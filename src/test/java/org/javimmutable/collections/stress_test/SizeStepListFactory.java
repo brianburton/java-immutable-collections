@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2016-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,38 +33,27 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 
 /**
- * Uses a random number generator to create a series of size steps
- * containing a growth size target and a shrink size target.
- * Steps are randomly selected so that the final shrink size is
- * always the maxSize and the final growthSize is always somewhat larger.
- * Sizes are monotonically increasing.
+ * Uses a random number generator to create a series of size steps containing a growth size target and a shrink size
+ * target. Steps are randomly selected so that the final shrink size is always the maxSize and the final growthSize is
+ * always somewhat larger. Sizes are monotonically increasing.
  */
-public class SizeStepListFactory
-{
-    public static Iterable<Step> steps(int numSteps,
-                                       int maxSize,
-                                       Random r)
-    {
+public class SizeStepListFactory {
+    public static Iterable<Step> steps(int numSteps, int maxSize, Random r) {
         IList<Step> steps;
         if (maxSize == 1) {
             steps = ILists.of(new Step(1, 1));
         } else if (maxSize == 2) {
-            steps = ILists.of(new Step(1, 1),
-                              new Step(2, 1),
-                              new Step(2, 2));
+            steps = ILists.of(new Step(1, 1), new Step(2, 1), new Step(2, 2));
         } else if (maxSize == 3) {
-            steps = ILists.of(new Step(1, 1),
-                              new Step(3, 2),
-                              new Step(3, 3));
+            steps = ILists.of(new Step(1, 1), new Step(3, 2), new Step(3, 3));
         } else if (maxSize < (2 * numSteps)) {
             steps = randomSteps(maxSize / 2, maxSize, r);
         } else {
@@ -75,10 +62,7 @@ public class SizeStepListFactory
         return steps;
     }
 
-    private static IList<Step> randomSteps(int numSteps,
-                                           int maxSize,
-                                           Random r)
-    {
+    private static IList<Step> randomSteps(int numSteps, int maxSize, Random r) {
         final int extra = Math.max(1, maxSize / (numSteps * 3));
         final int numSizes = 2 * (numSteps - 1);
         final Set<Integer> sizes = new TreeSet<>();
@@ -95,25 +79,20 @@ public class SizeStepListFactory
         return steps;
     }
 
-    public static class Step
-    {
+    public static class Step {
         private final int growthSize;
         private final int shrinkSize;
 
-        private Step(int growthSize,
-                     int shrinkSize)
-        {
+        private Step(int growthSize, int shrinkSize) {
             this.growthSize = growthSize;
             this.shrinkSize = shrinkSize;
         }
 
-        public int growthSize()
-        {
+        public int growthSize() {
             return growthSize;
         }
 
-        public int shrinkSize()
-        {
+        public int shrinkSize() {
             return shrinkSize;
         }
     }

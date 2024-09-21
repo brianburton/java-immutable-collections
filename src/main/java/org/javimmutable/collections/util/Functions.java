@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,34 +33,25 @@
 
 package org.javimmutable.collections.util;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-/**
- * Library of static functions that perform various operations on Iterators.
- */
-public final class Functions
-{
-    private Functions()
-    {
-    }
+/** Library of static functions that perform various operations on Iterators. */
+public final class Functions {
+    private Functions() {}
 
     /**
-     * Calls func for every value in iterator passing in the accumulator and each value as parameters
-     * and setting accumulator to the result.  The final accumulator value is returned.
+     * Calls func for every value in iterator passing in the accumulator and each value as parameters and setting
+     * accumulator to the result. The final accumulator value is returned.
      */
-    public static <T, R> R foldLeft(R accumulator,
-                                    Iterator<? extends T> iterator,
-                                    Func2<R, ? super T, R> func)
-    {
+    public static <T, R> R foldLeft(R accumulator, Iterator<? extends T> iterator, Func2<R, ? super T, R> func) {
         while (iterator.hasNext()) {
             accumulator = func.apply(accumulator, iterator.next());
         }
@@ -70,23 +59,19 @@ public final class Functions
     }
 
     /**
-     * Calls func for every value in iterator from right to left (i.e. in reverse order) passing in the accumulator and each value
-     * as parameters and setting the accumulator to the result.  The final accumulator value is returned.
+     * Calls func for every value in iterator from right to left (i.e. in reverse order) passing in the accumulator and
+     * each value as parameters and setting the accumulator to the result. The final accumulator value is returned.
      * Requires 2x time compared to foldLeft() since it reverses the order of the iterator before calling the function.
      */
-    public static <T, R> R foldRight(R accumulator,
-                                     Iterator<? extends T> iterator,
-                                     Func2<R, ? super T, R> func)
-    {
+    public static <T, R> R foldRight(R accumulator, Iterator<? extends T> iterator, Func2<R, ? super T, R> func) {
         return foldLeft(accumulator, reverse(iterator), func);
     }
 
     /**
-     * Creates a new Iterator whose values are in the reverse order of the provided Iterator.
-     * Requires O(n) time and creates an intermediate copy of the Iterator's values.
+     * Creates a new Iterator whose values are in the reverse order of the provided Iterator. Requires O(n) time and
+     * creates an intermediate copy of the Iterator's values.
      */
-    public static <T> Iterator<T> reverse(Iterator<? extends T> iterator)
-    {
+    public static <T> Iterator<T> reverse(Iterator<? extends T> iterator) {
         List<T> reversed = new LinkedList<>();
         while (iterator.hasNext()) {
             reversed.add(0, iterator.next());
@@ -95,13 +80,10 @@ public final class Functions
     }
 
     /**
-     * Calls func for each value in iterator and passes it to func until func returns true.
-     * If func returns true the value is returned.  If func never returns true an empty
-     * value is returned.
+     * Calls func for each value in iterator and passes it to func until func returns true. If func returns true the
+     * value is returned. If func never returns true an empty value is returned.
      */
-    public static <T> Maybe<T> find(Iterator<? extends T> iterator,
-                                    Func1<? super T, Boolean> func)
-    {
+    public static <T> Maybe<T> find(Iterator<? extends T> iterator, Func1<? super T, Boolean> func) {
         while (iterator.hasNext()) {
             final T value = iterator.next();
             if (func.apply(value)) {
@@ -111,22 +93,17 @@ public final class Functions
         return Maybe.empty();
     }
 
-    public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,
-                                              IMap<K, V> src)
-    {
+    public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest, IMap<K, V> src) {
         for (IMapEntry<K, V> entry : src) {
             dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
     }
 
-    public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest,
-                                              Map<K, V> src)
-    {
+    public static <K, V> IMap<K, V> assignAll(IMap<K, V> dest, Map<K, V> src) {
         for (Map.Entry<K, V> entry : src.entrySet()) {
             dest = dest.assign(entry.getKey(), entry.getValue());
         }
         return dest;
     }
-
 }

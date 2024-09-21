@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,14 +33,8 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func0;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Func2;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.indexed.IndexedList;
-import org.javimmutable.collections.tree.ComparableComparator;
+import static junit.framework.Assert.assertEquals;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -52,17 +44,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Func0;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Func2;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.indexed.IndexedList;
+import org.javimmutable.collections.tree.ComparableComparator;
 
-import static junit.framework.Assert.assertEquals;
+public final class StandardBuilderTests {
+    private StandardBuilderTests() {}
 
-public final class StandardBuilderTests
-{
-    private StandardBuilderTests()
-    {
-    }
-
-    public interface BuilderAdapter<T, C>
-    {
+    public interface BuilderAdapter<T, C> {
         C build();
 
         int size();
@@ -75,24 +68,21 @@ public final class StandardBuilderTests
 
         <K extends T> void add(K... source);
 
-        void add(Indexed<? extends T> source,
-                 int offset,
-                 int limit);
+        void add(Indexed<? extends T> source, int offset, int limit);
 
         void add(Indexed<? extends T> source);
 
         void clear();
     }
 
-    /**
-     * Tests all of the standard Builder add methods using the specified build and comparison functions.
-     */
-    public static <T, C> void verifyBuilder(List<T> values,
-                                            Func0<? extends BuilderAdapter<T, C>> builderFactory,
-                                            Func2<List<T>, C, Boolean> comparator,
-                                            T[] arrayTemplate)
-    {
-        @SuppressWarnings("TooBroadScope") C collection;
+    /** Tests all of the standard Builder add methods using the specified build and comparison functions. */
+    public static <T, C> void verifyBuilder(
+            List<T> values,
+            Func0<? extends BuilderAdapter<T, C>> builderFactory,
+            Func2<List<T>, C, Boolean> comparator,
+            T[] arrayTemplate) {
+        @SuppressWarnings("TooBroadScope")
+        C collection;
 
         Indexed<T> indexed = IndexedList.retained(values);
 
@@ -110,7 +100,7 @@ public final class StandardBuilderTests
 
         // add via array
         //noinspection unchecked
-        T[] array = (T[])values.toArray(arrayTemplate);
+        T[] array = (T[]) values.toArray(arrayTemplate);
         //noinspection unchecked
         builder.clear();
         builder.add(array);
@@ -133,11 +123,11 @@ public final class StandardBuilderTests
         verifyMultipleCallOk(values, builderFactory, comparator, indexed);
     }
 
-    private static <T, C> void verifyMultipleCallOk(List<T> values,
-                                                    Func0<? extends BuilderAdapter<T, C>> builderFactory,
-                                                    Func2<List<T>, C, Boolean> comparator,
-                                                    Indexed<T> indexed)
-    {
+    private static <T, C> void verifyMultipleCallOk(
+            List<T> values,
+            Func0<? extends BuilderAdapter<T, C>> builderFactory,
+            Func2<List<T>, C, Boolean> comparator,
+            Indexed<T> indexed) {
         final BuilderAdapter<T, C> multi = builderFactory.apply();
         final int multiStep = Math.max(1, indexed.size() / 8);
         final List<T> sublist = new ArrayList<>();
@@ -155,12 +145,12 @@ public final class StandardBuilderTests
         assertEquals(Boolean.TRUE, comparator.apply(values, multi.build()));
     }
 
-    public static <T, C> void verifyThreadSafety(@Nonnull List<T> expected,
-                                                 @Nonnull Comparator<T> comparator,
-                                                 @Nonnull Func0<BuilderAdapter<T, C>> builderFactory,
-                                                 @Nonnull Func1<C, Iterable<T>> transform)
-        throws InterruptedException
-    {
+    public static <T, C> void verifyThreadSafety(
+            @Nonnull List<T> expected,
+            @Nonnull Comparator<T> comparator,
+            @Nonnull Func0<BuilderAdapter<T, C>> builderFactory,
+            @Nonnull Func1<C, Iterable<T>> transform)
+            throws InterruptedException {
         final int numThreads = 32;
         final int perThread = (expected.size() + numThreads - 1) / numThreads;
         for (int loop = 1; loop <= 100; ++loop) {
@@ -187,25 +177,19 @@ public final class StandardBuilderTests
         }
     }
 
-    public static <C> void verifyThreadSafety(@Nonnull Func0<BuilderAdapter<Integer, C>> builderFactory,
-                                              @Nonnull Func1<C, Iterable<Integer>> transform)
-        throws InterruptedException
-    {
+    public static <C> void verifyThreadSafety(
+            @Nonnull Func0<BuilderAdapter<Integer, C>> builderFactory, @Nonnull Func1<C, Iterable<Integer>> transform)
+            throws InterruptedException {
         final List<Integer> expected = IntStream.range(0, 4096).boxed().collect(Collectors.toList());
         verifyThreadSafety(expected, ComparableComparator.of(), builderFactory, transform);
     }
 
-    public static <C extends Iterable<Integer>> void verifyThreadSafety(Func0<BuilderAdapter<Integer, C>> builderFactory)
-        throws InterruptedException
-    {
+    public static <C extends Iterable<Integer>> void verifyThreadSafety(
+            Func0<BuilderAdapter<Integer, C>> builderFactory) throws InterruptedException {
         verifyThreadSafety(builderFactory, list -> list);
     }
 
-    private static <T, C> void addValues(BuilderAdapter<T, C> builder,
-                                         List<T> indexed,
-                                         int first,
-                                         int limit)
-    {
+    private static <T, C> void addValues(BuilderAdapter<T, C> builder, List<T> indexed, int first, int limit) {
         for (int i = first; i < limit; ++i) {
             builder.add(indexed.get(i));
         }

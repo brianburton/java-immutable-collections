@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2018-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,15 +33,13 @@
 
 package org.javimmutable.collections.common;
 
+import static org.junit.Assert.*;
+
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Maybe;
 
-import static org.junit.Assert.*;
-
-public class StandardDequeTests
-{
-    public static void standardTests(IDeque<Integer> empty)
-    {
+public class StandardDequeTests {
+    public static void standardTests(IDeque<Integer> empty) {
         verifyInsertAllFirst(empty);
         verifyInsertAllLast(empty);
         verifyTransform(empty);
@@ -52,8 +48,7 @@ public class StandardDequeTests
         verifySingle(empty);
     }
 
-    public static void verifyInsertAllFirst(IDeque<Integer> empty)
-    {
+    public static void verifyInsertAllFirst(IDeque<Integer> empty) {
         IDeque<Integer> actual = appendAll(empty, 1, 10);
         IDeque<Integer> expected = actual;
         while (actual.size() < 250_000) {
@@ -66,8 +61,7 @@ public class StandardDequeTests
         }
     }
 
-    public static void verifyInsertAllLast(IDeque<Integer> empty)
-    {
+    public static void verifyInsertAllLast(IDeque<Integer> empty) {
         IDeque<Integer> actual = appendAll(empty, 1, 10);
         IDeque<Integer> expected = actual;
         while (actual.size() < 250_000) {
@@ -80,8 +74,7 @@ public class StandardDequeTests
         }
     }
 
-    public static void verifyAssign(IDeque<Integer> empty)
-    {
+    public static void verifyAssign(IDeque<Integer> empty) {
         for (int size = 0; size < 4096; ++size) {
             IDeque<Integer> expected = appendAll(empty, 1, size);
             IDeque<Integer> actual = appendAll(empty, 101, 100 + size);
@@ -92,8 +85,7 @@ public class StandardDequeTests
         }
     }
 
-    public static void verifyReverse(IDeque<Integer> empty)
-    {
+    public static void verifyReverse(IDeque<Integer> empty) {
         IDeque<Integer> expected = empty;
         IDeque<Integer> actual = empty;
         for (int size = 0; size < 512; ++size) {
@@ -104,8 +96,7 @@ public class StandardDequeTests
         }
     }
 
-    public static void verifyTransform(IDeque<Integer> empty)
-    {
+    public static void verifyTransform(IDeque<Integer> empty) {
         IDeque<Integer> orig = appendAll(empty, 1, 20);
         IDeque<Integer> transformed = orig.transform(i -> i + 10);
         assertSame(orig.getClass(), transformed.getClass());
@@ -116,28 +107,21 @@ public class StandardDequeTests
         assertEquals(appendAll(empty, 1, 10), transformed);
     }
 
-    private static void verifySingle(IDeque<Integer> empty)
-    {
+    private static void verifySingle(IDeque<Integer> empty) {
         assertEquals(Maybe.empty(), empty.single());
         assertEquals(Maybe.of(1), empty.insert(1).single());
         assertEquals(Maybe.of(null), empty.insert(null).single());
         assertEquals(Maybe.empty(), empty.insert(1).insert(2).single());
     }
 
-    private static IDeque<Integer> appendAll(IDeque<Integer> answer,
-                                             int first,
-                                             int last)
-    {
+    private static IDeque<Integer> appendAll(IDeque<Integer> answer, int first, int last) {
         for (int i = first; i <= last; ++i) {
             answer = answer.insert(i);
         }
         return answer;
     }
 
-    private static IDeque<Integer> prependAll(IDeque<Integer> answer,
-                                              int first,
-                                              int last)
-    {
+    private static IDeque<Integer> prependAll(IDeque<Integer> answer, int first, int last) {
         for (int i = last; i >= first; --i) {
             answer = answer.insertFirst(i);
         }

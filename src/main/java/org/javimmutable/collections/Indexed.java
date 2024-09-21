@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,89 +35,73 @@ package org.javimmutable.collections;
 
 import javax.annotation.Nonnull;
 
-/**
- * Interface for containers that allow access to values by an integer index.
- */
-public interface Indexed<T>
-{
+/** Interface for containers that allow access to values by an integer index. */
+public interface Indexed<T> {
     /**
-     * Retrieve the value.  The index must be valid for the container's current size (i.e. [0-size)
+     * Retrieve the value. The index must be valid for the container's current size (i.e. [0-size)
      *
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     T get(int index);
 
-    /**
-     * Retrieve the number of values available in the container.
-     */
+    /** Retrieve the number of values available in the container. */
     int size();
 
     /**
-     * Retrieves a Holder containing the (possibly null) value at the specified index if it exists.
-     * If no such value exists returns an empty Holder.
+     * Retrieves a Holder containing the (possibly null) value at the specified index if it exists. If no such value
+     * exists returns an empty Holder.
      */
     @Nonnull
     Maybe<T> find(int index);
 
-    default <U> Indexed<U> transformed(Func1<T, U> transforminator)
-    {
-        return new Indexed<>()
-        {
+    default <U> Indexed<U> transformed(Func1<T, U> transforminator) {
+        return new Indexed<>() {
             @Override
-            public U get(int index)
-            {
+            public U get(int index) {
                 return transforminator.apply(Indexed.this.get(index));
             }
 
             @Nonnull
             @Override
-            public Maybe<U> find(int index)
-            {
+            public Maybe<U> find(int index) {
                 return Indexed.this.find(index).map(transforminator);
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return Indexed.this.size();
             }
         };
     }
 
     @Nonnull
-    default Indexed<T> reversed()
-    {
+    default Indexed<T> reversed() {
         final int size = size();
         final int last = size - 1;
         if (size == 0) {
             return this;
         }
-        return new Indexed<>()
-        {
+        return new Indexed<>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 return Indexed.this.get(last - index);
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return size;
             }
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 return Indexed.this.find(last - index);
             }
         };
     }
 
     @Nonnull
-    default Indexed<T> prefix(int size)
-    {
+    default Indexed<T> prefix(int size) {
         if (size == size()) {
             return this;
         }
@@ -127,11 +109,9 @@ public interface Indexed<T>
             throw new ArrayIndexOutOfBoundsException(size);
         }
         final int last = size - 1;
-        return new Indexed<>()
-        {
+        return new Indexed<>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 if (index < 0 || index > last) {
                     throw new ArrayIndexOutOfBoundsException(index);
                 }
@@ -139,15 +119,13 @@ public interface Indexed<T>
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return size;
             }
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 if (index < 0 || index > last) {
                     return Maybe.empty();
                 } else {

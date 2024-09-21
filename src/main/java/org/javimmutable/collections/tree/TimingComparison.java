@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,21 +33,16 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
 
-public final class TimingComparison
-{
-    private TimingComparison()
-    {
-    }
+public final class TimingComparison {
+    private TimingComparison() {}
 
-    public static void main(String[] argv)
-    {
+    public static void main(String[] argv) {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
             System.exit(1);
@@ -68,12 +61,7 @@ public final class TimingComparison
         }
     }
 
-    private static void runLoop(int seed,
-                                int loops,
-                                int maxValue,
-                                int maxKey,
-                                int maxCommand)
-    {
+    private static void runLoop(int seed, int loops, int maxValue, int maxKey, int maxCommand) {
         Random random = new Random(seed);
         int adds = 0;
         int removes = 0;
@@ -98,7 +86,9 @@ public final class TimingComparison
             }
         }
         long endMap = System.currentTimeMillis();
-        System.out.printf("map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMap - startMap));
+        System.out.printf(
+                "map adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, expected.size(), (endMap - startMap));
 
         random = new Random(seed);
         adds = 0;
@@ -124,7 +114,9 @@ public final class TimingComparison
             }
         }
         long endPer = System.currentTimeMillis();
-        System.out.printf("tree adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endPer - startPer));
+        System.out.printf(
+                "tree adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, expected.size(), (endPer - startPer));
         map.checkInvariants();
 
         Iterator<Map.Entry<Integer, Integer>> expectedIter = expected.entrySet().iterator();
@@ -140,9 +132,7 @@ public final class TimingComparison
         }
     }
 
-    private static void assertEquals(Integer a,
-                                     Integer b)
-    {
+    private static void assertEquals(Integer a, Integer b) {
         if (!a.equals(b)) {
             throw new RuntimeException();
         }

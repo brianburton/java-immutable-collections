@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,17 @@
 
 package org.javimmutable.collections.hash;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
@@ -48,32 +57,17 @@ import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.ComparableComparator;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static java.util.Arrays.asList;
-
-public class HashSetTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class HashSetTest extends TestCase {
+    public void testStandard() {
         StandardSetTests.verifySet(HashSet.of(), true);
         StandardSetTests.verifySet(HashSet.usingList(), false);
         StandardSetTests.verifySet(HashSet.usingTree(), false);
         StandardIteratorTests.emptyIteratorTest(HashSet.<Integer>of().iterator());
-        StandardIteratorTests.listIteratorTest(asList(1, 2, 3), HashSet.<Integer>of().union(asList(1, 2, 3)).iterator());
+        StandardIteratorTests.listIteratorTest(
+                asList(1, 2, 3), HashSet.<Integer>of().union(asList(1, 2, 3)).iterator());
     }
 
-    public void test()
-    {
+    public void test() {
         List<String> expected = new ArrayList<>();
         expected.add("fred");
         expected.add("wilma");
@@ -154,7 +148,8 @@ public class HashSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new java.util.HashSet<>(asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
+        assertEquals(
+                new java.util.HashSet<>(asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -165,8 +160,7 @@ public class HashSetTest
     }
 
     @SuppressWarnings("unchecked")
-    public void testIntersectWithStringComparisonDifference()
-    {
+    public void testIntersectWithStringComparisonDifference() {
         // from hash set standpoint HELLO and Hello are NOT the same String so an intersection
         // should yield an empty set.  However that's not how java.util.Set works
         Set<String> hset = new java.util.HashSet<>(asList("Hello"));
@@ -209,31 +203,41 @@ public class HashSetTest
         assertEquals(asList("Hello"), TestUtil.makeList(jet.intersection(tset)));
         // different than Set.retainAll()
         assertEquals(asList(), TestUtil.makeList(jet.intersection(tset.iterator())));
-        assertEquals(asList(), TestUtil.makeList(jet.intersection((Collection)tset)));
+        assertEquals(asList(), TestUtil.makeList(jet.intersection((Collection) tset)));
     }
 
-    public void testStreams()
-    {
-        ISet<Integer> mset = HashSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+    public void testStreams() {
+        ISet<Integer> mset = HashSet.<Integer>of()
+                .insert(4)
+                .insert(3)
+                .insert(4)
+                .insert(2)
+                .insert(1)
+                .insert(3);
         StandardStreamableTests.verifyOrderedUsingCollection(asList(1, 2, 3, 4), mset);
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((ISet)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((ISet) a).iterator();
         final ISet<String> empty = HashSet.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIhBL78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1gvI7E4Q881t6Ck0gPICk4tmZv/p+zRkZVvmRgYKooY9PFqTs7Pzc3P03NMKi4pSkwuAermbFnFYXb0SCJIdwEATI5GOIEAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzOCE4tCSjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZGBgYSxgYEysAEu8rjaUAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzOCE4tCSjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgEQJA2MiECcBcXIFABnBxnOtAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIhBL78oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1gvI7E4Q881t6Ck0gPICk4tmZv/p+zRkZVvmRgYKooY9PFqTs7Pzc3P03NMKi4pSkwuAermbFnFYXb0SCJIdwEATI5GOIEAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzOCE4tCSjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZGBgYSxgYEysAEu8rjaUAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList("a", "b", "c", "b")),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzOCE4tCSjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgEQJA2MiECcBcXIFABnBxnOtAAAA");
     }
 
-    public void testBuilder()
-        throws InterruptedException
-    {
+    public void testBuilder() throws InterruptedException {
         final Func2<List<Integer>, ISet<Integer>, Boolean> comparator = (list, set) -> {
             set.checkInvariants();
             final List<Integer> sortedExpected = list.stream().sorted().collect(Collectors.toList());
@@ -248,8 +252,7 @@ public class HashSetTest
     }
 
     @Nonnull
-    private SetBuilderTestAdapter<Integer> builderAdaptor()
-    {
+    private SetBuilderTestAdapter<Integer> builderAdaptor() {
         return new SetBuilderTestAdapter<>(HashSet.builder());
     }
 }

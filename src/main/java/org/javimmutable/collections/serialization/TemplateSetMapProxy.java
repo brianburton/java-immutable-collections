@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.serialization;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
@@ -42,43 +43,29 @@ import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.setmap.TemplateSetMap;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("unchecked")
-public class TemplateSetMapProxy
-    extends AbstractSetMapProxy
-{
+public class TemplateSetMapProxy extends AbstractSetMapProxy {
     private static final long serialVersionUID = -121805;
 
-    public TemplateSetMapProxy()
-    {
+    public TemplateSetMapProxy() {
         super(TemplateSetMap.of(HashMap.of(), HashSet.of()));
     }
 
-    public TemplateSetMapProxy(TemplateSetMap map)
-    {
+    public TemplateSetMapProxy(TemplateSetMap map) {
         super(map);
     }
 
     @Override
-    protected ISetMap readMap(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        IMap emptyMap = (IMap)in.readObject();
-        ISet emptySet = (ISet)in.readObject();
+    protected ISetMap readMap(ObjectInput in) throws IOException, ClassNotFoundException {
+        IMap emptyMap = (IMap) in.readObject();
+        ISet emptySet = (ISet) in.readObject();
         return TemplateSetMap.of(emptyMap, emptySet);
     }
 
     @Override
-    protected void writeMap(ObjectOutput out)
-        throws IOException
-    {
-        TemplateSetMap setMap = (TemplateSetMap)map;
+    protected void writeMap(ObjectOutput out) throws IOException {
+        TemplateSetMap setMap = (TemplateSetMap) map;
         out.writeObject(setMap.getEmptyMap());
         out.writeObject(setMap.getEmptySet());
     }

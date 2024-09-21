@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,60 +33,50 @@
 
 package org.javimmutable.collections;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Objects;
 
 /**
- * Container object holding two SplitableIterators.  The two Iterators visit different
- * elements from the same original Iterator.  The left Iterator always visits elements
- * that come before the elements visited by the right Iterator in the original Iterator.
- * Visiting all elements in the left Iterator and then visiting all elements in the right
- * Iterator yields exactly the same elements as visiting all elements from the original
- * Iterator.
+ * Container object holding two SplitableIterators. The two Iterators visit different elements from the same original
+ * Iterator. The left Iterator always visits elements that come before the elements visited by the right Iterator in the
+ * original Iterator. Visiting all elements in the left Iterator and then visiting all elements in the right Iterator
+ * yields exactly the same elements as visiting all elements from the original Iterator.
  */
 @Immutable
-public class SplitIterator<T>
-{
+public class SplitIterator<T> {
     private final SplitableIterator<T> left;
     private final SplitableIterator<T> right;
 
-    public SplitIterator(@Nonnull SplitableIterator<T> left,
-                         @Nonnull SplitableIterator<T> right)
-    {
+    public SplitIterator(@Nonnull SplitableIterator<T> left, @Nonnull SplitableIterator<T> right) {
         this.left = left;
         this.right = right;
     }
 
     @Nonnull
-    public SplitableIterator<T> getLeft()
-    {
+    public SplitableIterator<T> getLeft() {
         return left;
     }
 
     @Nonnull
-    public SplitableIterator<T> getRight()
-    {
+    public SplitableIterator<T> getRight() {
         return right;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        SplitIterator<?> that = (SplitIterator<?>)o;
-        return Objects.equals(left, that.left) &&
-               Objects.equals(right, that.right);
+        SplitIterator<?> that = (SplitIterator<?>) o;
+        return Objects.equals(left, that.left) && Objects.equals(right, that.right);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(left, right);
     }
 }

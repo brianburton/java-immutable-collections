@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,32 +33,27 @@
 
 package org.javimmutable.collections.hash;
 
+import java.util.Map;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.list.ListCollisionMap;
 import org.javimmutable.collections.tree.TreeCollisionMap;
 
-import java.util.Map;
-
-public class EmptyHashMapTest
-    extends TestCase
-{
+public class EmptyHashMapTest extends TestCase {
     @SuppressWarnings("ConstantConditions")
-    public void testAssign()
-    {
+    public void testAssign() {
         IMap<String, Integer> comparableMap = HashMap.of();
         comparableMap = comparableMap.assign("a", 100);
         assertTrue(comparableMap instanceof HashMap);
-        assertSame(TreeCollisionMap.instance(), ((HashMap)comparableMap).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) comparableMap).getCollisionMap());
 
         IMap<Object, Integer> otherMap = HashMap.of();
         otherMap = otherMap.assign(new Object(), 100);
         assertTrue(otherMap instanceof HashMap);
-        assertSame(ListCollisionMap.instance(), ((HashMap)otherMap).getCollisionMap());
+        assertSame(ListCollisionMap.instance(), ((HashMap) otherMap).getCollisionMap());
     }
 
-    public void testAssignAll()
-    {
+    public void testAssignAll() {
         IMap<String, Number> map = HashMap.of();
         IMap<String, Integer> expected = HashMap.of();
         map = map.assignAll(expected);
@@ -72,15 +65,14 @@ public class EmptyHashMapTest
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertTrue(map instanceof HashMap);
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
 
         map = HashMap.of();
         expected = expected.assign("b", 12).assign("c", 14);
         map = map.assignAll(expected);
         assertEquals(expected, map);
         assertTrue(map instanceof HashMap);
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
-
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
 
         map = HashMap.of();
         Map<String, Integer> expected2 = new java.util.HashMap<String, Integer>();
@@ -93,7 +85,7 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertTrue(map instanceof HashMap);
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
 
         map = HashMap.of();
         expected2.put("b", 12);
@@ -101,6 +93,6 @@ public class EmptyHashMapTest
         map = map.assignAll(expected2);
         assertEquals(expected2, map.getMap());
         assertTrue(map instanceof HashMap);
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
     }
 }

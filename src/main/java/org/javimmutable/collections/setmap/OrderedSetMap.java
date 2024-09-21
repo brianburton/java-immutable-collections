@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.setmap;
 
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
@@ -42,48 +42,37 @@ import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.serialization.OrderedSetMapProxy;
 
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-
 /**
- * {@link ISetMap} implementation that allows keys to be traversed in the same order as they
- * were inserted into the collection
+ * {@link ISetMap} implementation that allows keys to be traversed in the same order as they were inserted into the
+ * collection
  */
 @Immutable
-public class OrderedSetMap<K, V>
-    extends AbstractSetMap<K, V>
-    implements Serializable
-{
+public class OrderedSetMap<K, V> extends AbstractSetMap<K, V> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final OrderedSetMap EMPTY = new OrderedSetMap(OrderedMap.of(), HashSet.of());
+
     private static final long serialVersionUID = -121805;
 
-    private OrderedSetMap(IMap<K, ISet<V>> contents,
-                          ISet<V> emptySet)
-    {
+    private OrderedSetMap(IMap<K, ISet<V>> contents, ISet<V> emptySet) {
         super(contents, emptySet);
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> OrderedSetMap<K, V> of()
-    {
+    public static <K, V> OrderedSetMap<K, V> of() {
         return EMPTY;
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         checkSetMapInvariants();
     }
 
     @Override
-    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
-    {
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map) {
         return new OrderedSetMap<K, V>(map, emptySet);
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new OrderedSetMapProxy(this);
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,16 +33,13 @@
 
 package org.javimmutable.collections.iterators;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class IteratorHelper
-{
-    public static boolean iteratorEquals(@Nonnull Iterator<?> a,
-                                         @Nonnull Iterator<?> b)
-    {
+public class IteratorHelper {
+    public static boolean iteratorEquals(@Nonnull Iterator<?> a, @Nonnull Iterator<?> b) {
         while (a.hasNext() && b.hasNext()) {
             final Object av = a.next();
             final Object bv = b.next();
@@ -55,8 +50,7 @@ public class IteratorHelper
         return a.hasNext() == b.hasNext();
     }
 
-    public static int iteratorHashCode(@Nonnull Iterator<?> a)
-    {
+    public static int iteratorHashCode(@Nonnull Iterator<?> a) {
         int hashCode = 0;
         while (a.hasNext()) {
             final Object value = a.next();
@@ -66,8 +60,7 @@ public class IteratorHelper
         return hashCode;
     }
 
-    public static String iteratorToString(Iterator<?> iterator)
-    {
+    public static String iteratorToString(Iterator<?> iterator) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         while (iterator.hasNext()) {
@@ -86,16 +79,14 @@ public class IteratorHelper
     }
 
     /**
-     * Utility method, useful in unit tests, that essentially casts away actual type of an object
-     * so that Iterable version of an overload is triggered instead of more specific class.
+     * Utility method, useful in unit tests, that essentially casts away actual type of an object so that Iterable
+     * version of an overload is triggered instead of more specific class.
      */
-    public static <T> Iterable<T> plainIterable(Iterable<T> values)
-    {
+    public static <T> Iterable<T> plainIterable(Iterable<T> values) {
         return () -> values.iterator();
     }
 
-    public static <T> Iterator<T> reverse(Iterator<? extends T> values)
-    {
+    public static <T> Iterator<T> reverse(Iterator<? extends T> values) {
         List<T> prefix = new ArrayList<>();
         while (values.hasNext()) {
             prefix.add(values.next());

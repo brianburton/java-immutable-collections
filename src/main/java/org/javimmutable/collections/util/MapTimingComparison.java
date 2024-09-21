@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,11 @@
 
 package org.javimmutable.collections.util;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.array.TrieArray;
@@ -42,21 +45,10 @@ import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.tree.TreeMap;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+public final class MapTimingComparison {
+    private MapTimingComparison() {}
 
-public final class MapTimingComparison
-{
-    private MapTimingComparison()
-    {
-    }
-
-    public static void main(String[] argv)
-        throws Exception
-    {
+    public static void main(String[] argv) throws Exception {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
             System.exit(1);
@@ -76,23 +68,83 @@ public final class MapTimingComparison
         final int maxValue = 10 * loops;
         final int maxKey = 100000000;
         final int maxCommand = 10;
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
         System.out.println();
 
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaHashTimes, javaTreeTimes, hashTimes, treeTimes, arrayTimes, inOrderTimes);
+            runLoop(
+                    seed + i,
+                    loops,
+                    maxValue,
+                    maxKey,
+                    maxCommand,
+                    javaHashTimes,
+                    javaTreeTimes,
+                    hashTimes,
+                    treeTimes,
+                    arrayTimes,
+                    inOrderTimes);
             System.out.println();
         }
-        System.out.printf("jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n",
-                          avg(javaHashTimes), avg(javaTreeTimes), avg(treeTimes), avg(hashTimes), avg(arrayTimes), avg(inOrderTimes));
+        System.out.printf(
+                "jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n",
+                avg(javaHashTimes),
+                avg(javaTreeTimes),
+                avg(treeTimes),
+                avg(hashTimes),
+                avg(arrayTimes),
+                avg(inOrderTimes));
     }
 
-    private static double avg(List<Integer> times)
-    {
+    private static double avg(List<Integer> times) {
         times.sort(Comparator.naturalOrder());
         int tenPercent = (times.size() + 9) / 10;
         int limit = times.size() - tenPercent;
@@ -100,23 +152,23 @@ public final class MapTimingComparison
         for (int i = 0; i < limit; ++i) {
             total += times.get(i);
         }
-        return total / (double)limit;
+        return total / (double) limit;
     }
 
     @SuppressWarnings("UnusedAssignment")
-    private static void runLoop(int seed,
-                                int loops,
-                                int maxValue,
-                                int maxKey,
-                                int maxCommand,
-                                List<Integer> javaHashElapsed,
-                                List<Integer> javaTreeElapsed,
-                                List<Integer> hashElapsed,
-                                List<Integer> treeElapsed,
-                                List<Integer> arrayElapsed,
-                                List<Integer> inOrderElapsed)
-        throws Exception
-    {
+    private static void runLoop(
+            int seed,
+            int loops,
+            int maxValue,
+            int maxKey,
+            int maxCommand,
+            List<Integer> javaHashElapsed,
+            List<Integer> javaTreeElapsed,
+            List<Integer> hashElapsed,
+            List<Integer> treeElapsed,
+            List<Integer> arrayElapsed,
+            List<Integer> inOrderElapsed)
+            throws Exception {
         Random random = new Random(seed);
         int adds = 0;
         int removes = 0;
@@ -141,8 +193,10 @@ public final class MapTimingComparison
             }
         }
         long endMillis = System.currentTimeMillis();
-        javaHashElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("java map adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMillis - startMillis));
+        javaHashElapsed.add((int) (endMillis - startMillis));
+        System.out.printf(
+                "java map adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, expected.size(), (endMillis - startMillis));
         expected = null;
         System.gc();
         Thread.sleep(500);
@@ -171,8 +225,10 @@ public final class MapTimingComparison
             }
         }
         endMillis = System.currentTimeMillis();
-        javaTreeElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("java tree adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, expected.size(), (endMillis - startMillis));
+        javaTreeElapsed.add((int) (endMillis - startMillis));
+        System.out.printf(
+                "java tree adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, expected.size(), (endMillis - startMillis));
         expected = null;
         System.gc();
         Thread.sleep(500);
@@ -201,8 +257,10 @@ public final class MapTimingComparison
             }
         }
         endMillis = System.currentTimeMillis();
-        treeElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("jimm tree adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+        treeElapsed.add((int) (endMillis - startMillis));
+        System.out.printf(
+                "jimm tree adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, map.size(), (endMillis - startMillis));
         map = null;
         System.gc();
         Thread.sleep(500);
@@ -231,8 +289,10 @@ public final class MapTimingComparison
             }
         }
         endMillis = System.currentTimeMillis();
-        hashElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("jimm hash adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+        hashElapsed.add((int) (endMillis - startMillis));
+        System.out.printf(
+                "jimm hash adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, map.size(), (endMillis - startMillis));
         map = null;
         System.gc();
         Thread.sleep(500);
@@ -261,8 +321,10 @@ public final class MapTimingComparison
             }
         }
         endMillis = System.currentTimeMillis();
-        inOrderElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("jimm iord adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, map.size(), (endMillis - startMillis));
+        inOrderElapsed.add((int) (endMillis - startMillis));
+        System.out.printf(
+                "jimm iord adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, map.size(), (endMillis - startMillis));
         map = null;
         System.gc();
         Thread.sleep(500);
@@ -291,8 +353,10 @@ public final class MapTimingComparison
             }
         }
         endMillis = System.currentTimeMillis();
-        arrayElapsed.add((int)(endMillis - startMillis));
-        System.out.printf("jimm arry adds %d removes %d gets %d size %d elapsed %d%n", adds, removes, gets, array.size(), (endMillis - startMillis));
+        arrayElapsed.add((int) (endMillis - startMillis));
+        System.out.printf(
+                "jimm arry adds %d removes %d gets %d size %d elapsed %d%n",
+                adds, removes, gets, array.size(), (endMillis - startMillis));
         array = null;
         System.gc();
         Thread.sleep(500);

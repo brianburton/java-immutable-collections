@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,43 +33,34 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.ISet;
-
-import javax.annotation.concurrent.Immutable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.ISet;
 
-/**
- * Adaptor that implements an unmodifiable Set backed by a {@link ISet}.
- */
+/** Adaptor that implements an unmodifiable Set backed by a {@link ISet}. */
 @Immutable
-public class SetAdaptor<T>
-    extends AbstractSet<T>
-{
+public class SetAdaptor<T> extends AbstractSet<T> {
     private final ISet<T> pset;
 
-    public SetAdaptor(ISet<T> pset)
-    {
+    public SetAdaptor(ISet<T> pset) {
         this.pset = pset;
     }
 
-    public static <T> SetAdaptor<T> of(ISet<T> pset)
-    {
+    public static <T> SetAdaptor<T> of(ISet<T> pset) {
         return new SetAdaptor<T>(pset);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean contains(Object o)
-    {
-        return pset.contains((T)o);
+    public boolean contains(Object o) {
+        return pset.contains((T) o);
     }
 
     @Override
-    public boolean containsAll(Collection<?> objects)
-    {
+    public boolean containsAll(Collection<?> objects) {
         for (Object o : objects) {
             if (!contains(o)) {
                 return false;
@@ -81,20 +70,16 @@ public class SetAdaptor<T>
     }
 
     @Override
-    public Iterator<T> iterator()
-    {
+    public Iterator<T> iterator() {
         return pset.iterator();
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return pset.size();
     }
 
-    public static <T> boolean areEqual(Set<T> a,
-                                       Set<T> b)
-    {
+    public static <T> boolean areEqual(Set<T> a, Set<T> b) {
         if (a == null) {
             return b == null;
         } else if (b == null) {

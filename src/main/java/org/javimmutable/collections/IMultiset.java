@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2015-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,23 +33,20 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate
- * through the multiset with the correct number of occurrences per value.
+ * Keeps a set of distinct values, as well as the count corresponding to each value. Can iterate through the multiset
+ * with the correct number of occurrences per value.
  */
 @Immutable
-public interface IMultiset<T>
-    extends ISet<T>,
-            Serializable
-{
+public interface IMultiset<T> extends ISet<T>, Serializable {
     /**
      * Adds one occurrence of value to the multiset.
      *
@@ -63,16 +58,14 @@ public interface IMultiset<T>
     IMultiset<T> insert(@Nonnull T value);
 
     /**
-     * Adds count number of occurrences of value to the multiset.
-     * Count must be greater than or equal to zero.
+     * Adds count number of occurrences of value to the multiset. Count must be greater than or equal to zero.
      *
      * @param value value to add
      * @param count number of occurrences added
      * @return new multiset reflecting the change
      */
     @Nonnull
-    IMultiset<T> insert(@Nonnull T value,
-                        int count);
+    IMultiset<T> insert(@Nonnull T value, int count);
 
     /**
      * Determines if the multiset contains at least one occurrence of the specified value
@@ -90,13 +83,11 @@ public interface IMultiset<T>
      * @param count number of occurrences checked for
      * @return true if thsi multiset contains at least count occurrences of value
      */
-    boolean containsAtLeast(@Nullable T value,
-                            int count);
+    boolean containsAtLeast(@Nullable T value, int count);
 
     /**
-     * Determines if the multiset contains every value (but not necessarily the same number of
-     * occurrences of each value) in other. If other is empty, returns true.
-     * Synonymous to calling contains() on each element of other.
+     * Determines if the multiset contains every value (but not necessarily the same number of occurrences of each
+     * value) in other. If other is empty, returns true. Synonymous to calling contains() on each element of other.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains all values
@@ -105,9 +96,8 @@ public interface IMultiset<T>
     boolean containsAll(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Determines if the multiset contains every value (but not necessarily the same number of
-     * occurrences of each value) in other. If other is empty, returns true.
-     * Synonymous to calling contains() on each element of other.
+     * Determines if the multiset contains every value (but not necessarily the same number of occurrences of each
+     * value) in other. If other is empty, returns true. Synonymous to calling contains() on each element of other.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains all values
@@ -116,8 +106,7 @@ public interface IMultiset<T>
     boolean containsAll(@Nonnull Iterator<? extends T> other);
 
     /**
-     * Determines if the multiset contains every occurrence of all the values
-     * in other. If other is empty, returns true.
+     * Determines if the multiset contains every occurrence of all the values in other. If other is empty, returns true.
      * Slow operation.
      *
      * @param other contains values to be checked for
@@ -126,8 +115,7 @@ public interface IMultiset<T>
     boolean containsAllOccurrences(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Determines if the multiset contains every occurrence of all the values
-     * in other. If other is empty, returns true.
+     * Determines if the multiset contains every occurrence of all the values in other. If other is empty, returns true.
      * Slow operation.
      *
      * @param other contains values to be checked for
@@ -136,8 +124,7 @@ public interface IMultiset<T>
     boolean containsAllOccurrences(@Nonnull Iterator<? extends T> other);
 
     /**
-     * Determines if the multiset contains every occurrence of all the values
-     * in other. If other is empty, returns true.
+     * Determines if the multiset contains every occurrence of all the values in other. If other is empty, returns true.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains all occurrences
@@ -145,8 +132,7 @@ public interface IMultiset<T>
     boolean containsAllOccurrences(@Nonnull IMultiset<? extends T> other);
 
     /**
-     * Determines if the multiset and other have at least one value in common.
-     * Returns false if other is empty.
+     * Determines if the multiset and other have at least one value in common. Returns false if other is empty.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains a value
@@ -155,8 +141,7 @@ public interface IMultiset<T>
     boolean containsAny(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Determines if the multiset and other have at least one value in common.
-     * Returns false if other is empty.
+     * Determines if the multiset and other have at least one value in common. Returns false if other is empty.
      *
      * @param other contains values to be checked for
      * @return true if this multiset contains a value
@@ -184,28 +169,24 @@ public interface IMultiset<T>
     IMultiset<T> deleteOccurrence(@Nonnull T value);
 
     /**
-     * Removes count number of occurrences of value from the multiset. If there are fewer than
-     * count occurrences in the multimap, then all the occurrences that do exist are deleted.
-     * Count must be greater than or equal to zero.
+     * Removes count number of occurrences of value from the multiset. If there are fewer than count occurrences in the
+     * multimap, then all the occurrences that do exist are deleted. Count must be greater than or equal to zero.
      *
      * @param value value to remove
      * @param count number of occurrences to remove
      * @return new multiset reflecting the change
      */
     @Nonnull
-    IMultiset<T> deleteOccurrence(@Nonnull T value,
-                                  int count);
+    IMultiset<T> deleteOccurrence(@Nonnull T value, int count);
 
-    /**
-     * @return an equivalent collection with no values
-     */
+    /** @return an equivalent collection with no values */
     @Nonnull
     @Override
     IMultiset<T> deleteAll();
 
     /**
-     * Removes all occurrences of each value in other from the multiset.
-     * Synonymous to calling delete() on each element of other.
+     * Removes all occurrences of each value in other from the multiset. Synonymous to calling delete() on each element
+     * of other.
      *
      * @param other contains values to delete
      * @return new multiset reflecting the change
@@ -215,8 +196,8 @@ public interface IMultiset<T>
     IMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Removes all occurrences of each value in other from the multiset.
-     * Synonymous to calling delete() on each element of other.
+     * Removes all occurrences of each value in other from the multiset. Synonymous to calling delete() on each element
+     * of other.
      *
      * @param other contains values to delete
      * @return new multiset reflecting the change
@@ -226,8 +207,8 @@ public interface IMultiset<T>
     IMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other);
 
     /**
-     * Removes each occurrence in other from the multiset.
-     * Synonymous to calling deleteOccurrence() on each element of other.
+     * Removes each occurrence in other from the multiset. Synonymous to calling deleteOccurrence() on each element of
+     * other.
      *
      * @param other contains occurrences to delete
      * @return new multiset reflecting the change
@@ -236,8 +217,8 @@ public interface IMultiset<T>
     IMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Removes each occurrence in other from the multiset.
-     * Synonymous to calling deleteOccurrence() on each element of other.
+     * Removes each occurrence in other from the multiset. Synonymous to calling deleteOccurrence() on each element of
+     * other.
      *
      * @param other contains occurrences to delete
      * @return new multiset reflecting the change
@@ -246,8 +227,8 @@ public interface IMultiset<T>
     IMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other);
 
     /**
-     * Removes each occurrence in other from the multiset.
-     * Synonymous to calling deleteOccurrence() on each element of other.
+     * Removes each occurrence in other from the multiset. Synonymous to calling deleteOccurrence() on each element of
+     * other.
      *
      * @param other contains occurrences to delete
      * @return new multiset reflecting the change
@@ -256,8 +237,7 @@ public interface IMultiset<T>
     IMultiset<T> deleteAllOccurrences(@Nonnull IMultiset<? extends T> other);
 
     /**
-     * Adds each occurrence in values to the multiset.
-     * Synonymous to calling insert on each element of values.
+     * Adds each occurrence in values to the multiset. Synonymous to calling insert on each element of values.
      *
      * @param values contains occurrences to be added
      * @return new multiset reflecting the change
@@ -267,8 +247,7 @@ public interface IMultiset<T>
     IMultiset<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
-     * Adds each occurrence in values to the multiset.
-     * Synonymous to calling insert on each element of values.
+     * Adds each occurrence in values to the multiset. Synonymous to calling insert on each element of values.
      *
      * @param values contains occurrences to be added
      * @return new multiset reflecting the change
@@ -278,8 +257,7 @@ public interface IMultiset<T>
     IMultiset<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Adds each occurrence in values to the multiset.
-     * Synonymous to calling insert on each element of values.
+     * Adds each occurrence in values to the multiset. Synonymous to calling insert on each element of values.
      *
      * @param values contains occurrences to be added
      * @return new multiset reflecting the change
@@ -288,10 +266,9 @@ public interface IMultiset<T>
     IMultiset<T> insertAll(@Nonnull IMultiset<? extends T> values);
 
     /**
-     * Combines all occurrences from other and the multiset. If only the multiset or
-     * other contains a value, that value's count is preserved in the new multiset.
-     * If both contain a value, the greater count is used.
-     * Slow operation.
+     * Combines all occurrences from other and the multiset. If only the multiset or other contains a value, that
+     * value's count is preserved in the new multiset. If both contain a value, the greater count is used. Slow
+     * operation.
      *
      * @param other contains values to union with this multiset
      * @return new multiset reflecting the changes
@@ -301,10 +278,9 @@ public interface IMultiset<T>
     IMultiset<T> union(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Combines all occurrences from other and the multiset. If only the multiset or
-     * other contains a value, that value's count is preserved in the new multiset.
-     * If both contain a value, the greater count is used.
-     * Slow operation.
+     * Combines all occurrences from other and the multiset. If only the multiset or other contains a value, that
+     * value's count is preserved in the new multiset. If both contain a value, the greater count is used. Slow
+     * operation.
      *
      * @param other contains values to union with this multiset
      * @return new multiset reflecting the changes
@@ -314,9 +290,8 @@ public interface IMultiset<T>
     IMultiset<T> union(@Nonnull Iterator<? extends T> other);
 
     /**
-     * Combines all occurrences from other and the multiset. If only the multiset or
-     * other contains a value, that value's count is preserved in the new multiset.
-     * If both contain a value, the greater count is used.
+     * Combines all occurrences from other and the multiset. If only the multiset or other contains a value, that
+     * value's count is preserved in the new multiset. If both contain a value, the greater count is used.
      *
      * @param other contains values to union with this multiset
      * @return new multiset reflecting the changes
@@ -325,10 +300,8 @@ public interface IMultiset<T>
     IMultiset<T> union(@Nonnull IMultiset<? extends T> other);
 
     /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
-     * Slow operation.
+     * Creates a new multiset with the occurrences that are in both other and this. If neither the multiset nor other
+     * contains a value, it is removed. If both contain a value, the lesser count is used. Slow operation.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -338,10 +311,8 @@ public interface IMultiset<T>
     IMultiset<T> intersection(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
-     * Slow operation.
+     * Creates a new multiset with the occurrences that are in both other and this. If neither the multiset nor other
+     * contains a value, it is removed. If both contain a value, the lesser count is used. Slow operation.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -351,9 +322,8 @@ public interface IMultiset<T>
     IMultiset<T> intersection(@Nonnull Iterator<? extends T> other);
 
     /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
+     * Creates a new multiset with the occurrences that are in both other and this. If neither the multiset nor other
+     * contains a value, it is removed. If both contain a value, the lesser count is used.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -362,9 +332,8 @@ public interface IMultiset<T>
     IMultiset<T> intersection(@Nonnull IMultiset<? extends T> other);
 
     /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
+     * Creates a new multiset with the occurrences that are in both other and this. If neither the multiset nor other
+     * contains a value, it is removed. If both contain a value, the lesser count is used.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -374,9 +343,8 @@ public interface IMultiset<T>
     IMultiset<T> intersection(@Nonnull ISet<? extends T> other);
 
     /**
-     * Creates a new multiset with the occurrences that are in both other and this.
-     * If neither the multiset nor other contains a value, it is removed. If both
-     * contain a value, the lesser count is used.
+     * Creates a new multiset with the occurrences that are in both other and this. If neither the multiset nor other
+     * contains a value, it is removed. If both contain a value, the lesser count is used.
      *
      * @param other contains values to intersect with this multiset
      * @return new multiset reflecting the change
@@ -402,8 +370,8 @@ public interface IMultiset<T>
     IStreamable<T> occurrences();
 
     /**
-     * Returns the number of occurrences associated with the specified value. If the value is not
-     * contained in the multiset, 0 is returned.
+     * Returns the number of occurrences associated with the specified value. If the value is not contained in the
+     * multiset, 0 is returned.
      *
      * @param value value to check for
      * @return number of occurrences
@@ -411,20 +379,20 @@ public interface IMultiset<T>
     int count(@Nonnull T value);
 
     /**
-     * Manually sets the number of occurrences associated with the specified value.
-     * Count must be greater than or equal to zero. If count == 0, is synonymous to delete(value).
-     * If value is not currently in the multiset, is equivalent to insert(value, count).
+     * Manually sets the number of occurrences associated with the specified value. Count must be greater than or equal
+     * to zero. If count == 0, is synonymous to delete(value). If value is not currently in the multiset, is equivalent
+     * to insert(value, count).
      *
      * @param value value to add
      * @param count new number of occurrences for value
      * @return new multiset reflecting the change
      */
     @Nonnull
-    IMultiset<T> setCount(@Nonnull T value,
-                          int count);
+    IMultiset<T> setCount(@Nonnull T value, int count);
 
     /**
-     * @return total number of unique values in the multiset. Same as the number of items in iterator() and entries().iterator().
+     * @return total number of unique values in the multiset. Same as the number of items in iterator() and
+     *     entries().iterator().
      */
     @Override
     int size();
@@ -435,12 +403,12 @@ public interface IMultiset<T>
     int occurrenceCount();
 
     /**
-     * Returns a Collector that creates a multiset of the same type as this containing all
-     * of the collected values inserted over whatever starting values this already contained.
+     * Returns a Collector that creates a multiset of the same type as this containing all of the collected values
+     * inserted over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, IMultiset<T>> multisetCollector()
-    {
-        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    default Collector<T, ?, IMultiset<T>> multisetCollector() {
+        return GenericCollector.unordered(
+                this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

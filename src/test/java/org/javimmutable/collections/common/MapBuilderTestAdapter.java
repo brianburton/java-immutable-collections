@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,79 +33,64 @@
 
 package org.javimmutable.collections.common;
 
+import java.util.Iterator;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Indexed;
 
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-
-public class MapBuilderTestAdapter<K, V>
-    implements StandardBuilderTests.BuilderAdapter<IMapEntry<K, V>, IMap<K, V>>
-{
+public class MapBuilderTestAdapter<K, V> implements StandardBuilderTests.BuilderAdapter<IMapEntry<K, V>, IMap<K, V>> {
     private final IMapBuilder<K, V> builder;
 
-    public MapBuilderTestAdapter(@Nonnull IMapBuilder<K, V> builder)
-    {
+    public MapBuilderTestAdapter(@Nonnull IMapBuilder<K, V> builder) {
         this.builder = builder;
     }
 
     @Override
-    public IMap<K, V> build()
-    {
+    public IMap<K, V> build() {
         return builder.build();
     }
 
     @Override
-    public void clear()
-    {
+    public void clear() {
         builder.clear();
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return builder.size();
     }
 
     @Override
-    public void add(IMapEntry<K, V> value)
-    {
+    public void add(IMapEntry<K, V> value) {
         builder.add(value);
     }
 
     @Override
-    public void add(Iterator<? extends IMapEntry<K, V>> source)
-    {
+    public void add(Iterator<? extends IMapEntry<K, V>> source) {
         builder.add(source);
     }
 
     @Override
-    public void add(Iterable<? extends IMapEntry<K, V>> source)
-    {
+    public void add(Iterable<? extends IMapEntry<K, V>> source) {
         builder.add(source);
     }
 
     @Override
-    public <T extends IMapEntry<K, V>> void add(T... source)
-    {
+    public <T extends IMapEntry<K, V>> void add(T... source) {
         IMapEntry<K, V>[] entries = new IMapEntry[source.length];
         System.arraycopy(source, 0, entries, 0, source.length);
         builder.add(entries);
     }
 
     @Override
-    public void add(Indexed<? extends IMapEntry<K, V>> source,
-                    int offset,
-                    int limit)
-    {
+    public void add(Indexed<? extends IMapEntry<K, V>> source, int offset, int limit) {
         builder.add(source, offset, limit);
     }
 
     @Override
-    public void add(Indexed<? extends IMapEntry<K, V>> source)
-    {
+    public void add(Indexed<? extends IMapEntry<K, V>> source) {
         builder.add(source);
     }
 }

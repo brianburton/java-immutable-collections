@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,18 +33,13 @@
 
 package org.javimmutable.collections.listmap;
 
+import java.util.Random;
 import org.javimmutable.collections.IListMap;
 
-import java.util.Random;
+public final class ListMapTimingLoop {
+    private ListMapTimingLoop() {}
 
-public final class ListMapTimingLoop
-{
-    private ListMapTimingLoop()
-    {
-    }
-
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         final int maxLoops = 25000000;
         final int maxKey = 75000;
         final int maxValue = 999999999;
@@ -74,6 +67,8 @@ public final class ListMapTimingLoop
             }
         }
         long endPer = System.currentTimeMillis();
-        System.out.printf("phm size %d adds %d removes %d gets %d elapsed %d%n", map.size(), adds, removes, gets, (endPer - startPer));
+        System.out.printf(
+                "phm size %d adds %d removes %d gets %d elapsed %d%n",
+                map.size(), adds, removes, gets, (endPer - startPer));
     }
 }

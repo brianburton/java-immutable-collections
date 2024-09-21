@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,16 +34,13 @@
 package org.javimmutable.collections;
 
 /**
- * Interface for lambdas that accept a result parameter and 2 value parameters and return
- * a value of the same type as the result parameter.
+ * Interface for lambdas that accept a result parameter and 2 value parameters and return a value of the same type as
+ * the result parameter.
  *
  * @param <A> value type
  * @param <R> result type
  */
 @FunctionalInterface
-public interface Sum2<A, B, R>
-{
-    R apply(R sum,
-            A a,
-            B b);
+public interface Sum2<A, B, R> {
+    R apply(R sum, A a, B b);
 }

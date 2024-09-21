@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.setmap;
 
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
@@ -42,32 +42,24 @@ import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.hash.HashSet;
 
-import javax.annotation.Nonnull;
-import java.util.stream.Collector;
-
-public class SetMapFactory<K, V>
-{
+public class SetMapFactory<K, V> {
     private IMap<K, ISet<V>> map = HashMap.of();
     private ISet<V> set = HashSet.of();
 
-    public ISetMap<K, V> create()
-    {
+    public ISetMap<K, V> create() {
         return TemplateSetMap.of(map, set);
     }
 
-    public Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> collector()
-    {
+    public Collector<IMapEntry<K, V>, ?, ISetMap<K, V>> collector() {
         return create().setMapCollector();
     }
 
-    public SetMapFactory<K, V> withMap(@Nonnull IMap<K, ISet<V>> map)
-    {
+    public SetMapFactory<K, V> withMap(@Nonnull IMap<K, ISet<V>> map) {
         this.map = map.deleteAll();
         return this;
     }
 
-    public SetMapFactory<K, V> withSet(@Nonnull ISet<V> set)
-    {
+    public SetMapFactory<K, V> withSet(@Nonnull ISet<V> set) {
         this.set = set.deleteAll();
         return this;
     }

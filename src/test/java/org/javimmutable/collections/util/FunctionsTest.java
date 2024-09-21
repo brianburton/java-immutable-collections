@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.util;
 
+import java.util.Arrays;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IList;
@@ -44,32 +44,27 @@ import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.tree.TreeMap;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class FunctionsTest
-    extends TestCase
-{
-    public void testFoldLeft()
-    {
+public class FunctionsTest extends TestCase {
+    public void testFoldLeft() {
         List<Integer> list = List.of(3, 2, 1);
-        assertEquals(17, (int)Functions.<Integer, Integer>foldLeft(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
+        assertEquals(17, (int) Functions.<Integer, Integer>foldLeft(
+                0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
-    public void testFoldRight()
-    {
+    public void testFoldRight() {
         List<Integer> list = List.of(3, 2, 1);
-        assertEquals(11, (int)Functions.<Integer, Integer>foldRight(0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
+        assertEquals(11, (int) Functions.<Integer, Integer>foldRight(
+                0, list.iterator(), (accumulator, value) -> 2 * accumulator + value));
     }
 
-    public void testReverse()
-    {
-        StandardIteratorTests.listIteratorTest(Arrays.asList(1), Functions.reverse(ILists.of(1).iterator()));
-        StandardIteratorTests.listIteratorTest(Arrays.asList(3, 2, 1), Functions.reverse(ILists.of(1, 2, 3).iterator()));
+    public void testReverse() {
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(1), Functions.reverse(ILists.of(1).iterator()));
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(3, 2, 1), Functions.reverse(ILists.of(1, 2, 3).iterator()));
     }
 
-    public void testFind()
-    {
+    public void testFind() {
         Func1<Integer, Boolean> func = value -> value % 2 == 0;
 
         IList<Integer> list = ILists.of(1, 2, 3, 4);
@@ -79,9 +74,9 @@ public class FunctionsTest
         assertEquals(Maybe.<Integer>empty(), Functions.find(list.iterator(), func));
     }
 
-    public void testAssignAll()
-    {
-        final IMap<String, String> expected = TreeMap.<String, String>of().assign("a", "A").assign("b", "B");
+    public void testAssignAll() {
+        final IMap<String, String> expected =
+                TreeMap.<String, String>of().assign("a", "A").assign("b", "B");
         assertEquals(expected, Functions.assignAll(TreeMap.of(), expected));
         assertEquals(expected, Functions.assignAll(TreeMap.of(), expected.getMap()));
     }

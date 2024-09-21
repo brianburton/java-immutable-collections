@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,14 +33,9 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.ICollectors;
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
+import static junit.framework.Assert.*;
+import static org.javimmutable.collections.common.StandardStreamableTests.*;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,14 +44,16 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.ICollectors;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 
-import static junit.framework.Assert.*;
-import static org.javimmutable.collections.common.StandardStreamableTests.*;
-
-public class StandardMapTests
-{
-    public static void verifyMiscellaneous(@Nonnull IMap<Integer, Integer> map)
-    {
+public class StandardMapTests {
+    public static void verifyMiscellaneous(@Nonnull IMap<Integer, Integer> map) {
         IMap<Integer, Integer> x = map.deleteAll();
 
         assertEquals(true, x.isEmpty());
@@ -89,14 +84,11 @@ public class StandardMapTests
         verifySelectReject(map.deleteAll());
     }
 
-    public static <K, V> void verifyEmptyEnumeration(@Nonnull IMap<K, V> map)
-    {
+    public static <K, V> void verifyEmptyEnumeration(@Nonnull IMap<K, V> map) {
         verifyOrderedUsingCollection(Collections.emptyList(), map);
     }
 
-    public static <K, V> void verifyEnumeration(@Nonnull Map<K, V> expectedMap,
-                                                @Nonnull IMap<K, V> map)
-    {
+    public static <K, V> void verifyEnumeration(@Nonnull Map<K, V> expectedMap, @Nonnull IMap<K, V> map) {
         verifyOrderedUsingCollection(expectedMap.entrySet(), map, entries());
         verifyOrderedUsingCollection(expectedMap.keySet(), map.keys());
         verifyOrderedUsingCollection(expectedMap.values(), map.values());
@@ -107,11 +99,12 @@ public class StandardMapTests
         testCollector(map.assignAll(expectedMap), map);
     }
 
-    public static <K, V> void verifyEnumeration(@Nonnull List<IMapEntry<K, V>> expectedEntries,
-                                                @Nonnull IMap<K, V> map)
-    {
-        final List<K> expectedKeys = expectedEntries.stream().map(e -> e.getKey()).collect(Collectors.toList());
-        final List<V> expectedValues = expectedEntries.stream().map(e -> e.getValue()).collect(Collectors.toList());
+    public static <K, V> void verifyEnumeration(
+            @Nonnull List<IMapEntry<K, V>> expectedEntries, @Nonnull IMap<K, V> map) {
+        final List<K> expectedKeys =
+                expectedEntries.stream().map(e -> e.getKey()).collect(Collectors.toList());
+        final List<V> expectedValues =
+                expectedEntries.stream().map(e -> e.getValue()).collect(Collectors.toList());
         verifyOrderedUsingCollection(expectedEntries, map);
         verifyOrderedUsingCollection(expectedKeys, map.keys());
         verifyOrderedUsingCollection(expectedValues, map.values());
@@ -122,9 +115,7 @@ public class StandardMapTests
         testCollector(map.insertAll(expectedEntries), map);
     }
 
-    public static <K, V> void verifyEnumeration(@Nonnull HashMap<K, V> expectedMap,
-                                                @Nonnull IMap<K, V> map)
-    {
+    public static <K, V> void verifyEnumeration(@Nonnull HashMap<K, V> expectedMap, @Nonnull IMap<K, V> map) {
         verifyUnorderedUsingCollection(expectedMap.entrySet(), map, entries());
         verifyUnorderedUsingCollection(expectedMap.keySet(), map.keys());
         verifyUnorderedUsingCollection(expectedMap.values(), map.values());
@@ -135,15 +126,13 @@ public class StandardMapTests
         testCollector(map.assignAll(expectedMap), map);
     }
 
-    private static void verifyReduce(@Nonnull IMap<Integer, Integer> empty)
-    {
+    private static void verifyReduce(@Nonnull IMap<Integer, Integer> empty) {
         assertEquals(Integer.valueOf(0), empty.reduce(0, (s, k, v) -> s + k - v));
 
         final Integer expected = 2 * IntStream.range(1, 1001).sum();
-        @Nonnull IMap<Integer, Integer> map = IntStream.range(1, 1001)
-            .boxed()
-            .map(i -> MapEntry.entry(i, -i))
-            .collect(ICollectors.toMap());
+        @Nonnull
+        IMap<Integer, Integer> map =
+                IntStream.range(1, 1001).boxed().map(i -> MapEntry.entry(i, -i)).collect(ICollectors.toMap());
         assertEquals(expected, map.reduce(0, (s, k, v) -> s + k - v));
 
         try {
@@ -171,13 +160,11 @@ public class StandardMapTests
         }
     }
 
-    private static void verifyForEach(@Nonnull IMap<Integer, Integer> empty)
-    {
+    private static void verifyForEach(@Nonnull IMap<Integer, Integer> empty) {
         final int sum = IntStream.range(1, 1001).sum();
-        @Nonnull IMap<Integer, Integer> map = IntStream.range(1, 1001)
-            .boxed()
-            .map(i -> MapEntry.entry(i, -i))
-            .collect(ICollectors.toMap());
+        @Nonnull
+        IMap<Integer, Integer> map =
+                IntStream.range(1, 1001).boxed().map(i -> MapEntry.entry(i, -i)).collect(ICollectors.toMap());
         MutableDelta delta = new MutableDelta();
         map.forEach((k, v) -> delta.add(k - v));
         assertEquals(2 * sum, delta.getValue());
@@ -194,20 +181,15 @@ public class StandardMapTests
         }
     }
 
-    private static void verifySelectReject(@Nonnull IMap<Integer, Integer> empty)
-    {
-        final IMap<Integer, Integer> all = IntStream.range(1, 50)
-            .boxed()
-            .map(i -> MapEntry.entry(i, -i))
-            .collect(ICollectors.toMap());
+    private static void verifySelectReject(@Nonnull IMap<Integer, Integer> empty) {
+        final IMap<Integer, Integer> all =
+                IntStream.range(1, 50).boxed().map(i -> MapEntry.entry(i, -i)).collect(ICollectors.toMap());
 
-        final IMap<Integer, Integer> evens = all.stream()
-            .filter(e -> e.getKey() % 2 == 0)
-            .collect(ICollectors.toMap());
+        final IMap<Integer, Integer> evens =
+                all.stream().filter(e -> e.getKey() % 2 == 0).collect(ICollectors.toMap());
 
-        final IMap<Integer, Integer> odds = all.stream()
-            .filter(e -> e.getKey() % 2 == 1)
-            .collect(ICollectors.toMap());
+        final IMap<Integer, Integer> odds =
+                all.stream().filter(e -> e.getKey() % 2 == 1).collect(ICollectors.toMap());
 
         assertEquals(evens, all.select((k, v) -> k % 2 == 0));
         assertEquals(odds, all.select((k, v) -> k % 2 == 1));
@@ -216,26 +198,21 @@ public class StandardMapTests
         assertEquals(evens, all.reject((k, v) -> k % 2 == 1));
     }
 
-    private static Func1<Maybe<Integer>, Integer> generator(int newValue)
-    {
+    private static Func1<Maybe<Integer>, Integer> generator(int newValue) {
         return h -> h.isEmpty() ? newValue : h.unsafeGet() * 10 + 1;
     }
 
-    private static <K, V> void testCollector(IMap<K, V> values,
-                                             IMap<K, V> template)
-    {
+    private static <K, V> void testCollector(IMap<K, V> values, IMap<K, V> template) {
         IMap<K, V> expected = template.insertAll(values);
         IMap<K, V> actual = values.parallelStream().collect(ICollectors.toMap());
         assertEquals(expected, actual);
     }
 
-    private static <K, V> Function<IMapEntry<K, V>, Map.Entry<K, V>> entries()
-    {
+    private static <K, V> Function<IMapEntry<K, V>, Map.Entry<K, V>> entries() {
         return MapEntry::new;
     }
 
-    private static <K, V> Function<Map.Entry<K, V>, IMapEntry<K, V>> reverseEntries()
-    {
+    private static <K, V> Function<Map.Entry<K, V>, IMapEntry<K, V>> reverseEntries() {
         return MapEntry::new;
     }
 }

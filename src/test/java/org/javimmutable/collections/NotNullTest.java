@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,26 +33,21 @@
 
 package org.javimmutable.collections;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.junit.Test;
+import static org.javimmutable.collections.common.TestUtil.makeList;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import junit.framework.TestCase;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.junit.Test;
 
-import static org.javimmutable.collections.common.TestUtil.makeList;
-import static org.junit.Assert.assertThrows;
-
-public class NotNullTest
-    extends TestCase
-{
+public class NotNullTest extends TestCase {
     @Test
-    public void testEmpty()
-        throws Exception
-    {
+    public void testEmpty() throws Exception {
         assertSame(NotNull.empty(), NotNull.empty());
         assertSame(NotNull.empty(), NotNull.of(null));
         assertSame(NotNull.empty(), NotNull.cast(Float.class, 10));
@@ -69,27 +62,37 @@ public class NotNullTest
         assertSame(NotNull.empty(), empty.map(Integer::parseInt));
         assertEquals(NotNull.of(1), empty.map(() -> 1, Integer::parseInt));
 
-        assertThrows(IOException.class, () -> empty.mapThrows(() -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> empty.mapThrows(() -> {
+                    throw new IOException();
+                }));
         assertEquals(NotNull.empty(), empty.mapThrows(NotNullTest::toIntThrows));
-        assertThrows(IOException.class, () -> empty.mapThrows(() -> {
-                                                                  throw new IOException();
-                                                              },
-                                                              NotNullTest::toIntThrows));
+        assertThrows(
+                IOException.class,
+                () -> empty.mapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        NotNullTest::toIntThrows));
 
         // test flatMap
         assertEquals(NotNull.of("a"), empty.flatMap(() -> NotNull.of("a")));
         assertEquals(NotNull.empty(), empty.flatMap(NotNullTest::toIntNotNull));
         assertEquals(NotNull.of(1), empty.flatMap(() -> NotNull.of(1), NotNullTest::toIntNotNull));
-        assertThrows(IOException.class, () -> empty.flatMapThrows(() -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> empty.flatMapThrows(() -> {
+                    throw new IOException();
+                }));
         assertEquals(NotNull.empty(), empty.flatMapThrows(NotNullTest::toIntNotNullThrows));
-        assertThrows(IOException.class, () -> empty.flatMapThrows(() -> {
-                                                                      throw new IOException();
-                                                                  },
-                                                                  NotNullTest::toIntNotNullThrows));
+        assertThrows(
+                IOException.class,
+                () -> empty.flatMapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        NotNullTest::toIntNotNullThrows));
 
         // test selection
         assertSame(empty, empty.select(x -> true));
@@ -105,9 +108,11 @@ public class NotNullTest
         assertEquals("1", change.x);
         assertSame(empty, empty.applyThrows(() -> change.x = "2"));
         assertEquals("2", change.x);
-        assertThrows(IOException.class, () -> empty.applyThrows(() -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> empty.applyThrows(() -> {
+                    throw new IOException();
+                }));
         assertSame(empty, empty.applyThrows(x -> change.x = x));
         assertEquals("2", change.x);
         assertSame(empty, empty.applyThrows(x -> {
@@ -138,9 +143,7 @@ public class NotNullTest
     }
 
     @Test
-    public void testFull()
-        throws Exception
-    {
+    public void testFull() throws Exception {
         assertEquals(NotNull.of(1), NotNull.of(3 - 2));
         assertEquals(NotNull.empty(), NotNull.cast(Integer.class, null));
         assertEquals(NotNull.of(10), NotNull.cast(Integer.class, 10));
@@ -159,10 +162,13 @@ public class NotNullTest
             throw new IOException();
         }));
         assertEquals(NotNull.of(8), full.mapThrows(NotNullTest::toIntThrows));
-        assertEquals(NotNull.of(8), full.mapThrows(() -> {
-                                                       throw new IOException();
-                                                   },
-                                                   NotNullTest::toIntThrows));
+        assertEquals(
+                NotNull.of(8),
+                full.mapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        NotNullTest::toIntThrows));
 
         // test flatMap
         assertSame(full, full.flatMap(() -> NotNull.of("a")));
@@ -172,10 +178,13 @@ public class NotNullTest
             throw new IOException();
         }));
         assertEquals(NotNull.of(8), full.flatMapThrows(NotNullTest::toIntNotNullThrows));
-        assertEquals(NotNull.of(8), full.flatMapThrows(() -> {
-                                                           throw new IOException();
-                                                       },
-                                                       NotNullTest::toIntNotNullThrows));
+        assertEquals(
+                NotNull.of(8),
+                full.flatMapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        NotNullTest::toIntNotNullThrows));
 
         // test selection
         assertEquals(NotNull.empty(), full.select(x -> false));
@@ -197,9 +206,11 @@ public class NotNullTest
         change.x = "";
         assertSame(full, full.applyThrows(x -> change.x = x));
         assertEquals("8", change.x);
-        assertThrows(IOException.class, () -> full.applyThrows(x -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> full.applyThrows(x -> {
+                    throw new IOException();
+                }));
 
         // test get
         assertEquals("8", full.unsafeGet());
@@ -234,22 +245,22 @@ public class NotNullTest
         assertEquals(false, NotNull.empty().equals(full));
     }
 
-    public void testSerialization()
-        throws Exception
-    {
+    public void testSerialization() throws Exception {
         NotNull<String> maybe = NotNull.empty();
-        StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyy/xK83JCSjKr6j8DwJ/Tl3mYWCoKChnY2BgfrlqVQUA8b1f71UAAAA=");
+        StandardSerializableTests.verifySerializable(
+                maybe,
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyy/xK83JCSjKr6j8DwJ/Tl3mYWCoKChnY2BgfrlqVQUA8b1f71UAAAA=");
         maybe = NotNull.of(null);
-        StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyy/xK83JCSjKr6j8DwJ/Tl3mYWCoKChnY2BgfrlqVQUA8b1f71UAAAA=");
+        StandardSerializableTests.verifySerializable(
+                maybe,
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyy/xK83JCSjKr6j8DwJ/Tl3mYWCoKChnY2BgfrlqVQUA8b1f71UAAAA=");
         maybe = NotNull.of("hello");
-        StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyy/xK83JCSjKr6j8DwJ/Tl3mYWCoKChnY2Bgfrl7dwkDa0ZqTk5+BQAMo/ZqXQAAAA==");
+        StandardSerializableTests.verifySerializable(
+                maybe,
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzyy/xK83JCSjKr6j8DwJ/Tl3mYWCoKChnY2Bgfrl7dwkDa0ZqTk5+BQAMo/ZqXQAAAA==");
     }
 
-    private static NotNull<Integer> toIntNotNull(String s)
-    {
+    private static NotNull<Integer> toIntNotNull(String s) {
         if (s.isEmpty()) {
             return NotNull.empty();
         }
@@ -260,9 +271,7 @@ public class NotNullTest
         }
     }
 
-    private static int toIntThrows(String s)
-        throws IOException
-    {
+    private static int toIntThrows(String s) throws IOException {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException ex) {
@@ -270,9 +279,7 @@ public class NotNullTest
         }
     }
 
-    private static NotNull<Integer> toIntNotNullThrows(String s)
-        throws IOException
-    {
+    private static NotNull<Integer> toIntNotNullThrows(String s) throws IOException {
         if (s.isEmpty()) {
             return NotNull.empty();
         }

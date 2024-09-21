@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.common;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -46,116 +46,80 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
- * Interface for simple collection objects that manage the contents of leaf nodes in the hash table.
- * Implementations are free to use any class for their leaf nodes and manage them as needed.
+ * Interface for simple collection objects that manage the contents of leaf nodes in the hash table. Implementations are
+ * free to use any class for their leaf nodes and manage them as needed.
  */
-public interface CollisionMap<K, V>
-{
-    interface Node
-    {
-    }
+public interface CollisionMap<K, V> {
+    interface Node {}
 
     @Nonnull
     Node empty();
 
     @Nonnull
-    Node single(@Nonnull K key,
-                @Nullable V value);
+    Node single(@Nonnull K key, @Nullable V value);
 
     @Nonnull
-    Node dual(@Nonnull K key1,
-              @Nullable V value1,
-              @Nonnull K key2,
-              @Nullable V value2);
+    Node dual(@Nonnull K key1, @Nullable V value1, @Nonnull K key2, @Nullable V value2);
 
     int size(@Nonnull Node node);
 
     @Nonnull
-    Node update(@Nonnull Node node,
-                @Nonnull K key,
-                @Nullable V value);
+    Node update(@Nonnull Node node, @Nonnull K key, @Nullable V value);
 
     @Nonnull
-    Node update(@Nonnull Node node,
-                @Nonnull K key,
-                @Nonnull Func1<Maybe<V>, V> generator);
+    Node update(@Nonnull Node node, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator);
 
     @Nonnull
-    Node delete(@Nonnull Node node,
-                @Nonnull K key);
+    Node delete(@Nonnull Node node, @Nonnull K key);
 
-    V getValueOr(@Nonnull Node node,
-                 @Nonnull K key,
-                 V defaultValue);
+    V getValueOr(@Nonnull Node node, @Nonnull K key, V defaultValue);
 
     @Nonnull
-    Maybe<V> findValue(@Nonnull Node node,
-                       @Nonnull K key);
+    Maybe<V> findValue(@Nonnull Node node, @Nonnull K key);
 
     @Nonnull
-    Maybe<IMapEntry<K, V>> findEntry(@Nonnull Node node,
-                                     @Nonnull K key);
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull Node node, @Nonnull K key);
 
     @Nonnull
     IMapEntry<K, V> first(@Nonnull Node node);
 
     @Nullable
-    GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nonnull Node node,
-                                                            @Nullable GenericIterator.State<IMapEntry<K, V>> parent,
-                                                            int offset,
-                                                            int limit);
+    GenericIterator.State<IMapEntry<K, V>> iterateOverRange(
+            @Nonnull Node node, @Nullable GenericIterator.State<IMapEntry<K, V>> parent, int offset, int limit);
 
     @Nonnull
-    default GenericIterator.Iterable<IMapEntry<K, V>> genericIterable(@Nonnull Node node)
-    {
-        return new GenericIterator.Iterable<IMapEntry<K, V>>()
-        {
+    default GenericIterator.Iterable<IMapEntry<K, V>> genericIterable(@Nonnull Node node) {
+        return new GenericIterator.Iterable<IMapEntry<K, V>>() {
             @Nullable
             @Override
-            public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
-                                                                           int offset,
-                                                                           int limit)
-            {
+            public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(
+                    @Nullable GenericIterator.State<IMapEntry<K, V>> parent, int offset, int limit) {
                 return CollisionMap.this.iterateOverRange(node, parent, offset, limit);
             }
 
             @Override
-            public int iterableSize()
-            {
+            public int iterableSize() {
                 return size(node);
             }
         };
     }
 
     @Nonnull
-    default SplitableIterable<IMapEntry<K, V>> iterable(@Nonnull CollisionMap.Node node)
-    {
+    default SplitableIterable<IMapEntry<K, V>> iterable(@Nonnull CollisionMap.Node node) {
         return genericIterable(node);
     }
 
     @Nonnull
-    default SplitableIterator<IMapEntry<K, V>> iterator(@Nonnull Node node)
-    {
+    default SplitableIterator<IMapEntry<K, V>> iterator(@Nonnull Node node) {
         return genericIterable(node).iterator();
     }
 
-    void forEach(@Nonnull Node node,
-                 @Nonnull Proc2<K, V> proc);
+    void forEach(@Nonnull Node node, @Nonnull Proc2<K, V> proc);
 
-    <E extends Exception> void forEachThrows(@Nonnull Node node,
-                                             @Nonnull Proc2Throws<K, V, E> proc)
-        throws E;
+    <E extends Exception> void forEachThrows(@Nonnull Node node, @Nonnull Proc2Throws<K, V, E> proc) throws E;
 
-    <R> R reduce(@Nonnull Node node,
-                 R sum,
-                 @Nonnull Sum2<K, V, R> proc);
+    <R> R reduce(@Nonnull Node node, R sum, @Nonnull Sum2<K, V, R> proc);
 
-    <R, E extends Exception> R reduceThrows(@Nonnull Node node,
-                                            R sum,
-                                            @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E;
+    <R, E extends Exception> R reduceThrows(@Nonnull Node node, R sum, @Nonnull Sum2Throws<K, V, R, E> proc) throws E;
 }

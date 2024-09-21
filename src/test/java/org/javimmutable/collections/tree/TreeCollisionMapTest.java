@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.tree;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -47,20 +48,12 @@ import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.StandardCollisionMapTests;
 import org.javimmutable.collections.common.TestUtil;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-public class TreeCollisionMapTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class TreeCollisionMapTest extends TestCase {
+    public void testStandard() {
         StandardCollisionMapTests.randomTests(TreeCollisionMap.instance());
     }
 
-    public void testUpdateDelete()
-    {
+    public void testUpdateDelete() {
         TreeCollisionMap<Integer, Integer> collisionMap = TreeCollisionMap.instance();
         CollisionMap.Node node = collisionMap.empty();
 
@@ -97,8 +90,7 @@ public class TreeCollisionMapTest
         assertSame(FringeNode.instance(), deleted);
     }
 
-    public void testFindGet()
-    {
+    public void testFindGet() {
         TreeCollisionMap<Integer, Integer> transforms = TreeCollisionMap.instance();
         CollisionMap.Node node = transforms.empty();
         node = transforms.update(node, 10, 100);
@@ -128,8 +120,7 @@ public class TreeCollisionMapTest
         TestUtil.verifyContents(expected, transforms.iterable(node));
     }
 
-    public void testForEach()
-    {
+    public void testForEach() {
         TreeCollisionMap<String, String> transforms = TreeCollisionMap.instance();
         CollisionMap.Node node = transforms.empty();
 
@@ -169,8 +160,7 @@ public class TreeCollisionMapTest
         }
     }
 
-    public void testReduce()
-    {
+    public void testReduce() {
         TreeCollisionMap<String, String> transforms = TreeCollisionMap.instance();
         CollisionMap.Node node = transforms.empty();
 
@@ -197,9 +187,8 @@ public class TreeCollisionMapTest
         }
     }
 
-    private AbstractNode<Integer, Integer> branch(Tuple2<Integer, Integer> a,
-                                                  Tuple2<Integer, Integer> b)
-    {
-        return ValueNode.instance(a.getFirst(), a.getSecond()).assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
+    private AbstractNode<Integer, Integer> branch(Tuple2<Integer, Integer> a, Tuple2<Integer, Integer> b) {
+        return ValueNode.instance(a.getFirst(), a.getSecond())
+                .assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
     }
 }

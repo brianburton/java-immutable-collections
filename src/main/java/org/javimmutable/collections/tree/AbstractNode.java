@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -49,48 +50,34 @@ import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Comparator;
-
 abstract class AbstractNode<K, V>
-    implements SplitableIterable<IMapEntry<K, V>>,
-               GenericIterator.Iterable<IMapEntry<K, V>>,
-               CollisionMap.Node,
-               CollisionSet.Node
-{
-    abstract boolean containsKey(@Nonnull Comparator<K> comp,
-                                 @Nonnull K key);
+        implements SplitableIterable<IMapEntry<K, V>>,
+                GenericIterator.Iterable<IMapEntry<K, V>>,
+                CollisionMap.Node,
+                CollisionSet.Node {
+    abstract boolean containsKey(@Nonnull Comparator<K> comp, @Nonnull K key);
 
-    abstract V get(@Nonnull Comparator<K> comp,
-                   @Nonnull K key,
-                   V defaultValue);
+    abstract V get(@Nonnull Comparator<K> comp, @Nonnull K key, V defaultValue);
 
     @Nonnull
-    abstract Maybe<V> find(@Nonnull Comparator<K> comp,
-                           @Nonnull K key);
+    abstract Maybe<V> find(@Nonnull Comparator<K> comp, @Nonnull K key);
 
     @Nonnull
-    abstract Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                              @Nonnull K key);
+    abstract Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp, @Nonnull K key);
 
     abstract boolean isEmpty();
 
     abstract int size();
 
     @Nonnull
-    abstract AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
-                                       @Nonnull K key,
-                                       @Nullable V value);
+    abstract AbstractNode<K, V> assign(@Nonnull Comparator<K> comp, @Nonnull K key, @Nullable V value);
 
     @Nonnull
-    abstract AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
-                                       @Nonnull K key);
+    abstract AbstractNode<K, V> delete(@Nonnull Comparator<K> comp, @Nonnull K key);
 
     @Nonnull
-    abstract AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
-                                       @Nonnull K key,
-                                       @Nonnull Func1<Maybe<V>, V> generator);
+    abstract AbstractNode<K, V> update(
+            @Nonnull Comparator<K> comp, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator);
 
     @Nonnull
     abstract DeleteResult<K, V> deleteLeftmost();
@@ -118,32 +105,26 @@ abstract class AbstractNode<K, V>
     abstract void checkInvariants(@Nonnull Comparator<K> comp);
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        return (obj instanceof AbstractNode) && IteratorHelper.iteratorEquals(iterator(), ((AbstractNode)obj).iterator());
+    public boolean equals(Object obj) {
+        return (obj instanceof AbstractNode)
+                && IteratorHelper.iteratorEquals(iterator(), ((AbstractNode) obj).iterator());
     }
 
     abstract void forEach(@Nonnull Proc2<K, V> proc);
 
-    abstract <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-        throws E;
+    abstract <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc) throws E;
 
-    abstract <R> R reduce(R sum,
-                          @Nonnull Sum2<K, V, R> proc);
+    abstract <R> R reduce(R sum, @Nonnull Sum2<K, V, R> proc);
 
-    abstract <R, E extends Exception> R reduceThrows(R sum,
-                                                     @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E;
+    abstract <R, E extends Exception> R reduceThrows(R sum, @Nonnull Sum2Throws<K, V, R, E> proc) throws E;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
         forEach((key, value) -> ToStringHelper.addToString(sb, 1, key, value));
@@ -151,24 +132,19 @@ abstract class AbstractNode<K, V>
         return sb.toString();
     }
 
-    static class DeleteResult<K, V>
-    {
+    static class DeleteResult<K, V> {
         final K key;
         final V value;
         final AbstractNode<K, V> remainder;
 
-        DeleteResult(@Nonnull K key,
-                     V value,
-                     @Nonnull AbstractNode<K, V> remainder)
-        {
+        DeleteResult(@Nonnull K key, V value, @Nonnull AbstractNode<K, V> remainder) {
             this.key = key;
             this.value = value;
             this.remainder = remainder;
         }
 
         @Nonnull
-        DeleteResult<K, V> withRemainder(@Nonnull AbstractNode<K, V> remainder)
-        {
+        DeleteResult<K, V> withRemainder(@Nonnull AbstractNode<K, V> remainder) {
             return new DeleteResult<>(key, value, remainder);
         }
     }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,22 +35,16 @@ package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.hash.HashMultiset;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("unchecked")
-public class HashMultisetProxy
-    extends AbstractMultisetProxy
-{
+public class HashMultisetProxy extends AbstractMultisetProxy {
     private static final long serialVersionUID = -121805;
 
-    public HashMultisetProxy()
-    {
+    public HashMultisetProxy() {
         super(HashMultiset.of());
     }
 
-    public HashMultisetProxy(HashMultiset set)
-    {
+    public HashMultisetProxy(HashMultiset set) {
         super(set);
     }
 }

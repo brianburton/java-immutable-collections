@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2015-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,59 +33,46 @@
 
 package org.javimmutable.collections.stress_test;
 
-
+import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IArrays;
 import org.javimmutable.collections.IList;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Random;
-
-public class AbstractStressTestableTest
-    extends TestCase
-{
-    public void test()
-        throws IOException
-    {
+public class AbstractStressTestableTest extends TestCase {
+    public void test() throws IOException {
         IList<String> tokens = StressTestUtil.loadTokens("src/site/markdown/index.md");
         testStandard(tokens);
     }
 
-    private void testStandard(IList<String> tokens)
-    {
+    private void testStandard(IList<String> tokens) {
         Random random = new Random();
         StressTester testable = new ArrayStressTester(IArrays.<String>of(), ArrayIndexRange.INTEGER);
         testMakeInsertList(testable, tokens, random);
         testMakeInsertJList(testable, tokens, random);
     }
 
-    private void testMakeInsertList(StressTester testable,
-                                    IList<String> tokens,
-                                    Random random)
-    {
+    private void testMakeInsertList(StressTester testable, IList<String> tokens, Random random) {
         int times = 100000;
         int total = 0;
         for (int i = 0; i < times; ++i) {
             List<String> list = testable.makeInsertList(tokens, random);
             total = total + list.size();
         }
-        double average = (double)total / (double)times;
+        double average = (double) total / (double) times;
         assertTrue(average >= 0.9);
         assertTrue(average <= 1.1);
     }
 
-    private void testMakeInsertJList(StressTester testable,
-                                     IList<String> tokens,
-                                     Random random)
-    {
+    private void testMakeInsertJList(StressTester testable, IList<String> tokens, Random random) {
         int times = 100000;
         int total = 0;
         for (int i = 0; i < times; ++i) {
             IList<String> list = testable.makeInsertJList(tokens, random);
             total = total + list.size();
         }
-        double average = (double)total / (double)times;
+        double average = (double) total / (double) times;
         assertTrue(average >= 0.9);
         assertTrue(average <= 1.1);
     }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,51 +33,44 @@
 
 package org.javimmutable.collections.common;
 
+import java.util.Map;
+import java.util.function.BiPredicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.iterators.TransformStreamable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Map;
-import java.util.function.BiPredicate;
-
 @Immutable
-public abstract class AbstractMap<K, V>
-    implements IMap<K, V>
-{
+public abstract class AbstractMap<K, V> implements IMap<K, V> {
     @Nullable
     @Override
-    public V get(K key)
-    {
+    public V get(K key) {
         return getValueOr(key, null);
     }
 
     /**
-     * Adds the key/value pair to this map.  Any value already existing for the specified key
-     * is replaced with the new value.
+     * Adds the key/value pair to this map. Any value already existing for the specified key is replaced with the new
+     * value.
      */
     @Override
     @Nonnull
-    public IMap<K, V> insert(@Nonnull IMapEntry<K, V> e)
-    {
+    public IMap<K, V> insert(@Nonnull IMapEntry<K, V> e) {
         return assign(e.getKey(), e.getValue());
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> assignAll(@Nonnull IMap<? extends K, ? extends V> map)
-    {
-        return map.reduce((IMap<K, V>)this, (m, k, v) -> m = m.assign(k, v));
+    public IMap<K, V> assignAll(@Nonnull IMap<? extends K, ? extends V> map) {
+        return map.reduce((IMap<K, V>) this, (m, k, v) -> m = m.assign(k, v));
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map)
-    {
+    public IMap<K, V> assignAll(@Nonnull Map<? extends K, ? extends V> map) {
         IMap<K, V> answer = this;
         for (Map.Entry<? extends K, ? extends V> e : map.entrySet()) {
             answer = answer.assign(e.getKey(), e.getValue());
@@ -89,46 +80,40 @@ public abstract class AbstractMap<K, V>
 
     @Nonnull
     @Override
-    public Map<K, V> getMap()
-    {
+    public Map<K, V> getMap() {
         return MapAdaptor.of(this);
     }
 
     @Nonnull
     @Override
-    public IStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return TransformStreamable.ofKeys(this);
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values()
-    {
+    public IStreamable<V> values() {
         return TransformStreamable.ofValues(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return getMap().hashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o instanceof IMap) {
-            return getMap().equals(((IMap)o).getMap());
+            return getMap().equals(((IMap) o).getMap());
         } else {
             return (o instanceof Map) && getMap().equals(o);
         }
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
         forEach((k, v) -> {
@@ -141,22 +126,20 @@ public abstract class AbstractMap<K, V>
         return sb.toString();
     }
 
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_UNORDERED;
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> select(@Nonnull BiPredicate<K, V> predicate)
-    {
-        return reduce(mapBuilder(), (b, k, v) -> predicate.test(k, v) ? b.add(k, v) : b).build();
+    public IMap<K, V> select(@Nonnull BiPredicate<K, V> predicate) {
+        return reduce(mapBuilder(), (b, k, v) -> predicate.test(k, v) ? b.add(k, v) : b)
+                .build();
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate)
-    {
-        return reduce((IMap<K, V>)this, (m, k, v) -> predicate.test(k, v) ? m.delete(k) : m);
+    public IMap<K, V> reject(@Nonnull BiPredicate<K, V> predicate) {
+        return reduce((IMap<K, V>) this, (m, k, v) -> predicate.test(k, v) ? m.delete(k) : m);
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,17 +33,15 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import org.javimmutable.collections.Maybe;
 import static org.javimmutable.collections.common.TestUtil.verifyContents;
 
-public class OneValueNodeTest
-    extends TestCase
-{
-    public void testSeek()
-    {
+import junit.framework.TestCase;
+import org.javimmutable.collections.Maybe;
+
+public class OneValueNodeTest extends TestCase {
+    public void testSeek() {
         final AbstractNode<Integer> node = new OneValueNode<>(100);
         assertThat(node.get(0)).isEqualTo(100);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
@@ -54,8 +50,7 @@ public class OneValueNodeTest
         assertEquals(Maybe.empty(), node.findImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
-    public void testVarious()
-    {
+    public void testVarious() {
         final EmptyNode<Integer> empty = EmptyNode.instance();
         final OneValueNode<Integer> node = new OneValueNode<>(100);
         final AbstractNode<Integer> large1 = MultiValueNodeTest.leaf(1, MultiValueNode.MAX_SIZE);

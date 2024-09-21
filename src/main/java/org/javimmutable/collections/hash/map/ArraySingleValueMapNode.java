@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,10 @@
 
 package org.javimmutable.collections.hash.map;
 
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -43,67 +45,45 @@ import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Objects;
-
 @Immutable
-public class ArraySingleValueMapNode<K, V>
-    implements ArrayMapNode<K, V>,
-               IMapEntry<K, V>
-{
+public class ArraySingleValueMapNode<K, V> implements ArrayMapNode<K, V>, IMapEntry<K, V> {
     private final K key;
     private final V value;
 
-    public ArraySingleValueMapNode(K key,
-                                   V value)
-    {
+    public ArraySingleValueMapNode(K key, V value) {
         this.key = key;
         this.value = value;
     }
 
-    public ArraySingleValueMapNode(IMapEntry<K, V> entry)
-    {
+    public ArraySingleValueMapNode(IMapEntry<K, V> entry) {
         this(entry.getKey(), entry.getValue());
     }
 
     @Override
-    public int size(@Nonnull CollisionMap<K, V> collisionMap)
-    {
+    public int size(@Nonnull CollisionMap<K, V> collisionMap) {
         return 1;
     }
 
     @Override
-    public V getValueOr(@Nonnull CollisionMap<K, V> collisionMap,
-                        @Nonnull K key,
-                        V defaultValue)
-    {
+    public V getValueOr(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key, V defaultValue) {
         return key.equals(this.key) ? value : defaultValue;
     }
 
     @Nonnull
     @Override
-    public Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap,
-                         @Nonnull K key)
-    {
+    public Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key) {
         return key.equals(this.key) ? Maybe.of(value) : Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                            @Nonnull K key)
-    {
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key) {
         return key.equals(this.key) ? Maybe.of(this) : Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
-                                     @Nonnull K key,
-                                     V value)
-    {
+    public ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key, V value) {
         final K thisKey = this.key;
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
@@ -117,10 +97,8 @@ public class ArraySingleValueMapNode<K, V>
 
     @Nonnull
     @Override
-    public ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
-                                     @Nonnull K key,
-                                     @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    public ArrayMapNode<K, V> update(
+            @Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator) {
         final K thisKey = this.key;
         final V thisValue = this.value;
         if (!key.equals(thisKey)) {
@@ -138,77 +116,64 @@ public class ArraySingleValueMapNode<K, V>
 
     @Nullable
     @Override
-    public ArrayMapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
-                                     @Nonnull K key)
-    {
+    public ArrayMapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key) {
         return key.equals(this.key) ? null : this;
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap)
-    {
+    public GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap) {
         return GenericIterator.singleValueIterable(key);
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<V> values(@Nonnull CollisionMap<K, V> collisionMap)
-    {
+    public GenericIterator.Iterable<V> values(@Nonnull CollisionMap<K, V> collisionMap) {
         return GenericIterator.singleValueIterable(value);
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<IMapEntry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap)
-    {
+    public GenericIterator.Iterable<IMapEntry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap) {
         return GenericIterator.singleValueIterable(this);
     }
 
     @Override
-    public void forEach(@Nonnull CollisionMap<K, V> collisionMap,
-                        @Nonnull Proc2<K, V> proc)
-    {
+    public void forEach(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull Proc2<K, V> proc) {
         proc.apply(key, value);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
-                                                    @Nonnull Proc2Throws<K, V, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(
+            @Nonnull CollisionMap<K, V> collisionMap, @Nonnull Proc2Throws<K, V, E> proc) throws E {
         proc.apply(key, value);
     }
 
     @Override
-    public V getValue()
-    {
+    public V getValue() {
         return value;
     }
 
     @Nonnull
     @Override
-    public K getKey()
-    {
+    public K getKey() {
         return key;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
         if (!(o instanceof ArraySingleValueMapNode)) {
             return false;
         }
-        ArraySingleValueMapNode<?, ?> that = (ArraySingleValueMapNode<?, ?>)o;
+        ArraySingleValueMapNode<?, ?> that = (ArraySingleValueMapNode<?, ?>) o;
         return key.equals(that.key) && Objects.equals(value, that.value);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(key, value);
     }
 }

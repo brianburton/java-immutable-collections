@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,7 +36,6 @@ package org.javimmutable.collections;
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -51,29 +48,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.junit.Test;
 
-public class ReadmeTest
-{
+public class ReadmeTest {
     @Test
-    public void streams()
-    {
+    public void streams() {
         IList<String> source = ILists.of("axle", "wheel", "apple", "wall");
         ISet<String> copied = source.stream().collect(ICollectors.toSet());
         assertEquals(ISets.hashed("axle", "wheel", "apple", "wall"), copied);
     }
 
     @Test
-    public void reduce()
-    {
+    public void reduce() {
         IList<Integer> values = ILists.of(1, 2, 3, 4, 5, 6, 7, 8);
-        assertEquals(36, (int)values.reduce(0, (s, x) -> s + x));        // 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8
-        assertEquals(-18, (int)values.reduce(18, (s, x) -> s - x));      // 18 - 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
-        assertEquals(16, (int)values.reduce(0, (s, x) -> s + (x / 2)));  // 0 + 0 + 1 + 1 + 2 + 2 + 3 + 3 + 4
+        assertEquals(36, (int) values.reduce(0, (s, x) -> s + x)); // 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8
+        assertEquals(-18, (int) values.reduce(18, (s, x) -> s - x)); // 18 - 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
+        assertEquals(16, (int) values.reduce(0, (s, x) -> s + (x / 2))); // 0 + 0 + 1 + 1 + 2 + 2 + 3 + 3 + 4
     }
 
     @Test
-    public void listTutorial()
-    {
+    public void listTutorial() {
         {
             IList<Integer> list = ILists.of();
             list = list.insert(10).insert(20).insert(30);
@@ -106,16 +100,14 @@ public class ReadmeTest
             assertEquals(ILists.of("baker", "charlie"), source.select(str -> str.contains("r")));
             assertEquals(ILists.of("able", "baker", "delta"), source.reject(str -> str.contains("h")));
             assertEquals("ablebakercharliedeltaecho", source.reduce("", (answer, str) -> answer + str));
-            assertEquals(ILists.of("baker", "charlie"),
-                         source.stream()
-                             .filter(str -> str.contains("r"))
-                             .collect(ICollectors.toList()));
+            assertEquals(
+                    ILists.of("baker", "charlie"),
+                    source.stream().filter(str -> str.contains("r")).collect(ICollectors.toList()));
         }
     }
 
     @Test
-    public void mapTutorial()
-    {
+    public void mapTutorial() {
         {
             IMap<Integer, Integer> hmap = IMaps.hashed();
             hmap = hmap.assign(10, 11).assign(20, 21).assign(30, 31).assign(20, 19);
@@ -149,22 +141,25 @@ public class ReadmeTest
         {
             IMap<Integer, Integer> smap = IMaps.sorted();
             smap = smap.assign(30, 31).assign(20, 21).assign(20, 19).assign(10, 80);
-            assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(smap.getMap().keySet()));
-            assertEquals(Arrays.asList(80, 19, 31), new ArrayList<>(smap.getMap().values()));
+            assertEquals(
+                    Arrays.asList(10, 20, 30), new ArrayList<>(smap.getMap().keySet()));
+            assertEquals(
+                    Arrays.asList(80, 19, 31), new ArrayList<>(smap.getMap().values()));
         }
 
         // ordered
         {
             IMap<Integer, Integer> omap = IMaps.ordered();
             omap = omap.assign(30, 31).assign(20, 21).assign(10, 80).assign(20, 19);
-            assertEquals(Arrays.asList(30, 20, 10), new ArrayList<>(omap.getMap().keySet()));
-            assertEquals(Arrays.asList(31, 19, 80), new ArrayList<>(omap.getMap().values()));
+            assertEquals(
+                    Arrays.asList(30, 20, 10), new ArrayList<>(omap.getMap().keySet()));
+            assertEquals(
+                    Arrays.asList(31, 19, 80), new ArrayList<>(omap.getMap().values()));
         }
     }
 
     @Test
-    public void arrayTutorial()
-    {
+    public void arrayTutorial() {
         {
             IArray<String> array = IArrays.of();
             array = array.assign(25000, "charlie");
@@ -174,63 +169,51 @@ public class ReadmeTest
         }
         {
             IArray<String> array = IArrays.<String>of()
-                .assign(25000, "charlie")
-                .assign(-50000, "able")
-                .assign(0, "baker");
+                    .assign(25000, "charlie")
+                    .assign(-50000, "able")
+                    .assign(0, "baker");
             assertEquals(-25000, array.keys().stream().mapToInt(i -> i).sum());
-            assertEquals("ab,ba,ch", array.values().stream().map(x -> x.substring(0, 2)).collect(Collectors.joining(",")));
+            assertEquals(
+                    "ab,ba,ch",
+                    array.values().stream().map(x -> x.substring(0, 2)).collect(Collectors.joining(",")));
         }
     }
 
-    public String callWebService(String host,
-                                 int port)
-        throws IOException
-    {
+    public String callWebService(String host, int port) throws IOException {
         return "";
     }
 
-    public IList<String> extractHouseAddresses(String webServiceResult)
-        throws ParseException
-    {
+    public IList<String> extractHouseAddresses(String webServiceResult) throws ParseException {
         return ILists.of();
     }
 
-    public IList<BigDecimal> lookupHouseValues(IList<String> houseAddresses)
-        throws IOException
-    {
+    public IList<BigDecimal> lookupHouseValues(IList<String> houseAddresses) throws IOException {
         return ILists.of();
     }
 
     @Test
-    public void tropes()
-    {
+    public void tropes() {
         IMap<String, String> envVars = IMaps.hashed(System.getenv());
         int port = envVars.find("PORT").map(Integer::parseInt).get(80);
 
-        Result<BigDecimal> totalValue =
-            Result.attempt(() -> callWebService("some-host", 443))
+        Result<BigDecimal> totalValue = Result.attempt(() -> callWebService("some-host", 443))
                 .map(resultJson -> extractHouseAddresses(resultJson))
                 .map(addresses -> lookupHouseValues(addresses))
                 .map(values -> values.reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
     @Test
-    public void creation()
-    {
+    public void creation() {
         List<String> sourceList = Arrays.asList("these", "are", "some", "strings");
         IList<String> empty = ILists.of();
-        IList<String> aList = empty
-            .insert("these")
-            .insert("are")
-            .insert("some")
-            .insert("strings");
+        IList<String> aList = empty.insert("these").insert("are").insert("some").insert("strings");
         IList<String> literal = ILists.of("these", "are", "some", "strings");
         IList<String> fromJavaList = ILists.allOf(sourceList);
         IList<String> fromBuilder = ILists.<String>builder()
-            .add("these")
-            .add("are")
-            .addAll("some", "strings")
-            .build();
+                .add("these")
+                .add("are")
+                .addAll("some", "strings")
+                .build();
         assertThat(aList).isEqualTo(literal);
         assertThat(fromJavaList).isEqualTo(literal);
         assertThat(fromBuilder).isEqualTo(literal);
@@ -244,19 +227,20 @@ public class ReadmeTest
         assertThat(eWordCount).isEqualTo(3);
 
         // use a stream to build a map of numbers to lists of the number's factors
-        IMap<Integer, IList<Integer>> factorMap =
-            IntStream.range(2, 100).boxed()
+        IMap<Integer, IList<Integer>> factorMap = IntStream.range(2, 100)
+                .boxed()
                 .map(i -> IMapEntry.of(i, factorsOf(i)))
                 .collect(ICollectors.toMap());
 
-        // extract a list of prime numbers using a stream by filtering out numbers that have any factors 
+        // extract a list of prime numbers using a stream by filtering out numbers that have any factors
         IList<Integer> primes = factorMap.stream()
-            .filter(e -> e.getValue().isEmpty())
-            .map(e -> e.getKey())
-            .collect(ICollectors.toList());
+                .filter(e -> e.getValue().isEmpty())
+                .map(e -> e.getKey())
+                .collect(ICollectors.toList());
         assertThat(primes)
-            .isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
-                                 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97));
+                .isEqualTo(ILists.of(
+                        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89,
+                        97));
 
         // you can easily grab sub-lists from a list
         assertThat(primes.prefix(7)).isEqualTo(ILists.of(2, 3, 5, 7, 11, 13, 17));
@@ -264,8 +248,7 @@ public class ReadmeTest
     }
 
     @Test
-    public void forEach()
-    {
+    public void forEach() {
         ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
         numbers.forEach(i -> System.out.println(i));
 
@@ -274,8 +257,7 @@ public class ReadmeTest
     }
 
     @Test
-    public void filtering()
-    {
+    public void filtering() {
         ISet<Integer> numbers = IntStream.range(1, 20).boxed().collect(ICollectors.toSet());
         ISet<Integer> changed = numbers.reject(i -> i % 3 != 2);
         assertThat(changed).isEqualTo(ISets.hashed(2, 5, 8, 11, 14, 17));
@@ -288,8 +270,7 @@ public class ReadmeTest
     }
 
     @Test
-    public void slicingAndDicing()
-    {
+    public void slicingAndDicing() {
         IList<Integer> numbers = IntStream.range(1, 21).boxed().collect(ICollectors.toList());
         IList<Integer> changed = numbers.prefix(6);
         assertThat(changed).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6));
@@ -302,34 +283,31 @@ public class ReadmeTest
     }
 
     @Test
-    public void indexingWithSetMap()
-    {
-        IList<String> source = ILists.of("Now is our time.",
-                                         "Our moment has arrived.",
-                                         "Shall we embrace immutable collections?",
-                                         "Or tread in dangerous synchronized waters forever?");
-        ISetMap<String, String> index = source
-            .stream()
-            .flatMap(line -> Stream.of(line
-                                           .toLowerCase()
-                                           .replace(".", "")
-                                           .replace("?", "")
-                                           .split(" "))
-                .map(word -> MapEntry.entry(word, line)))
-            .collect(ICollectors.toSetMap());
+    public void indexingWithSetMap() {
+        IList<String> source = ILists.of(
+                "Now is our time.",
+                "Our moment has arrived.",
+                "Shall we embrace immutable collections?",
+                "Or tread in dangerous synchronized waters forever?");
+        ISetMap<String, String> index = source.stream()
+                .flatMap(line -> Stream.of(line.toLowerCase()
+                                .replace(".", "")
+                                .replace("?", "")
+                                .split(" "))
+                        .map(word -> MapEntry.entry(word, line)))
+                .collect(ICollectors.toSetMap());
         assertThat(index.get("our")).isEqualTo(ISets.hashed("Now is our time.", "Our moment has arrived."));
     }
 
     @Test
-    public void listMaps()
-    {
+    public void listMaps() {
         IListMap<String, Integer> index = IListMaps.<String, Integer>sorted()
-            .insert("c", 2)
-            .insert("a", 1)
-            .insert("d", 640)
-            .insert("b", 3)
-            .insert("d", 512)
-            .insertAll("a", ILists.of(-4, 40, 18)); // could be any Iterable not just list
+                .insert("c", 2)
+                .insert("a", 1)
+                .insert("d", 640)
+                .insert("b", 3)
+                .insert("d", 512)
+                .insertAll("a", ILists.of(-4, 40, 18)); // could be any Iterable not just list
         // keys are sorted in the map
         assertThat(ILists.allOf(index.keys())).isEqualTo(ILists.of("a", "b", "c", "d"));
         // values appear in the list in order they are added
@@ -339,38 +317,43 @@ public class ReadmeTest
     }
 
     @Test
-    public void changesInLoop()
-    {
+    public void changesInLoop() {
         assertThatThrownBy(() -> {
-            Map<Integer, Integer> ints = IntStream.range(1, 11).boxed().collect(Collectors.toMap(i -> i, i -> i));
-            for (Map.Entry<Integer, Integer> entry : ints.entrySet()) {
-                ints.put(2 * entry.getKey(), 2 * entry.getValue());
-            }
-        }).isInstanceOf(ConcurrentModificationException.class);
+                    Map<Integer, Integer> ints =
+                            IntStream.range(1, 11).boxed().collect(Collectors.toMap(i -> i, i -> i));
+                    for (Map.Entry<Integer, Integer> entry : ints.entrySet()) {
+                        ints.put(2 * entry.getKey(), 2 * entry.getValue());
+                    }
+                })
+                .isInstanceOf(ConcurrentModificationException.class);
 
-        IMap<Integer, Integer> myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
+        IMap<Integer, Integer> myMap =
+                IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
         for (IMapEntry<Integer, Integer> entry : myMap) {
             myMap = myMap.assign(2 * entry.getKey(), 2 * entry.getValue());
         }
         assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
-        assertThat(ILists.allOf(myMap.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
+        assertThat(ILists.allOf(myMap.values()))
+                .isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20));
 
         myMap = IntStream.range(1, 11).boxed().map(i -> IMapEntry.of(i, i)).collect(ICollectors.toMap());
         IMap<Integer, Integer> changed = myMap.stream()
-            .map(entry -> IMapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
-            .collect(myMap.mapCollector());
+                .map(entry -> IMapEntry.of(5 + entry.getKey(), 10 + entry.getValue()))
+                .collect(myMap.mapCollector());
         // 6-10 were updated, 11-15 were added
-        assertThat(ILists.allOf(changed.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
-        assertThat(ILists.allOf(changed.values())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
-        // original map is unchanged 
+        assertThat(ILists.allOf(changed.keys()))
+                .isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+        assertThat(ILists.allOf(changed.values()))
+                .isEqualTo(ILists.of(1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
+        // original map is unchanged
         assertThat(ILists.allOf(myMap.keys())).isEqualTo(ILists.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
-    private IList<Integer> factorsOf(int number)
-    {
-        final int maxPossibleFactor = (int)Math.sqrt(number);
-        return IntStream.range(2, maxPossibleFactor + 1).boxed()
-            .filter(candidate -> number % candidate == 0)
-            .collect(ICollectors.toList());
+    private IList<Integer> factorsOf(int number) {
+        final int maxPossibleFactor = (int) Math.sqrt(number);
+        return IntStream.range(2, maxPossibleFactor + 1)
+                .boxed()
+                .filter(candidate -> number % candidate == 0)
+                .collect(ICollectors.toList());
     }
 }

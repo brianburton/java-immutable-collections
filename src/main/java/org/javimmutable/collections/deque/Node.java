@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,25 +33,19 @@
 
 package org.javimmutable.collections.deque;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
- * Interface for classes used to implement 32-way trees that restrict inserts and deletions
- * to the head and tail of the list but allow updates at any index within the list.
+ * Interface for classes used to implement 32-way trees that restrict inserts and deletions to the head and tail of the
+ * list but allow updates at any index within the list.
  */
-interface Node<T>
-    extends SplitableIterable<T>,
-            GenericIterator.Iterable<T>,
-            Indexed<T>,
-            InvariantCheckable
-{
+interface Node<T> extends SplitableIterable<T>, GenericIterator.Iterable<T>, Indexed<T>, InvariantCheckable {
     boolean isEmpty();
 
     boolean isFull();
@@ -70,8 +62,7 @@ interface Node<T>
 
     boolean containsIndex(int index);
 
-    Node<T> assign(int index,
-                   T value);
+    Node<T> assign(int index, T value);
 
     @Nonnull
     Node<T> reverse();
@@ -80,26 +71,22 @@ interface Node<T>
 
     @Nonnull
     @Override
-    default SplitableIterator<T> iterator()
-    {
+    default SplitableIterator<T> iterator() {
         return new GenericIterator<>(this, 0, size());
     }
 
     @Nullable
-    default LeafNode<T> castAsLeaf()
-    {
+    default LeafNode<T> castAsLeaf() {
         return null;
     }
 
     @Nullable
-    default BranchNode<T> castAsBranch()
-    {
+    default BranchNode<T> castAsBranch() {
         return null;
     }
 
     @Nonnull
-    default Node<T> prune()
-    {
+    default Node<T> prune() {
         return this;
     }
 
@@ -113,8 +100,8 @@ interface Node<T>
     Node<T> prefix(int limit);
 
     /**
-     * Return the (possibly empty) list containing the values starting at offset (inclusive)
-     * and including all remaining items.
+     * Return the (possibly empty) list containing the values starting at offset (inclusive) and including all remaining
+     * items.
      *
      * @param offset first index (inclusive) of values to include
      * @return a possibly empty list containing the values

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,8 +33,14 @@
 
 package org.javimmutable.collections.hash;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 import com.google.common.collect.TreeMultiset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMultiset;
@@ -45,29 +49,19 @@ import org.javimmutable.collections.common.StandardMultisetTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-
-public class HashMultisetTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class HashMultisetTest extends TestCase {
+    public void testStandard() {
         StandardMultisetTests.verifyMultiset(HashMultiset.of(), true);
-        StandardMultisetTests.testRandom(HashMultiset.of(),
-                                         TreeMultiset.create());
+        StandardMultisetTests.testRandom(HashMultiset.of(), TreeMultiset.create());
     }
 
-    public void test()
-    {
+    public void test() {
         List<String> valuesL = asList("tennant", "smith", "capaldi", "eccleston");
         IMultiset<String> valuesM = HashMultiset.<String>of().union(valuesL);
-        valuesM = valuesM.setCount("tennant", 10).setCount("smith", 11).setCount("capaldi", 12).setCount("eccleston", 9);
+        valuesM = valuesM.setCount("tennant", 10)
+                .setCount("smith", 11)
+                .setCount("capaldi", 12)
+                .setCount("eccleston", 9);
 
         IMultiset<String> jmet = HashMultiset.of();
         assertTrue(jmet.isEmpty());
@@ -195,15 +189,19 @@ public class HashMultisetTest
         assertEquals(expected, jmet3.intersection(expected));
     }
 
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() {
         IMultiset<String> jmet = HashMultiset.<String>of().insert("TENNANT").insert("ECCLESTON");
         assertSame(HashMultiset.of(), jmet.deleteAll());
     }
 
-    public void testStreams()
-    {
-        IMultiset<Integer> mset = HashMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+    public void testStreams() {
+        IMultiset<Integer> mset = HashMultiset.<Integer>of()
+                .insert(4)
+                .insert(3)
+                .insert(4)
+                .insert(2)
+                .insert(1)
+                .insert(3);
         assertEquals(asList(1, 2, 3, 4), mset.stream().collect(toList()));
         List<Integer> expected = new ArrayList<>();
         for (int i = 1; i <= 500; i++) {
@@ -221,21 +219,28 @@ public class HashMultisetTest
         assertEquals(expected, actual);
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IMultiset)a).entries().iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory =
+                a -> ((IMultiset) a).entries().iterator();
         final IMultiset<String> empty = HashMultiset.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8C3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMMoxqbikKDG5BKdxBeUcDAzMLxmAoAIApOZm4qsAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8C3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMMoxqbikKDG5BKdxBeUcDAzMLxkYGBhLGBgTy1lArAoAjCqw57UAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8C3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMMoxqbikKDG5BKdxBeUcDAzMLxmARAkDY2I5C5DFCGQlgVlMQFYyRKwCAMvclmzJAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8C3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMMoxqbikKDG5BKdxBeUcDAzMLxmAoAIApOZm4qsAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8C3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMMoxqbikKDG5BKdxBeUcDAzMLxkYGBhLGBgTy1lArAoAjCqw57UAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList("a", "b", "c", "b")),
+                "H4sIAAAAAAAA/1vzloG1uIjBJr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8C3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMMoxqbikKDG5BKdxBeUcDAzMLxmARAkDY2I5C5DFCGQlgVlMQFYyRKwCAMvclmzJAAAA");
     }
 
-    private ISet<String> asJSet(String... args)
-    {
+    private ISet<String> asJSet(String... args) {
         ISet<String> jet = HashSet.of();
         for (String arg : args) {
             jet = jet.insert(arg);
@@ -243,8 +248,7 @@ public class HashMultisetTest
         return jet;
     }
 
-    private IMultiset<String> asJMet(String... args)
-    {
+    private IMultiset<String> asJMet(String... args) {
         IMultiset<String> jmet = HashMultiset.of();
         for (String arg : args) {
             jmet = jmet.insert(arg);
@@ -252,8 +256,7 @@ public class HashMultisetTest
         return jmet;
     }
 
-    private IMultiset<String> asJMet(List<String> list)
-    {
+    private IMultiset<String> asJMet(List<String> list) {
         IMultiset<String> jmet = HashMultiset.of();
         return jmet.insertAll(list);
     }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.hash;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.array.ArrayAssignMapper;
@@ -44,21 +44,14 @@ import org.javimmutable.collections.hash.set.ArraySetNode;
 import org.javimmutable.collections.hash.set.ArraySingleValueSetNode;
 import org.javimmutable.collections.list.ListCollisionSet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-
 @ThreadSafe
-class HashSetBuilder<T>
-    implements ISetBuilder<T>,
-               ArrayAssignMapper<T, T, ArraySetNode<T>>
-{
+class HashSetBuilder<T> implements ISetBuilder<T>, ArrayAssignMapper<T, T, ArraySetNode<T>> {
     private final TrieArrayBuilder<ArraySetNode<T>> builder = new TrieArrayBuilder<>();
     private CollisionSet<T> collisionSet = ListCollisionSet.instance();
 
     @Nonnull
     @Override
-    public synchronized ISet<T> build()
-    {
+    public synchronized ISet<T> build() {
         if (builder.size() == 0) {
             return HashSet.of();
         } else {
@@ -67,15 +60,13 @@ class HashSetBuilder<T>
     }
 
     @Override
-    public synchronized int size()
-    {
+    public synchronized int size() {
         return builder.size();
     }
 
     @Nonnull
     @Override
-    public synchronized ISetBuilder<T> add(T value)
-    {
+    public synchronized ISetBuilder<T> add(T value) {
         if (builder.size() == 0) {
             collisionSet = HashSet.selectCollisionSetForValue(value);
         }
@@ -85,8 +76,7 @@ class HashSetBuilder<T>
 
     @Nonnull
     @Override
-    public synchronized ISetBuilder<T> clear()
-    {
+    public synchronized ISetBuilder<T> clear() {
         collisionSet = ListCollisionSet.instance();
         builder.reset();
         return this;
@@ -94,26 +84,20 @@ class HashSetBuilder<T>
 
     @Nonnull
     @Override
-    public synchronized ArraySetNode<T> mappedAssign(@Nonnull T key,
-                                                     T ignored)
-    {
+    public synchronized ArraySetNode<T> mappedAssign(@Nonnull T key, T ignored) {
         assert key == ignored;
         return new ArraySingleValueSetNode<>(key);
     }
 
     @Nonnull
     @Override
-    public synchronized ArraySetNode<T> mappedAssign(@Nonnull ArraySetNode<T> current,
-                                                     @Nonnull T key,
-                                                     T ignored)
-    {
+    public synchronized ArraySetNode<T> mappedAssign(@Nonnull ArraySetNode<T> current, @Nonnull T key, T ignored) {
         assert key == ignored;
         return current.insert(collisionSet, key);
     }
 
     @Override
-    public synchronized int mappedSize(@Nonnull ArraySetNode<T> mapping)
-    {
+    public synchronized int mappedSize(@Nonnull ArraySetNode<T> mapping) {
         return mapping.size(collisionSet);
     }
 }

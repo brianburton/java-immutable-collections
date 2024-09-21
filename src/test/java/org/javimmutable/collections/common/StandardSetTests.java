@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,13 +33,7 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.IMultisets;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.Maybe;
-import org.javimmutable.collections.hash.HashSet;
-import org.javimmutable.collections.inorder.OrderedSet;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static junit.framework.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,18 +43,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.IMultisets;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.Maybe;
+import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.inorder.OrderedSet;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import static junit.framework.Assert.*;
+public final class StandardSetTests {
+    private StandardSetTests() {}
 
-public final class StandardSetTests
-{
-    private StandardSetTests()
-    {
-    }
-
-    public static void verifySet(ISet<Integer> template,
-                                 boolean emptyIsUnique)
-    {
+    public static void verifySet(ISet<Integer> template, boolean emptyIsUnique) {
         testVarious(template);
         testWithMultiset(template);
         testRandom(template);
@@ -84,8 +76,8 @@ public final class StandardSetTests
         assertEquals(true, jet.isNonEmpty());
         assertEquals(true, jet.contains(10));
 
-        assertEquals((Integer)10, jet.get(10));
-        assertEquals((Integer)10, jet.getValueOr(10, 25));
+        assertEquals((Integer) 10, jet.get(10));
+        assertEquals((Integer) 10, jet.getValueOr(10, 25));
         assertEquals(Maybe.of(10), jet.find(10));
 
         jet = jet.delete(10);
@@ -98,7 +90,7 @@ public final class StandardSetTests
         }
 
         assertEquals(null, jet.get(10));
-        assertEquals((Integer)25, jet.getValueOr(10, 25));
+        assertEquals((Integer) 25, jet.getValueOr(10, 25));
         assertEquals(Maybe.empty(), jet.find(10));
 
         final List<Integer> values = Arrays.asList(1, 2, 3, 4);
@@ -150,18 +142,18 @@ public final class StandardSetTests
         verifyContents(jet.deleteAll(withExtra), empty);
         verifyContents(jet.deleteAll(withExtra.iterator()), empty);
 
-        //insertAll
-        //empty into empty
+        // insertAll
+        // empty into empty
         assertSame(template, template.insertAll(plainIterable(template)));
         assertSame(template, template.insertAll(template));
         assertSame(template, template.insertAll(template.iterator()));
 
-        //values into empty
+        // values into empty
         verifyContents(template.insertAll(plainIterable(values)), values);
         verifyContents(template.insertAll(values), values);
         verifyContents(template.insertAll(values.iterator()), values);
 
-        //empty into values
+        // empty into values
         jet = template.union(values);
         assertSame(jet, jet.insertAll(plainIterable(template)));
         assertSame(jet, jet.insertAll(template));
@@ -174,7 +166,7 @@ public final class StandardSetTests
             assertSame(jet, jet.insertAll(jet.iterator()));
         }
 
-        //values into values
+        // values into values
         verifyContents(jet.insertAll(plainIterable(withExtra)), withExtra);
         verifyContents(jet.insertAll(withExtra), withExtra);
         verifyContents(jet.insertAll(withExtra.iterator()), withExtra);
@@ -188,13 +180,11 @@ public final class StandardSetTests
     }
 
     // forces java type system to use overload for plain Iterable
-    private static <T> Iterable<T> plainIterable(Iterable<T> source)
-    {
+    private static <T> Iterable<T> plainIterable(Iterable<T> source) {
         return () -> source.iterator();
     }
 
-    private static void testCollector(ISet<Integer> template)
-    {
+    private static void testCollector(ISet<Integer> template) {
         Collection<Integer> values = new ArrayList<>();
         for (int i = 1; i <= 10; ++i) {
             values.add(i);
@@ -211,8 +201,7 @@ public final class StandardSetTests
         assertEquals(expected, actual);
     }
 
-    private static void testVarious(ISet<Integer> template)
-    {
+    private static void testVarious(ISet<Integer> template) {
         List<Integer> expected = Arrays.asList(100, 200, 300, 400);
 
         ISet<Integer> set = HashSet.of();
@@ -314,54 +303,62 @@ public final class StandardSetTests
         assertEquals(template, set3.deleteAll(set3));
     }
 
-    private static void verifyIntersectionOrder(ISet<Integer> template)
-    {
-        ISet<Integer> jet = template.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
+    private static void verifyIntersectionOrder(ISet<Integer> template) {
+        ISet<Integer> jet = template.insert(100)
+                .insert(50)
+                .insert(100)
+                .insert(600)
+                .insert(0)
+                .insert(400);
         final List<Integer> expected = new ArrayList<>();
         expected.addAll(jet.getSet());
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
 
-        ISet<Integer> diffOrder = OrderedSet.<Integer>of().insert(400).insert(0).insert(600)
-            .insert(100).insert(50).insert(100);
-        //Iterable
+        ISet<Integer> diffOrder = OrderedSet.<Integer>of()
+                .insert(400)
+                .insert(0)
+                .insert(600)
+                .insert(100)
+                .insert(50)
+                .insert(100);
+        // Iterable
         jet = jet.intersection(iterable(diffOrder));
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
-        //Iterable
+        // Iterable
         jet = jet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100));
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
-        //Set
+        // Set
         jet = jet.intersection(diffOrder.getSet());
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
-        //JSet
+        // JSet
         jet = jet.intersection(diffOrder);
         StandardIteratorTests.listIteratorTest(expected, jet.iterator());
     }
 
-    private static void testWithMultiset(ISet<Integer> template)
-    {
+    private static void testWithMultiset(ISet<Integer> template) {
         ISet<Integer> multi = IMultisets.hashed();
         ISet<Integer> jet = template;
 
-        //intersection(Jet)
-        //empty into empty
+        // intersection(Jet)
+        // empty into empty
         List<Integer> expected = new ArrayList<>();
         verifyContents(template.intersection(multi), expected);
 
-        //values into empty
+        // values into empty
         multi = multi.insert(0).insert(0).insert(1).insert(3).insert(3).insert(3);
         verifyContents(template.intersection(multi), expected);
 
-        //empty into values
+        // empty into values
         multi = multi.deleteAll();
         jet = jet.insert(0).insert(1).insert(2);
         verifyContents(jet.intersection(multi), expected);
 
-        //values into values
+        // values into values
         multi = multi.insert(0).insert(0).insert(1).insert(3).insert(3).insert(3);
         expected = Arrays.asList(0, 1);
         verifyContents(jet.intersection(multi), expected);
 
-        //equals(Jet)
+        // equals(Jet)
         multi = multi.deleteAll().insert(0).insert(1).insert(2);
         assertTrue(jet.equals(multi));
         assertTrue(multi.equals(jet));
@@ -371,8 +368,7 @@ public final class StandardSetTests
         assertTrue(jet.equals(multi.getSet()));
     }
 
-    private static void testRandom(ISet<Integer> template)
-    {
+    private static void testRandom(ISet<Integer> template) {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
@@ -427,14 +423,11 @@ public final class StandardSetTests
     }
 
     // forces java type system to use Iterable version of method
-    private static <T> Iterable<T> iterable(Iterable<T> collection)
-    {
+    private static <T> Iterable<T> iterable(Iterable<T> collection) {
         return collection;
     }
 
-    private static <T> void verifyContents(ISet<T> jet,
-                                           List<T> expected)
-    {
+    private static <T> void verifyContents(ISet<T> jet, List<T> expected) {
         assertEquals(expected.isEmpty(), jet.isEmpty());
         assertEquals(expected.size(), jet.size());
         for (T value : expected) {

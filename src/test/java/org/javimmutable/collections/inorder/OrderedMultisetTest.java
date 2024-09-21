@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,8 +33,16 @@
 
 package org.javimmutable.collections.inorder;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
@@ -47,31 +53,20 @@ import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.TestUtil;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
-import static java.util.stream.Collectors.toList;
-
-public class OrderedMultisetTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class OrderedMultisetTest extends TestCase {
+    public void testStandard() {
         StandardMultisetTests.verifyMultiset(OrderedMultiset.of(), true);
-        StandardMultisetTests.testRandom(OrderedMultiset.of(),
-                                         LinkedHashMultiset.create());
+        StandardMultisetTests.testRandom(OrderedMultiset.of(), LinkedHashMultiset.create());
     }
 
-    public void test()
-    {
+    public void test() {
         List<String> valuesL = new LinkedList<>();
         valuesL.addAll(Arrays.asList("tennant", "smith", "capaldi", "eccleston"));
         IMultiset<String> valuesM = OrderedMultiset.<String>of().union(valuesL);
-        valuesM = valuesM.setCount("tennant", 10).setCount("smith", 11).setCount("capaldi", 12).setCount("eccleston", 9);
+        valuesM = valuesM.setCount("tennant", 10)
+                .setCount("smith", 11)
+                .setCount("capaldi", 12)
+                .setCount("eccleston", 9);
 
         IMultiset<String> jmet = OrderedMultiset.of();
         assertTrue(jmet.isEmpty());
@@ -197,11 +192,9 @@ public class OrderedMultisetTest
         assertEquals(expected, jmet3.intersection(TestUtil.makeSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(asJSet("tennant", "smith", "capaldi", "eccleston")));
         assertEquals(expected, jmet3.intersection(expected));
-
     }
 
-    public void testInsertOrder()
-    {
+    public void testInsertOrder() {
         IMultiset<Integer> jmet = OrderedMultiset.of();
         Multiset<Integer> multi = LinkedHashMultiset.create();
         Random random = new Random(2500L);
@@ -230,19 +223,18 @@ public class OrderedMultisetTest
         try {
             assertEquals(new ArrayList<>(multi), asList(jmet));
         } catch (AssertionFailedError ignored) {
-            //expected
+            // expected
         }
         try {
             StandardMultisetTests.verifyIterators(jmet, multi);
         } catch (AssertionFailedError ignored) {
-            //expected
+            // expected
         }
     }
 
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() {
         OrderedMultiset<Integer> jmet = OrderedMultiset.of();
-        jmet = (OrderedMultiset<Integer>)jmet.insert(1).insert(3).insert(1);
+        jmet = (OrderedMultiset<Integer>) jmet.insert(1).insert(3).insert(1);
         OrderedMultiset<Integer> cleared = jmet.deleteAll();
         assertSame(OrderedMultiset.<Integer>of(), cleared);
         assertEquals(0, cleared.size());
@@ -250,27 +242,39 @@ public class OrderedMultisetTest
         StandardIteratorTests.emptyIteratorTest(cleared.iterator());
     }
 
-    public void testStreams()
-    {
-        IMultiset<Integer> mset = OrderedMultiset.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+    public void testStreams() {
+        IMultiset<Integer> mset = OrderedMultiset.<Integer>of()
+                .insert(4)
+                .insert(3)
+                .insert(4)
+                .insert(2)
+                .insert(1)
+                .insert(3);
         assertEquals(Arrays.asList(4, 3, 2, 1), mset.stream().collect(toList()));
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IMultiset)a).entries().iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory =
+                a -> ((IMultiset) a).entries().iterator();
         final IMultiset<String> empty = OrderedMultiset.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8S3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMM0xqbikKDG5BKdxBeUcDAzMLxmAoAIA5hrU964AAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8S3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMM0xqbikKDG5BKdxBeUcDAzMLxkYGBhLGBgTy1lArAoALK8IrLgAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(Arrays.asList("c", "b", "a", "b")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8S3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMM0xqbikKDG5BKdxBeUcDAzMLxmARAkDY3I5C5DFCGQlgVlMQFYiRKwCAAq5XdrMAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8S3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMM0xqbikKDG5BKdxBeUcDAzMLxmAoAIA5hrU964AAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8S3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMM0xqbikKDG5BKdxBeUcDAzMLxkYGBhLGBgTy1lArAoALK8IrLgAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(Arrays.asList("c", "b", "a", "b")),
+                "H4sIAAAAAAAA/1vzloG1uIjBPr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8S3NKcksTi0JKMqvqPwPAv9UjHkYGCqKGBxIMM0xqbikKDG5BKdxBeUcDAzMLxmARAkDY3I5C5DFCGQlgVlMQFYiRKwCAAq5XdrMAAAA");
     }
 
-    private ISet<String> asJSet(String... args)
-    {
+    private ISet<String> asJSet(String... args) {
         ISet<String> jet = OrderedSet.of();
         for (String arg : args) {
             jet = jet.insert(arg);
@@ -278,8 +282,7 @@ public class OrderedMultisetTest
         return jet;
     }
 
-    private IMultiset<String> asJMet(String... args)
-    {
+    private IMultiset<String> asJMet(String... args) {
         IMultiset<String> jmet = OrderedMultiset.of();
         for (String arg : args) {
             jmet = jmet.insert(arg);
@@ -287,14 +290,12 @@ public class OrderedMultisetTest
         return jmet;
     }
 
-    private IMultiset<String> asJMet(List<String> list)
-    {
+    private IMultiset<String> asJMet(List<String> list) {
         IMultiset<String> jmet = OrderedMultiset.of();
         return jmet.insertAll(list);
     }
 
-    private ArrayList<Integer> asList(IMultiset<Integer> jmet)
-    {
+    private ArrayList<Integer> asList(IMultiset<Integer> jmet) {
         ArrayList<Integer> list = new ArrayList<>();
         for (Integer value : jmet.occurrences()) {
             list.add(value);

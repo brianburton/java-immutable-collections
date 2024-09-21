@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,12 +33,8 @@
 
 package org.javimmutable.collections;
 
-/**
- * Interface for lambdas that accept 1 parameter and return nothing but might throw an exception.
- */
+/** Interface for lambdas that accept 1 parameter and return nothing but might throw an exception. */
 @FunctionalInterface
-public interface Proc1Throws<A, E extends Exception>
-{
-    void apply(A a)
-        throws E;
+public interface Proc1Throws<A, E extends Exception> {
+    void apply(A a) throws E;
 }

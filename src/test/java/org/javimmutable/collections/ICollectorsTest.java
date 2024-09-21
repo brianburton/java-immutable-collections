@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,21 +33,17 @@
 
 package org.javimmutable.collections;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.tree.ComparableComparator;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import junit.framework.TestCase;
+import org.javimmutable.collections.tree.ComparableComparator;
 
-public class ICollectorsTest
-    extends TestCase
-{
-    public void testCollections()
-    {
+public class ICollectorsTest extends TestCase {
+    public void testCollections() {
         final List<Integer> source = IntStream.rangeClosed(1, 1200).boxed().collect(Collectors.toList());
         final Comparator<Integer> comparator = ComparableComparator.of();
         Collections.shuffle(source);
@@ -59,12 +53,14 @@ public class ICollectorsTest
         verifyCollection(source, values -> ISets.hashed(values), () -> ICollectors.toSet());
         verifyCollection(source, values -> ISets.sorted(values), () -> ICollectors.toSortedSet());
         verifyCollection(source, values -> ISets.sorted(comparator, values), () -> ICollectors.toSortedSet(comparator));
-        verifyCollection(source, values -> createGroupingByExpected(values, x -> x / 7), () -> ICollectors.groupingBy(x -> x / 7));
+        verifyCollection(
+                source,
+                values -> createGroupingByExpected(values, x -> x / 7),
+                () -> ICollectors.groupingBy(x -> x / 7));
     }
 
-    private IListMap<Integer, Integer> createGroupingByExpected(List<Integer> source,
-                                                                Func1<Integer, Integer> keyTransform)
-    {
+    private IListMap<Integer, Integer> createGroupingByExpected(
+            List<Integer> source, Func1<Integer, Integer> keyTransform) {
         IListMap<Integer, Integer> expected = IListMaps.hashed();
         for (Integer value : source) {
             final Integer key = keyTransform.apply(value);
@@ -73,10 +69,10 @@ public class ICollectorsTest
         return expected;
     }
 
-    private <C> void verifyCollection(List<Integer> source,
-                                      Func1<List<Integer>, C> collectionFactory,
-                                      Func0<Collector<Integer, ?, C>> collectorFactory)
-    {
+    private <C> void verifyCollection(
+            List<Integer> source,
+            Func1<List<Integer>, C> collectionFactory,
+            Func0<Collector<Integer, ?, C>> collectorFactory) {
         C expected = collectionFactory.apply(source);
         C actual = source.stream().collect(collectorFactory.apply());
         assertEquals(expected, actual);

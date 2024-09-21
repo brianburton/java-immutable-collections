@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,56 +33,37 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
 
-public interface ICollection<T>
-    extends IStreamable<T>,
-            Serializable
-{
-    /**
-     * Add value to the container in some manner appropriate to the implementation.
-     */
+public interface ICollection<T> extends IStreamable<T>, Serializable {
+    /** Add value to the container in some manner appropriate to the implementation. */
     @Nonnull
     ICollection<T> insert(T value);
 
-    /**
-     * Add all values to the container in some manner appropriate to the implementation.
-     */
+    /** Add all values to the container in some manner appropriate to the implementation. */
     @Nonnull
     ICollection<T> insertAll(@Nonnull Iterator<? extends T> iterator);
 
-    /**
-     * Add all values to the container in some manner appropriate to the implementation.
-     */
+    /** Add all values to the container in some manner appropriate to the implementation. */
     @Nonnull
     ICollection<T> insertAll(@Nonnull Iterable<? extends T> iterable);
 
-    /**
-     * @return number of values in the collection
-     */
+    /** @return number of values in the collection */
     int size();
 
-    /**
-     * @return true only if collection contains no values
-     */
-    default boolean isEmpty()
-    {
+    /** @return true only if collection contains no values */
+    default boolean isEmpty() {
         return size() == 0;
     }
 
-    /**
-     * @return false only if collection contains no values
-     */
-    default boolean isNonEmpty()
-    {
+    /** @return false only if collection contains no values */
+    default boolean isNonEmpty() {
         return !isEmpty();
     }
 
-    /**
-     * @return an equivalent collection with no values
-     */
+    /** @return an equivalent collection with no values */
     @Nonnull
     ICollection<T> deleteAll();
 }

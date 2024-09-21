@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,22 +35,16 @@ package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.setmap.OrderedSetMap;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("unchecked")
-public class OrderedSetMapProxy
-    extends AbstractSetMapProxy
-{
+public class OrderedSetMapProxy extends AbstractSetMapProxy {
     private static final long serialVersionUID = -121805;
 
-    public OrderedSetMapProxy()
-    {
+    public OrderedSetMapProxy() {
         super(OrderedSetMap.of());
     }
 
-    public OrderedSetMapProxy(OrderedSetMap map)
-    {
+    public OrderedSetMapProxy(OrderedSetMap map) {
         super(map);
     }
 }

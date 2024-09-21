@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,7 +34,6 @@
 package org.javimmutable.collections.common;
 
 import static java.util.Arrays.asList;
-import junit.framework.TestCase;
 import static org.javimmutable.collections.common.ArrayHelper.Allocator;
 import static org.javimmutable.collections.common.ArrayHelper.allocator;
 import static org.javimmutable.collections.common.ArrayHelper.append;
@@ -57,14 +54,12 @@ import static org.javimmutable.collections.common.ArrayHelper.suffix;
 import static org.javimmutable.collections.common.ArrayHelper.suffixInsert;
 
 import java.util.concurrent.Callable;
+import junit.framework.TestCase;
 
-public class ArrayHelperTest
-    extends TestCase
-{
+public class ArrayHelperTest extends TestCase {
     private final Allocator<Integer> alloc = allocator(Integer.class);
 
-    public void testSubArray()
-    {
+    public void testSubArray() {
         Integer[] orig = {1, 2, 3};
 
         verifyValues(subArray(alloc, orig, 0, 0));
@@ -82,8 +77,7 @@ public class ArrayHelperTest
         verifyValues(subArray(alloc, orig, 3, 3));
     }
 
-    public void testSubArray2()
-    {
+    public void testSubArray2() {
         Integer[] a = {1, 2, 3};
         Integer[] b = {4, 5, 6};
 
@@ -114,11 +108,9 @@ public class ArrayHelperTest
         verifyValues(subArray(alloc, a, b, 1, 4), 2, 3, 4);
         verifyValues(subArray(alloc, a, b, 1, 5), 2, 3, 4, 5);
         verifyValues(subArray(alloc, a, b, 1, 6), 2, 3, 4, 5, 6);
-
     }
 
-    public void testAssign()
-    {
+    public void testAssign() {
         Integer[] orig = {1, 2, 3};
 
         verifyValues(assign(orig, 0, 9), 9, 2, 3);
@@ -132,149 +124,131 @@ public class ArrayHelperTest
         }
     }
 
-    public void testAppend()
-    {
+    public void testAppend() {
         verifyValues(append(alloc, new Integer[0], 9), 9);
-        verifyValues(append(alloc, new Integer[]{1}, 9), 1, 9);
-        verifyValues(append(alloc, new Integer[]{1, 2}, 9), 1, 2, 9);
+        verifyValues(append(alloc, new Integer[] {1}, 9), 1, 9);
+        verifyValues(append(alloc, new Integer[] {1, 2}, 9), 1, 2, 9);
     }
 
-    public void testPrepend()
-    {
+    public void testPrepend() {
         verifyValues(prepend(alloc, new Integer[0], 9), 9);
-        verifyValues(prepend(alloc, new Integer[]{1}, 9), 9, 1);
-        verifyValues(prepend(alloc, new Integer[]{1, 2}, 9), 9, 1, 2);
+        verifyValues(prepend(alloc, new Integer[] {1}, 9), 9, 1);
+        verifyValues(prepend(alloc, new Integer[] {1, 2}, 9), 9, 1, 2);
     }
 
-    public void testInsert()
-    {
+    public void testInsert() {
         verifyValues(insert(alloc, new Integer[0], 0, 9), 9);
 
-        verifyValues(insert(alloc, new Integer[]{1}, 0, 9), 9, 1);
-        verifyValues(insert(alloc, new Integer[]{1}, 1, 9), 1, 9);
+        verifyValues(insert(alloc, new Integer[] {1}, 0, 9), 9, 1);
+        verifyValues(insert(alloc, new Integer[] {1}, 1, 9), 1, 9);
 
-        verifyValues(insert(alloc, new Integer[]{1, 2}, 0, 9), 9, 1, 2);
-        verifyValues(insert(alloc, new Integer[]{1, 2}, 1, 9), 1, 9, 2);
-        verifyValues(insert(alloc, new Integer[]{1, 2}, 2, 9), 1, 2, 9);
+        verifyValues(insert(alloc, new Integer[] {1, 2}, 0, 9), 9, 1, 2);
+        verifyValues(insert(alloc, new Integer[] {1, 2}, 1, 9), 1, 9, 2);
+        verifyValues(insert(alloc, new Integer[] {1, 2}, 2, 9), 1, 2, 9);
     }
 
-    public void testDelete()
-    {
+    public void testDelete() {
         // length 1
         Integer[] orig = {1};
         verifyValues(ArrayHelper.<Integer>delete(alloc, orig, 0));
 
         // length 2
-        orig = new Integer[]{1, 2};
+        orig = new Integer[] {1, 2};
         verifyValues(delete(alloc, orig, 0), 2);
         verifyValues(delete(alloc, orig, 1), 1);
 
         // length 3
-        orig = new Integer[]{1, 2, 3};
+        orig = new Integer[] {1, 2, 3};
         verifyValues(delete(alloc, orig, 0), 2, 3);
         verifyValues(delete(alloc, orig, 1), 1, 3);
         verifyValues(delete(alloc, orig, 2), 1, 2);
     }
 
-    public void testConcat()
-    {
-        verifyValues(concat(alloc, new Integer[]{}, new Integer[]{}));
-        verifyValues(concat(alloc, new Integer[]{1}, new Integer[]{}), 1);
-        verifyValues(concat(alloc, new Integer[]{}, new Integer[]{1}), 1);
-        verifyValues(concat(alloc, new Integer[]{1}, new Integer[]{2}), 1, 2);
+    public void testConcat() {
+        verifyValues(concat(alloc, new Integer[] {}, new Integer[] {}));
+        verifyValues(concat(alloc, new Integer[] {1}, new Integer[] {}), 1);
+        verifyValues(concat(alloc, new Integer[] {}, new Integer[] {1}), 1);
+        verifyValues(concat(alloc, new Integer[] {1}, new Integer[] {2}), 1, 2);
     }
 
-    public void testAssignAppend()
-    {
+    public void testAssignAppend() {
         try {
             assignAppend(alloc, new Integer[0], 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        verifyValues(assignAppend(alloc, new Integer[]{1}, 9, 10), 9, 10);
-        verifyValues(assignAppend(alloc, new Integer[]{1, 2}, 9, 10), 1, 9, 10);
+        verifyValues(assignAppend(alloc, new Integer[] {1}, 9, 10), 9, 10);
+        verifyValues(assignAppend(alloc, new Integer[] {1, 2}, 9, 10), 1, 9, 10);
     }
 
-    public void testAssignTwo()
-    {
+    public void testAssignTwo() {
         try {
-            assignTwo(new Integer[]{}, 0, 9, 10);
+            assignTwo(new Integer[] {}, 0, 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
         try {
-            assignTwo(new Integer[]{1}, 0, 9, 10);
+            assignTwo(new Integer[] {1}, 0, 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
         try {
-            assignTwo(new Integer[]{1, 2}, 1, 9, 10);
+            assignTwo(new Integer[] {1, 2}, 1, 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        verifyValues(assignTwo(new Integer[]{1, 2}, 0, 9, 10), 9, 10);
-        verifyValues(assignTwo(new Integer[]{
-            1, 2, 3
-        }, 0, 9, 10), 9, 10, 3);
-        verifyValues(assignTwo(new Integer[]{
-            1, 2, 3
-        }, 1, 9, 10), 1, 9, 10);
+        verifyValues(assignTwo(new Integer[] {1, 2}, 0, 9, 10), 9, 10);
+        verifyValues(assignTwo(new Integer[] {1, 2, 3}, 0, 9, 10), 9, 10, 3);
+        verifyValues(assignTwo(new Integer[] {1, 2, 3}, 1, 9, 10), 1, 9, 10);
     }
 
-    public void testAssignInsertNode()
-    {
+    public void testAssignInsertNode() {
         try {
-            assignInsert(alloc, new Integer[]{}, 0, 9, 10);
+            assignInsert(alloc, new Integer[] {}, 0, 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
         try {
-            assignInsert(alloc, new Integer[]{1}, 1, 9, 10);
+            assignInsert(alloc, new Integer[] {1}, 1, 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
-        verifyValues(assignInsert(alloc, new Integer[]{1}, 0, 9, 10), 9, 10);
-        verifyValues(assignInsert(alloc, new Integer[]{
-            1, 2
-        }, 0, 9, 10), 9, 10, 2);
-        verifyValues(assignInsert(alloc, new Integer[]{
-            1, 2
-        }, 1, 9, 10), 1, 9, 10);
+        verifyValues(assignInsert(alloc, new Integer[] {1}, 0, 9, 10), 9, 10);
+        verifyValues(assignInsert(alloc, new Integer[] {1, 2}, 0, 9, 10), 9, 10, 2);
+        verifyValues(assignInsert(alloc, new Integer[] {1, 2}, 1, 9, 10), 1, 9, 10);
 
         try {
-            assignInsert(alloc, new Integer[]{1, 2}, 2, 9, 10);
+            assignInsert(alloc, new Integer[] {1, 2}, 2, 9, 10);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
     }
 
-    public void testAssignDelete()
-    {
+    public void testAssignDelete() {
         try {
-            assignDelete(alloc, new Integer[]{1}, 0, 9);
+            assignDelete(alloc, new Integer[] {1}, 0, 9);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
-        verifyValues(assignDelete(alloc, new Integer[]{1, 2}, 0, 9), 9);
+        verifyValues(assignDelete(alloc, new Integer[] {1, 2}, 0, 9), 9);
         try {
-            assignDelete(alloc, new Integer[]{1, 2}, 1, 9);
+            assignDelete(alloc, new Integer[] {1, 2}, 1, 9);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
-        verifyValues(assignDelete(alloc, new Integer[]{1, 2, 3}, 0, 9), 9, 3);
-        verifyValues(assignDelete(alloc, new Integer[]{1, 2, 3}, 1, 9), 1, 9);
+        verifyValues(assignDelete(alloc, new Integer[] {1, 2, 3}, 0, 9), 9, 3);
+        verifyValues(assignDelete(alloc, new Integer[] {1, 2, 3}, 1, 9), 1, 9);
         try {
-            assignDelete(alloc, new Integer[]{1, 2, 3}, 2, 9);
+            assignDelete(alloc, new Integer[] {1, 2, 3}, 2, 9);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
     }
 
-    public void testPrefix()
-    {
+    public void testPrefix() {
         verifyValues(a(), prefix(alloc, a(), 0));
         verifyValues(a(), prefix(alloc, a(1), 0));
         verifyValues(a(), prefix(alloc, a(1, 2), 0));
@@ -284,8 +258,7 @@ public class ArrayHelperTest
         verifyOutOfBounds(() -> prefix(alloc, a(1), 2));
     }
 
-    public void testPrefixInsert()
-    {
+    public void testPrefixInsert() {
         verifyValues(a(9), prefixInsert(alloc, a(), 0, 0, 9));
         verifyValues(a(9), prefixInsert(alloc, a(1), 0, 0, 9));
         verifyValues(a(9, 1), prefixInsert(alloc, a(1), 1, 0, 9));
@@ -299,8 +272,7 @@ public class ArrayHelperTest
         verifyOutOfBounds(() -> prefixInsert(alloc, a(1), 1, 2, 9));
     }
 
-    public void testSuffix()
-    {
+    public void testSuffix() {
         verifyValues(a(), suffix(alloc, a(), 0));
         verifyValues(a(), suffix(alloc, a(1), 1));
         verifyValues(a(), suffix(alloc, a(1, 2), 2));
@@ -315,8 +287,7 @@ public class ArrayHelperTest
         verifyOutOfBounds(() -> suffix(alloc, a(1, 2), 3));
     }
 
-    public void testSuffixInsert()
-    {
+    public void testSuffixInsert() {
         verifyValues(a(9), suffixInsert(alloc, a(), 0, 0, 9));
         verifyValues(a(9), suffixInsert(alloc, a(1), 1, 1, 9));
         verifyValues(a(9, 1), suffixInsert(alloc, a(1), 0, 0, 9));
@@ -332,19 +303,17 @@ public class ArrayHelperTest
         verifyOutOfBounds(() -> suffixInsert(alloc, a(1, 2), 1, 0, 9));
     }
 
-    public void testReverse()
-    {
+    public void testReverse() {
         verifyValues(reverse(alloc, new Integer[0]));
-        verifyValues(reverse(alloc, new Integer[]{1}), 1);
-        verifyValues(reverse(alloc, new Integer[]{1, 2}), 2, 1);
-        verifyValues(reverse(alloc, new Integer[]{1, 2, 3}), 3, 2, 1);
-        verifyValues(reverse(alloc, new Integer[]{1, 2, 3, 4}), 4, 3, 2, 1);
-        verifyValues(reverse(alloc, new Integer[]{1, 2, 3, 4, 5}), 5, 4, 3, 2, 1);
-        verifyValues(reverse(alloc, new Integer[]{1, 2, 3, 4, 5, 6}), 6, 5, 4, 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[] {1}), 1);
+        verifyValues(reverse(alloc, new Integer[] {1, 2}), 2, 1);
+        verifyValues(reverse(alloc, new Integer[] {1, 2, 3}), 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[] {1, 2, 3, 4}), 4, 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[] {1, 2, 3, 4, 5}), 5, 4, 3, 2, 1);
+        verifyValues(reverse(alloc, new Integer[] {1, 2, 3, 4, 5, 6}), 6, 5, 4, 3, 2, 1);
     }
 
-    private void verifyOutOfBounds(Callable<Integer[]> op)
-    {
+    private void verifyOutOfBounds(Callable<Integer[]> op) {
         try {
             op.call();
             fail();
@@ -354,14 +323,11 @@ public class ArrayHelperTest
         }
     }
 
-    private <T> void verifyValues(T[] actual,
-                                  Integer... expected)
-    {
+    private <T> void verifyValues(T[] actual, Integer... expected) {
         assertEquals(asList(expected), asList(actual));
     }
 
-    private Integer[] a(Integer... values)
-    {
+    private Integer[] a(Integer... values) {
         return values;
     }
 }

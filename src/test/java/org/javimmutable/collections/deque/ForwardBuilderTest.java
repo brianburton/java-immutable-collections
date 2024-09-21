@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,11 +33,7 @@
 
 package org.javimmutable.collections.deque;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-import org.javimmutable.collections.Indexed;
 import static org.javimmutable.collections.deque.ForwardBuilder.insertAtEnd;
-import org.javimmutable.collections.indexed.IndexedHelper;
 import static org.javimmutable.collections.indexed.IndexedHelper.range;
 
 import java.util.ArrayList;
@@ -50,58 +44,46 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.indexed.IndexedHelper;
 
-public class ForwardBuilderTest
-    extends TestCase
-{
+public class ForwardBuilderTest extends TestCase {
     private static final Indexed<Integer> NoValues = IndexedHelper.empty();
 
-    private final Map<String, Scenario> Scenarios =
-        Stream.of(new Scenario("leaf",
-                               NoValues,
-                               range(1, 28),
-                               NoValues,
-                               range(29, 2000)),
-                  new Scenario("depth 2, no prefix, no suffix",
-                               NoValues,
-                               range(1, 512),
-                               NoValues,
-                               range(513, 2000)),
-                  new Scenario("depth 2, no prefix, leaf suffix",
-                               NoValues,
-                               range(1, 512),
-                               range(513, 528),
-                               range(529, 2000)),
-                  new Scenario("depth 2, leaf prefix, leaf suffix",
-                               range(-2, 0),
-                               range(1, 512),
-                               range(513, 528),
-                               range(529, 2000)),
-                  new Scenario("depth 3, no prefix, no suffix",
-                               NoValues,
-                               range(1, 1024),
-                               NoValues,
-                               range(1025, 2500)),
-                  new Scenario("depth 3, full prefix, full suffix",
-                               range(-67, 0),
-                               range(1, 1094),
-                               range(1094, 1097),
-                               range(1098, 3000))
-            )
-            .collect(Collectors.toMap(Scenario::getName,
-                                      Function.identity(),
-                                      (x, y) -> y,
-                                      LinkedHashMap::new));
+    private final Map<String, Scenario> Scenarios = Stream.of(
+                    new Scenario("leaf", NoValues, range(1, 28), NoValues, range(29, 2000)),
+                    new Scenario("depth 2, no prefix, no suffix", NoValues, range(1, 512), NoValues, range(513, 2000)),
+                    new Scenario(
+                            "depth 2, no prefix, leaf suffix",
+                            NoValues,
+                            range(1, 512),
+                            range(513, 528),
+                            range(529, 2000)),
+                    new Scenario(
+                            "depth 2, leaf prefix, leaf suffix",
+                            range(-2, 0),
+                            range(1, 512),
+                            range(513, 528),
+                            range(529, 2000)),
+                    new Scenario(
+                            "depth 3, no prefix, no suffix", NoValues, range(1, 1024), NoValues, range(1025, 2500)),
+                    new Scenario(
+                            "depth 3, full prefix, full suffix",
+                            range(-67, 0),
+                            range(1, 1094),
+                            range(1094, 1097),
+                            range(1098, 3000)))
+            .collect(Collectors.toMap(Scenario::getName, Function.identity(), (x, y) -> y, LinkedHashMap::new));
 
-    public void testEmpty()
-    {
+    public void testEmpty() {
         ForwardBuilder<Integer> builder = insertAtEnd(EmptyNode.of());
         builder.checkInvariants();
         verifyEquals(Collections.emptyList(), builder.build());
     }
 
-    public void testAddToEmpty()
-    {
+    public void testAddToEmpty() {
         ForwardBuilder<Integer> builder = insertAtEnd(EmptyNode.of());
         List<Integer> expected = new ArrayList<>();
         for (int i = 1; i < 2500; ++i) {
@@ -114,8 +96,7 @@ public class ForwardBuilderTest
         builder.checkInvariants();
     }
 
-    public void testScenarios()
-    {
+    public void testScenarios() {
         runScenario(Scenarios.get("depth 3, full prefix, full suffix"));
         for (Scenario scenario : Scenarios.values()) {
             try {
@@ -128,8 +109,7 @@ public class ForwardBuilderTest
         }
     }
 
-    private void runScenario(Scenario scenario)
-    {
+    private void runScenario(Scenario scenario) {
         ForwardBuilder<Integer> builder = insertAtEnd(EmptyNode.of());
         builder.addAll(scenario.middle);
         builder.checkInvariants();
@@ -162,47 +142,40 @@ public class ForwardBuilderTest
         verifyEquals(expected, built);
     }
 
-    private void verifyEquals(List<Integer> expectedList,
-                              Node<Integer> actual)
-    {
+    private void verifyEquals(List<Integer> expectedList, Node<Integer> actual) {
         List<Integer> actualList = new ArrayList<>(actual.size());
         actual.iterator().forEachRemaining(actualList::add);
 
         assertEquals(expectedList, actualList);
     }
 
-    private void verifyEquals(Indexed<Integer> expected,
-                              Node<Integer> actual)
-    {
+    private void verifyEquals(Indexed<Integer> expected, Node<Integer> actual) {
         List<Integer> actualList = new ArrayList<>(actual.size());
         actual.iterator().forEachRemaining(actualList::add);
 
         assertEquals(IndexedHelper.asList(expected), actualList);
     }
 
-    private void verifyEquals(Node<Integer> expected,
-                              Node<Integer> actual)
-    {
+    private void verifyEquals(Node<Integer> expected, Node<Integer> actual) {
         List<Integer> expectedList = new ArrayList<>(expected.size());
         expected.iterator().forEachRemaining(expectedList::add);
 
         verifyEquals(expectedList, actual);
     }
 
-    private static class Scenario
-    {
+    private static class Scenario {
         private final String name;
         private final Indexed<Integer> prefix;
         private final Indexed<Integer> middle;
         private final Indexed<Integer> suffix;
         private final Indexed<Integer> adds;
 
-        private Scenario(String name,
-                         Indexed<Integer> prefix,
-                         Indexed<Integer> middle,
-                         Indexed<Integer> suffix,
-                         Indexed<Integer> adds)
-        {
+        private Scenario(
+                String name,
+                Indexed<Integer> prefix,
+                Indexed<Integer> middle,
+                Indexed<Integer> suffix,
+                Indexed<Integer> adds) {
             this.name = name;
             this.prefix = prefix;
             this.middle = middle;
@@ -210,8 +183,7 @@ public class ForwardBuilderTest
             this.adds = adds;
         }
 
-        private String getName()
-        {
+        private String getName() {
             return name;
         }
     }

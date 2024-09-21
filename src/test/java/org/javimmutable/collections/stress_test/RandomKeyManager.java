@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2016-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,9 +33,6 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,26 +41,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
 
-public class RandomKeyManager
-{
+public class RandomKeyManager {
     private final Random random;
     private final IList<String> allPossibleKeys;
     private final List<KeyInfo> allocated;
     private final Map<String, Integer> allocatedIndexes;
 
-    public RandomKeyManager(Random random,
-                            IList<String> allPossibleKeys)
-    {
+    public RandomKeyManager(Random random, IList<String> allPossibleKeys) {
         this.random = random;
         this.allPossibleKeys = allPossibleKeys;
         allocated = new ArrayList<KeyInfo>();
         allocatedIndexes = new HashMap<String, Integer>();
     }
 
-    public static String makeValue(IList<String> tokens,
-                                   Random random)
-    {
+    public static String makeValue(IList<String> tokens, Random random) {
         int length = 1 + random.nextInt(250);
         StringBuilder sb = new StringBuilder();
         while (sb.length() < length) {
@@ -74,8 +66,7 @@ public class RandomKeyManager
         return sb.toString();
     }
 
-    public String randomKey()
-    {
+    public String randomKey() {
         if (size() == 0) {
             return randomUnallocatedKey();
         } else {
@@ -83,8 +74,7 @@ public class RandomKeyManager
         }
     }
 
-    public IList<String> randomKeys(int howMany)
-    {
+    public IList<String> randomKeys(int howMany) {
         IList<String> answer = ILists.of();
         while (answer.size() < howMany) {
             answer = answer.insertLast(randomKey());
@@ -92,35 +82,34 @@ public class RandomKeyManager
         return answer;
     }
 
-    //on average, adds 1 value to set
-    public IList<String> randomInsertJList()
-    {
+    // on average, adds 1 value to set
+    public IList<String> randomInsertJList() {
         String value;
         IList<String> list = ILists.of();
         switch (random.nextInt(8)) {
-            case 0:  //adds 0 - empty
+            case 0: // adds 0 - empty
                 break;
-            case 1: //adds 0 - value already in set
+            case 1: // adds 0 - value already in set
                 list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
                 break;
-            case 2: //adds 1 - unique value
+            case 2: // adds 1 - unique value
                 list = list.insertLast(randomUnallocatedKey());
                 break;
-            case 3: //adds 1 - unique value, value already in set
+            case 3: // adds 1 - unique value, value already in set
                 list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
                 list = list.insertLast(randomUnallocatedKey());
                 break;
-            case 4: //adds 1 - two copies of unique value
+            case 4: // adds 1 - two copies of unique value
                 value = randomUnallocatedKey();
                 list = list.insert(value).insert(value);
                 break;
-            case 5: //adds 1 - two copies of unique value, value already in set
+            case 5: // adds 1 - two copies of unique value, value already in set
                 list = (size() == 0) ? list : list.insertLast(randomAllocatedKey());
                 value = randomUnallocatedKey();
                 list = list.insert(value).insert(value);
                 break;
-            case 6: //adds 2 - two unique values
-            case 7: //adds 2 - two unique values
+            case 6: // adds 2 - two unique values
+            case 7: // adds 2 - two unique values
                 list = list.insertAll(randomUniqueUnallocatedKeysJList(2));
                 break;
             default:
@@ -129,37 +118,36 @@ public class RandomKeyManager
         return list;
     }
 
-    //on average, deletes 1 value from set
-    public IList<String> randomDeleteJList(int minSize)
-    {
+    // on average, deletes 1 value from set
+    public IList<String> randomDeleteJList(int minSize) {
         final int availableToDelete = Math.max(0, size() - minSize);
         final int commandMax = (availableToDelete == 0) ? 2 : ((availableToDelete == 1) ? 6 : 8);
         String value;
         IList<String> list = ILists.of();
         switch (random.nextInt(commandMax)) {
-            case 0: //deletes 0 - empty
+            case 0: // deletes 0 - empty
                 break;
-            case 1: //deletes 0 - value not in set
+            case 1: // deletes 0 - value not in set
                 list = list.insert(randomUnallocatedKey());
                 break;
-            case 2: //deletes 1 - value in set
+            case 2: // deletes 1 - value in set
                 list = list.insertLast(randomAllocatedKey());
                 break;
-            case 3: //deletes 1 - two copies of value in set
+            case 3: // deletes 1 - two copies of value in set
                 value = randomAllocatedKey();
                 list = list.insert(value).insert(value);
                 break;
-            case 4: //deletes 1 - value in set, value not in set
+            case 4: // deletes 1 - value in set, value not in set
                 list = list.insertLast(randomAllocatedKey());
                 list = list.insert(randomUnallocatedKey());
                 break;
-            case 5: //deletes 1 - two copies of value in set, value not in set
+            case 5: // deletes 1 - two copies of value in set, value not in set
                 value = randomAllocatedKey();
                 list = list.insert(value).insert(value);
                 list = list.insert(randomUnallocatedKey());
                 break;
-            case 6: //deletes 2 - two different values in set
-            case 7: //deletes 2 - two different values in set
+            case 6: // deletes 2 - two different values in set
+            case 7: // deletes 2 - two different values in set
                 list = list.insertAll(randomUniqueAllocatedKeysJList(2));
                 break;
             default:
@@ -168,8 +156,7 @@ public class RandomKeyManager
         return list;
     }
 
-    public IList<String> randomContainsJList(int maxSize)
-    {
+    public IList<String> randomContainsJList(int maxSize) {
         if (size() == 0 || random.nextBoolean()) {
             return randomUnallocatedKeysJList(random.nextInt(maxSize));
         } else {
@@ -177,8 +164,7 @@ public class RandomKeyManager
         }
     }
 
-    public String randomAllocatedKey()
-    {
+    public String randomAllocatedKey() {
         if (size() == 0) {
             throw new IllegalArgumentException("no allocated values available");
         }
@@ -191,8 +177,7 @@ public class RandomKeyManager
         }
     }
 
-    public String randomUnallocatedKey()
-    {
+    public String randomUnallocatedKey() {
         while (true) {
             final String text = makeValue(allPossibleKeys, random);
             if (unallocated(text)) {
@@ -201,8 +186,7 @@ public class RandomKeyManager
         }
     }
 
-    public IList<String> randomAllocatedKeysJList(int howMany)
-    {
+    public IList<String> randomAllocatedKeysJList(int howMany) {
         if (size() == 0) {
             throw new IllegalArgumentException("no allocated values available");
         }
@@ -218,8 +202,7 @@ public class RandomKeyManager
         return answer;
     }
 
-    public IList<String> randomUniqueAllocatedKeysJList(int howMany)
-    {
+    public IList<String> randomUniqueAllocatedKeysJList(int howMany) {
         if (size() < howMany) {
             throw new IllegalArgumentException("no allocated values available");
         }
@@ -237,13 +220,11 @@ public class RandomKeyManager
         return answer;
     }
 
-    public List<String> randomAllocatedKeysList(int howMany)
-    {
+    public List<String> randomAllocatedKeysList(int howMany) {
         return randomAllocatedKeysJList(howMany).getList();
     }
 
-    public IList<String> randomUnallocatedKeysJList(int howMany)
-    {
+    public IList<String> randomUnallocatedKeysJList(int howMany) {
         compact();
         IList<String> answer = ILists.of();
         while (answer.size() < howMany) {
@@ -252,8 +233,7 @@ public class RandomKeyManager
         return answer;
     }
 
-    public IList<String> randomUniqueUnallocatedKeysJList(int howMany)
-    {
+    public IList<String> randomUniqueUnallocatedKeysJList(int howMany) {
         compact();
         Set<String> values = new HashSet<String>();
         IList<String> answer = ILists.of();
@@ -267,15 +247,11 @@ public class RandomKeyManager
         return answer;
     }
 
-    public List<String> randomUnallocatedKeysList(int howMany)
-    {
+    public List<String> randomUnallocatedKeysList(int howMany) {
         return randomUnallocatedKeysJList(howMany).getList();
     }
 
-    public IList<String> randomIntersectionKeysJList(int howManyUnique,
-                                                     int howManyDups,
-                                                     int howManyUnallocated)
-    {
+    public IList<String> randomIntersectionKeysJList(int howManyUnique, int howManyDups, int howManyUnallocated) {
         if (size() < howManyUnique) {
             throw new IllegalArgumentException("not enough allocated values available");
         }
@@ -313,21 +289,16 @@ public class RandomKeyManager
         return answer;
     }
 
-    public List<String> randomIntersectionKeysList(int howManyUnique,
-                                                   int howManyDups,
-                                                   int howManyUnallocated)
-    {
-        return randomIntersectionKeysJList(howManyUnique, howManyDups, howManyUnallocated).getList();
+    public List<String> randomIntersectionKeysList(int howManyUnique, int howManyDups, int howManyUnallocated) {
+        return randomIntersectionKeysJList(howManyUnique, howManyDups, howManyUnallocated)
+                .getList();
     }
 
-    public Set<String> randomIntersectionKeysSet(int howManyUnique,
-                                                 int howManyUnallocated)
-    {
+    public Set<String> randomIntersectionKeysSet(int howManyUnique, int howManyUnallocated) {
         return new HashSet<String>(randomIntersectionKeysList(howManyUnique, 0, howManyUnallocated));
     }
 
-    public void allocate(String key)
-    {
+    public void allocate(String key) {
         final Integer index = allocatedIndexes.get(key);
         if (index == null) {
             allocatedIndexes.put(key, allocated.size());
@@ -337,32 +308,28 @@ public class RandomKeyManager
         }
     }
 
-    public void allocate(Iterable<String> keys)
-    {
+    public void allocate(Iterable<String> keys) {
         compact();
         for (String key : keys) {
             allocate(key);
         }
     }
 
-    public void unallocate(String key)
-    {
+    public void unallocate(String key) {
         final Integer index = allocatedIndexes.remove(key);
         if (index != null) {
             allocated.get(index).present = false;
         }
     }
 
-    public void unallocate(Iterable<String> keys)
-    {
+    public void unallocate(Iterable<String> keys) {
         for (String key : keys) {
             unallocate(key);
         }
         compact();
     }
 
-    public boolean allocated(String key)
-    {
+    public boolean allocated(String key) {
         final Integer index = allocatedIndexes.get(key);
         if (index != null) {
             assert allocated.get(index).present;
@@ -370,8 +337,7 @@ public class RandomKeyManager
         return index != null;
     }
 
-    public boolean unallocated(String key)
-    {
+    public boolean unallocated(String key) {
         final Integer index = allocatedIndexes.get(key);
         if (index != null) {
             assert allocated.get(index).present;
@@ -379,8 +345,7 @@ public class RandomKeyManager
         return index == null;
     }
 
-    public void retainAll(Iterable<String> keys)
-    {
+    public void retainAll(Iterable<String> keys) {
         Set<String> keysToRemove = new HashSet<String>(allocatedIndexes.keySet());
         for (String key : keys) {
             keysToRemove.remove(key);
@@ -390,8 +355,7 @@ public class RandomKeyManager
         }
     }
 
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         int totalPresent = 0;
         for (int index = 0; index < allocated.size(); ++index) {
             KeyInfo keyInfo = allocated.get(index);
@@ -400,9 +364,11 @@ public class RandomKeyManager
             } else if (keyInfo.present) {
                 Integer mapIndex = allocatedIndexes.get(keyInfo.text);
                 if (mapIndex == null) {
-                    throw new RuntimeException(String.format("no mapIndex found for key %s at index %d", keyInfo.text, index));
+                    throw new RuntimeException(
+                            String.format("no mapIndex found for key %s at index %d", keyInfo.text, index));
                 } else if (mapIndex != index) {
-                    throw new RuntimeException(String.format("wrong mapIndex found for key %s at index %d found %d", keyInfo.text, index, mapIndex));
+                    throw new RuntimeException(String.format(
+                            "wrong mapIndex found for key %s at index %d found %d", keyInfo.text, index, mapIndex));
                 }
                 totalPresent += 1;
             }
@@ -415,29 +381,29 @@ public class RandomKeyManager
             } else if (mapIndex < 0 || mapIndex >= allocated.size()) {
                 throw new RuntimeException(String.format("map has invalid index %d for %s", mapIndex, text));
             } else if (!text.equals(allocated.get(mapIndex).text)) {
-                throw new RuntimeException(String.format("map has text mismatch for %s found %s at index %d", text, allocated.get(mapIndex).text, mapIndex));
+                throw new RuntimeException(String.format(
+                        "map has text mismatch for %s found %s at index %d",
+                        text, allocated.get(mapIndex).text, mapIndex));
             } else if (!allocated.get(mapIndex).present) {
                 throw new RuntimeException(String.format("map links to !present at index %d for %s", mapIndex, text));
             }
         }
         if (totalPresent != allocatedIndexes.size()) {
-            throw new RuntimeException(String.format("map size has %d keys expected %d", allocatedIndexes.size(), totalPresent));
+            throw new RuntimeException(
+                    String.format("map size has %d keys expected %d", allocatedIndexes.size(), totalPresent));
         }
     }
 
-    public void clear()
-    {
+    public void clear() {
         allocated.clear();
         allocatedIndexes.clear();
     }
 
-    public int size()
-    {
+    public int size() {
         return allocatedIndexes.size();
     }
 
-    public IList<String> allAllocatedJList()
-    {
+    public IList<String> allAllocatedJList() {
         IList<String> answer = ILists.of();
         for (KeyInfo key : allocated) {
             if (key.present) {
@@ -447,8 +413,7 @@ public class RandomKeyManager
         return answer;
     }
 
-    void compact()
-    {
+    void compact() {
         if (allocatedIndexes.size() < allocated.size() / 2) {
             allocatedIndexes.clear();
             int index = 0;
@@ -464,13 +429,11 @@ public class RandomKeyManager
         }
     }
 
-    private static class KeyInfo
-    {
+    private static class KeyInfo {
         private final String text;
         private boolean present;
 
-        public KeyInfo(String text)
-        {
+        public KeyInfo(String text) {
             this.text = text;
             this.present = true;
         }

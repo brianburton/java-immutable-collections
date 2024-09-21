@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,31 +33,24 @@
 
 package org.javimmutable.collections.util;
 
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapBuilder;
-import org.javimmutable.collections.IMaps;
-import org.javimmutable.collections.Temp;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
+import org.javimmutable.collections.IMaps;
+import org.javimmutable.collections.Temp;
 
 /**
- * More realistic map timing comparisons.  Builds the map and then
- * accesses it rather than performing a lot of mutations.
+ * More realistic map timing comparisons. Builds the map and then accesses it rather than performing a lot of mutations.
  */
-public class MapAccessTimingComparison
-{
-    private MapAccessTimingComparison()
-    {
-    }
+public class MapAccessTimingComparison {
+    private MapAccessTimingComparison() {}
 
-    public static void main(String[] argv)
-        throws Exception
-    {
+    public static void main(String[] argv) throws Exception {
         if (argv.length != 2) {
             System.err.printf("usage: %s seed loops", MapAccessTimingComparison.class.getSimpleName());
             System.exit(1);
@@ -79,23 +70,83 @@ public class MapAccessTimingComparison
         final int maxValue = 10 * loops;
         final int maxKey = 100000000;
         final int maxCommand = 10;
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        runLoop(seed, loops, maxValue, maxKey, maxCommand, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
+        runLoop(
+                seed,
+                loops,
+                maxValue,
+                maxKey,
+                maxCommand,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
         System.out.println();
 
         System.out.println("real runs");
         for (int i = 0; i < 25; ++i) {
-            runLoop(seed + i, loops, maxValue, maxKey, maxCommand, javaHashTimes, javaTreeTimes, hashTimes, treeTimes, arrayTimes, inOrderTimes);
+            runLoop(
+                    seed + i,
+                    loops,
+                    maxValue,
+                    maxKey,
+                    maxCommand,
+                    javaHashTimes,
+                    javaTreeTimes,
+                    hashTimes,
+                    treeTimes,
+                    arrayTimes,
+                    inOrderTimes);
             System.out.println();
         }
-        System.out.printf("jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n",
-                          avg(javaHashTimes), avg(javaTreeTimes), avg(treeTimes), avg(hashTimes), avg(arrayTimes), avg(inOrderTimes));
+        System.out.printf(
+                "jhash avg: %.1f  jtree avg: %.1f  tree avg: %.1f  hash avg: %.1f  array avg: %.1f  order avg: %.1f%n",
+                avg(javaHashTimes),
+                avg(javaTreeTimes),
+                avg(treeTimes),
+                avg(hashTimes),
+                avg(arrayTimes),
+                avg(inOrderTimes));
     }
 
-    private static double avg(List<Integer> times)
-    {
+    private static double avg(List<Integer> times) {
         times.sort(Comparator.naturalOrder());
         int tenPercent = (times.size() + 9) / 10;
         int limit = times.size() - tenPercent;
@@ -103,23 +154,23 @@ public class MapAccessTimingComparison
         for (int i = 0; i < limit; ++i) {
             total += times.get(i);
         }
-        return total / (double)limit;
+        return total / (double) limit;
     }
 
     @SuppressWarnings("UnusedAssignment")
-    private static void runLoop(int seed,
-                                int loops,
-                                int maxValue,
-                                int maxKey,
-                                int maxCommand,
-                                List<Integer> javaHashElapsed,
-                                List<Integer> javaTreeElapsed,
-                                List<Integer> hashElapsed,
-                                List<Integer> treeElapsed,
-                                List<Integer> arrayElapsed,
-                                List<Integer> inOrderElapsed)
-        throws Exception
-    {
+    private static void runLoop(
+            int seed,
+            int loops,
+            int maxValue,
+            int maxKey,
+            int maxCommand,
+            List<Integer> javaHashElapsed,
+            List<Integer> javaTreeElapsed,
+            List<Integer> hashElapsed,
+            List<Integer> treeElapsed,
+            List<Integer> arrayElapsed,
+            List<Integer> inOrderElapsed)
+            throws Exception {
         javaMapLoop(seed, loops, maxValue, maxKey, "jhash", javaHashElapsed, java.util.HashMap::new);
         javaMapLoop(seed, loops, maxValue, maxKey, "jtree", javaTreeElapsed, java.util.TreeMap::new);
         iMapLoop(seed, loops, maxValue, maxKey, "hash", hashElapsed, IMaps::hashedBuilder);
@@ -127,15 +178,15 @@ public class MapAccessTimingComparison
         iMapLoop(seed, loops, maxValue, maxKey, "order", inOrderElapsed, IMaps::orderedBuilder);
     }
 
-    private static void javaMapLoop(int seed,
-                                    int loops,
-                                    int maxValue,
-                                    int maxKey,
-                                    String label,
-                                    List<Integer> elapsed,
-                                    Supplier<Map<Integer, Integer>> factory)
-        throws Exception
-    {
+    private static void javaMapLoop(
+            int seed,
+            int loops,
+            int maxValue,
+            int maxKey,
+            String label,
+            List<Integer> elapsed,
+            Supplier<Map<Integer, Integer>> factory)
+            throws Exception {
         Random random = new Random(seed);
         long startMillis = System.currentTimeMillis();
 
@@ -157,25 +208,25 @@ public class MapAccessTimingComparison
         }
 
         // stream phase
-//        map.entrySet().parallelStream().forEach(e -> gets.a += 1);
+        //        map.entrySet().parallelStream().forEach(e -> gets.a += 1);
 
         long endMillis = System.currentTimeMillis();
-        int elapsedMillis = (int)(endMillis - startMillis);
+        int elapsedMillis = (int) (endMillis - startMillis);
         elapsed.add(elapsedMillis);
         System.out.printf("%s adds %d gets %d size %d elapsed %d%n", label, loops, gets.a, map.size(), elapsedMillis);
         System.gc();
         Thread.sleep(500);
     }
 
-    private static void iMapLoop(int seed,
-                                 int loops,
-                                 int maxValue,
-                                 int maxKey,
-                                 String label,
-                                 List<Integer> elapsed,
-                                 Supplier<IMapBuilder<Integer, Integer>> factory)
-        throws Exception
-    {
+    private static void iMapLoop(
+            int seed,
+            int loops,
+            int maxValue,
+            int maxKey,
+            String label,
+            List<Integer> elapsed,
+            Supplier<IMapBuilder<Integer, Integer>> factory)
+            throws Exception {
         Random random = new Random(seed);
         long startMillis = System.currentTimeMillis();
 
@@ -198,10 +249,10 @@ public class MapAccessTimingComparison
         }
 
         // stream phase
-//        map.parallelStream().forEach(e -> gets.a += 1);
+        //        map.parallelStream().forEach(e -> gets.a += 1);
 
         long endMillis = System.currentTimeMillis();
-        int elapsedMillis = (int)(endMillis - startMillis);
+        int elapsedMillis = (int) (endMillis - startMillis);
         elapsed.add(elapsedMillis);
         System.out.printf("%s adds %d gets %d size %d elapsed %d%n", label, loops, gets.a, map.size(), elapsedMillis);
         System.gc();

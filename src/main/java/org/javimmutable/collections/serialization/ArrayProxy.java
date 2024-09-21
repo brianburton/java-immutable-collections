@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,41 +33,32 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IArrayBuilder;
-import org.javimmutable.collections.array.TrieArray;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IArrayBuilder;
+import org.javimmutable.collections.array.TrieArray;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ArrayProxy
-    implements Externalizable
-{
+public class ArrayProxy implements Externalizable {
     private static final long serialVersionUID = -121805;
     private static final int LIST_VERSION = 1001;
 
     private IArray<Object> list;
 
-    public ArrayProxy()
-    {
+    public ArrayProxy() {
         this.list = TrieArray.of();
     }
 
-    public ArrayProxy(IArray list)
-    {
+    public ArrayProxy(IArray list) {
         this.list = list;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(LIST_VERSION);
         out.writeInt(list.size());
         list.forEachThrows(entry -> {
@@ -79,9 +68,7 @@ public class ArrayProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != LIST_VERSION) {
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
@@ -96,8 +83,7 @@ public class ArrayProxy
         list = builder.build();
     }
 
-    private Object readResolve()
-    {
+    private Object readResolve() {
         return list;
     }
 }

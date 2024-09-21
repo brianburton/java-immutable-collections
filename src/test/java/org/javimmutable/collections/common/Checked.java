@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,40 +36,33 @@ package org.javimmutable.collections.common;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class Checked
-{
+public class Checked {
     final int hashCode;
     final int value;
 
-    public Checked(int hashCode,
-                   int value)
-    {
+    public Checked(int hashCode, int value) {
         this.hashCode = hashCode;
         this.value = value;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Checked checked = (Checked)o;
-        return hashCode == checked.hashCode &&
-               value == checked.value;
+        Checked checked = (Checked) o;
+        return hashCode == checked.hashCode && value == checked.value;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return hashCode;
     }
 
-    public int value()
-    {
+    public int value() {
         return value;
     }
 }

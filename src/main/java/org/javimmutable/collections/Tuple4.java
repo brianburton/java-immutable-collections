@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,16 +33,12 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 
-/**
- * Immutable container for 4 values.
- */
+/** Immutable container for 4 values. */
 @Immutable
-public class Tuple4<A, B, C, D>
-    implements Serializable
-{
+public class Tuple4<A, B, C, D> implements Serializable {
     private static final long serialVersionUID = -121805;
 
     private final A first;
@@ -52,49 +46,36 @@ public class Tuple4<A, B, C, D>
     private final C third;
     private final D fourth;
 
-    public Tuple4(A first,
-                  B second,
-                  C third,
-                  D fourth)
-    {
+    public Tuple4(A first, B second, C third, D fourth) {
         this.first = first;
         this.second = second;
         this.third = third;
         this.fourth = fourth;
     }
 
-    public static <A, B, C, D> Tuple4<A, B, C, D> of(A first,
-                                                     B second,
-                                                     C third,
-                                                     D fourth)
-    {
+    public static <A, B, C, D> Tuple4<A, B, C, D> of(A first, B second, C third, D fourth) {
         return new Tuple4<>(first, second, third, fourth);
     }
 
-    public A getFirst()
-    {
+    public A getFirst() {
         return first;
     }
 
-    public B getSecond()
-    {
+    public B getSecond() {
         return second;
     }
 
-    public C getThird()
-    {
+    public C getThird() {
         return third;
     }
 
-    public D getFourth()
-    {
+    public D getFourth() {
         return fourth;
     }
 
     @SuppressWarnings("RedundantIfStatement")
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -102,7 +83,7 @@ public class Tuple4<A, B, C, D>
             return false;
         }
 
-        Tuple4 tuple4 = (Tuple4)o;
+        Tuple4 tuple4 = (Tuple4) o;
 
         if (first != null ? !first.equals(tuple4.first) : tuple4.first != null) {
             return false;
@@ -121,8 +102,7 @@ public class Tuple4<A, B, C, D>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = first != null ? first.hashCode() : 0;
         result = 31 * result + (second != null ? second.hashCode() : 0);
         result = 31 * result + (third != null ? third.hashCode() : 0);

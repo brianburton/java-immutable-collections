@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,32 +33,26 @@
 
 package org.javimmutable.collections.common;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Array;
+import javax.annotation.Nonnull;
 
-public final class ArrayHelper
-{
-    public interface Allocator<T>
-    {
+public final class ArrayHelper {
+    public interface Allocator<T> {
         @Nonnull
         T[] allocate(int size);
     }
 
     /**
-     * Allocate a new array containing the subarray of orig starting at offset and ending before limit.
-     * To copy the first value offset would be 0, limit would be 1.
+     * Allocate a new array containing the subarray of orig starting at offset and ending before limit. To copy the
+     * first value offset would be 0, limit would be 1.
      *
      * @param allocator used to allocate the resulting array
-     * @param orig      array from which to copy
-     * @param offset    0 based offset into array
-     * @param limit     0 based offset of first value NOT copied (length of copy is limit - offset)
+     * @param orig array from which to copy
+     * @param offset 0 based offset into array
+     * @param limit 0 based offset of first value NOT copied (length of copy is limit - offset)
      */
     @Nonnull
-    public static <T> T[] subArray(@Nonnull Allocator<T> allocator,
-                                   @Nonnull T[] orig,
-                                   int offset,
-                                   int limit)
-    {
+    public static <T> T[] subArray(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, int offset, int limit) {
         final int length = limit - offset;
         T[] answer = allocator.allocate(length);
         System.arraycopy(orig, offset, answer, 0, length);
@@ -72,18 +64,14 @@ public final class ArrayHelper
      * Functionally equivalent to calling append(a,b) and then calling subArray() with the result
      *
      * @param allocator used to allocate the resulting array
-     * @param a         first input array
-     * @param b         second input array
-     * @param offset    0 based offset into logical concatenated array
-     * @param limit     0 based offset of first value NOT copied (length of copy is limit - offset)
+     * @param a first input array
+     * @param b second input array
+     * @param offset 0 based offset into logical concatenated array
+     * @param limit 0 based offset of first value NOT copied (length of copy is limit - offset)
      */
     @Nonnull
-    public static <T> T[] subArray(@Nonnull Allocator<T> allocator,
-                                   @Nonnull T[] a,
-                                   @Nonnull T[] b,
-                                   int offset,
-                                   int limit)
-    {
+    public static <T> T[] subArray(
+            @Nonnull Allocator<T> allocator, @Nonnull T[] a, @Nonnull T[] b, int offset, int limit) {
         final int length = limit - offset;
         final T[] answer = allocator.allocate(length);
         if (offset > a.length) {
@@ -101,33 +89,26 @@ public final class ArrayHelper
     /**
      * Creates a copy of orig with the value at index replaced by value.
      *
-     * @param orig  array to copy
+     * @param orig array to copy
      * @param index index of value to change
      * @param value value to assign at index
      */
     @Nonnull
-    public static <T> T[] assign(@Nonnull T[] orig,
-                                 int index,
-                                 T value)
-    {
+    public static <T> T[] assign(@Nonnull T[] orig, int index, T value) {
         final T[] answer = orig.clone();
         answer[index] = value;
         return answer;
     }
 
     /**
-     * Creates a copy of orig with one extra value added at the end.
-     * Length of result is orig.length + 1.
+     * Creates a copy of orig with one extra value added at the end. Length of result is orig.length + 1.
      *
      * @param allocator used to allocate the resulting array
-     * @param orig      array to copy
-     * @param value     value to assign at end of new array
+     * @param orig array to copy
+     * @param value value to assign at end of new array
      */
     @Nonnull
-    public static <T> T[] append(@Nonnull Allocator<T> allocator,
-                                 @Nonnull T[] orig,
-                                 T value)
-    {
+    public static <T> T[] append(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, T value) {
         final T[] answer = allocator.allocate(orig.length + 1);
         System.arraycopy(orig, 0, answer, 0, orig.length);
         answer[orig.length] = value;
@@ -135,18 +116,14 @@ public final class ArrayHelper
     }
 
     /**
-     * Creates a copy of orig with one extra value added at the beginning.
-     * Length of result is orig.length + 1.
+     * Creates a copy of orig with one extra value added at the beginning. Length of result is orig.length + 1.
      *
      * @param allocator used to allocate the resulting array
-     * @param orig      array to copy
-     * @param value     value to assign at beginning of new array
+     * @param orig array to copy
+     * @param value value to assign at beginning of new array
      */
     @Nonnull
-    public static <T> T[] prepend(@Nonnull Allocator<T> allocator,
-                                  @Nonnull T[] orig,
-                                  T value)
-    {
+    public static <T> T[] prepend(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, T value) {
         final T[] answer = allocator.allocate(orig.length + 1);
         System.arraycopy(orig, 0, answer, 1, orig.length);
         answer[0] = value;
@@ -154,20 +131,16 @@ public final class ArrayHelper
     }
 
     /**
-     * Creates a copy of orig with one extra value inserted at index.
-     * All values from index->length are shifted to the right by 1.
+     * Creates a copy of orig with one extra value inserted at index. All values from index->length are shifted to the
+     * right by 1.
      *
      * @param allocator used to allocate the resulting array
-     * @param orig      array to copy
-     * @param index     index where new value should be inserted
-     * @param value     value to assign at end of new array
+     * @param orig array to copy
+     * @param index index where new value should be inserted
+     * @param value value to assign at end of new array
      */
     @Nonnull
-    public static <T> T[] insert(@Nonnull Allocator<T> allocator,
-                                 @Nonnull T[] orig,
-                                 int index,
-                                 T value)
-    {
+    public static <T> T[] insert(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, int index, T value) {
         if (index == orig.length) {
             return append(allocator, orig, value);
         } else {
@@ -180,18 +153,15 @@ public final class ArrayHelper
     }
 
     /**
-     * Creates a copy of orig with one value deleted at index.
-     * All values from index->length are shifted to the left by 1.
+     * Creates a copy of orig with one value deleted at index. All values from index->length are shifted to the left by
+     * 1.
      *
      * @param allocator used to allocate the resulting array
-     * @param orig      array to copy
-     * @param index     index where new value should be inserted
+     * @param orig array to copy
+     * @param index index where new value should be inserted
      */
     @Nonnull
-    public static <T> T[] delete(@Nonnull Allocator<T> allocator,
-                                 @Nonnull T[] orig,
-                                 int index)
-    {
+    public static <T> T[] delete(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, int index) {
         final T[] answer = allocator.allocate(orig.length - 1);
         System.arraycopy(orig, 0, answer, 0, index);
         System.arraycopy(orig, index + 1, answer, index, orig.length - index - 1);
@@ -202,14 +172,11 @@ public final class ArrayHelper
      * Creates a new array containing all the values of a followed by all the values of b.
      *
      * @param allocator used to allocate the resulting array
-     * @param a         first input array
-     * @param b         second input array
+     * @param a first input array
+     * @param b second input array
      */
     @Nonnull
-    public static <T> T[] concat(@Nonnull Allocator<T> allocator,
-                                 @Nonnull T[] a,
-                                 @Nonnull T[] b)
-    {
+    public static <T> T[] concat(@Nonnull Allocator<T> allocator, @Nonnull T[] a, @Nonnull T[] b) {
         final T[] answer = allocator.allocate(a.length + b.length);
         System.arraycopy(a, 0, answer, 0, a.length);
         System.arraycopy(b, 0, answer, a.length, b.length);
@@ -217,16 +184,12 @@ public final class ArrayHelper
     }
 
     /**
-     * Replace the last value in orig (which cannot be empty) with assignValue
-     * and also append appendValue to the end.  Always returns a new array
-     * of length orig.length + 1.
+     * Replace the last value in orig (which cannot be empty) with assignValue and also append appendValue to the end.
+     * Always returns a new array of length orig.length + 1.
      */
     @Nonnull
-    public static <T> T[] assignAppend(@Nonnull Allocator<T> allocator,
-                                       @Nonnull T[] orig,
-                                       T assignValue,
-                                       T appendValue)
-    {
+    public static <T> T[] assignAppend(
+            @Nonnull Allocator<T> allocator, @Nonnull T[] orig, T assignValue, T appendValue) {
         final T[] answer = allocator.allocate(orig.length + 1);
         System.arraycopy(orig, 0, answer, 0, orig.length - 1);
         answer[orig.length - 1] = assignValue;
@@ -235,16 +198,11 @@ public final class ArrayHelper
     }
 
     /**
-     * Replaces the node at index with first and the node at index + 1 with second.
-     * Always returns a new array.
-     * Array must have size >= index + 2.
+     * Replaces the node at index with first and the node at index + 1 with second. Always returns a new array. Array
+     * must have size >= index + 2.
      */
     @Nonnull
-    public static <T> T[] assignTwo(@Nonnull T[] orig,
-                                    int index,
-                                    T first,
-                                    T second)
-    {
+    public static <T> T[] assignTwo(@Nonnull T[] orig, int index, T first, T second) {
         final T[] answer = orig.clone();
         answer[index] = first;
         answer[index + 1] = second;
@@ -252,17 +210,12 @@ public final class ArrayHelper
     }
 
     /**
-     * Replace the value at index with assignValue and insert insertValue immediately at index + 1.
-     * Always returns a new array.
-     * Array size must be at least 1.
+     * Replace the value at index with assignValue and insert insertValue immediately at index + 1. Always returns a new
+     * array. Array size must be at least 1.
      */
     @Nonnull
-    public static <T> T[] assignInsert(@Nonnull Allocator<T> allocator,
-                                       @Nonnull T[] orig,
-                                       int index,
-                                       T assignValue,
-                                       T insertValue)
-    {
+    public static <T> T[] assignInsert(
+            @Nonnull Allocator<T> allocator, @Nonnull T[] orig, int index, T assignValue, T insertValue) {
         final T[] answer = allocator.allocate(orig.length + 1);
         System.arraycopy(orig, 0, answer, 0, index);
         System.arraycopy(orig, index, answer, index + 1, orig.length - index);
@@ -272,16 +225,11 @@ public final class ArrayHelper
     }
 
     /**
-     * Deletes the node at index and sets the value of the resulting array at index
-     * to newNode.
-     * Always returns a new array.
+     * Deletes the node at index and sets the value of the resulting array at index to newNode. Always returns a new
+     * array.
      */
     @Nonnull
-    public static <T> T[] assignDelete(@Nonnull Allocator<T> allocator,
-                                       @Nonnull T[] orig,
-                                       int index,
-                                       T newNode)
-    {
+    public static <T> T[] assignDelete(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, int index, T newNode) {
         final T[] answer = allocator.allocate(orig.length - 1);
         System.arraycopy(orig, 0, answer, 0, index);
         System.arraycopy(orig, index + 1, answer, index, orig.length - index - 1);
@@ -289,30 +237,21 @@ public final class ArrayHelper
         return answer;
     }
 
-    /**
-     * Returns a copy of orig of length limit containing all values from [0,limit).
-     */
+    /** Returns a copy of orig of length limit containing all values from [0,limit). */
     @Nonnull
-    public static <T> T[] prefix(@Nonnull Allocator<T> allocator,
-                                 @Nonnull T[] orig,
-                                 int limit)
-    {
+    public static <T> T[] prefix(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, int limit) {
         final T[] answer = allocator.allocate(limit);
         System.arraycopy(orig, 0, answer, 0, limit);
         return answer;
     }
 
     /**
-     * Returns a copy of orig containing of length limit+1 containing all values from [0,limit)
-     * but with value inserted at index and values after that shifted to the right.
+     * Returns a copy of orig containing of length limit+1 containing all values from [0,limit) but with value inserted
+     * at index and values after that shifted to the right.
      */
     @Nonnull
-    public static <T> T[] prefixInsert(@Nonnull Allocator<T> allocator,
-                                       @Nonnull T[] orig,
-                                       int limit,
-                                       int index,
-                                       T value)
-    {
+    public static <T> T[] prefixInsert(
+            @Nonnull Allocator<T> allocator, @Nonnull T[] orig, int limit, int index, T value) {
         final T[] answer = allocator.allocate(limit + 1);
         System.arraycopy(orig, 0, answer, 0, index);
         answer[index] = value;
@@ -324,10 +263,7 @@ public final class ArrayHelper
      * Returns a copy of orig containing of length orig.length-offset containing all values from [offset,orig.length).
      */
     @Nonnull
-    public static <T> T[] suffix(@Nonnull Allocator<T> allocator,
-                                 @Nonnull T[] orig,
-                                 int offset)
-    {
+    public static <T> T[] suffix(@Nonnull Allocator<T> allocator, @Nonnull T[] orig, int offset) {
         try {
             final int length = orig.length - offset;
             final T[] answer = allocator.allocate(length);
@@ -340,16 +276,12 @@ public final class ArrayHelper
 
     /**
      * Returns a copy of orig containing of length orig.length-offset containing all values from [offset,orig.length)
-     * but with value inserted at index relative to orig (index-offset relative to resulting array) and all values
-     * past that point shifted to the right.
+     * but with value inserted at index relative to orig (index-offset relative to resulting array) and all values past
+     * that point shifted to the right.
      */
     @Nonnull
-    public static <T> T[] suffixInsert(@Nonnull Allocator<T> allocator,
-                                       @Nonnull T[] orig,
-                                       int offset,
-                                       int index,
-                                       T value)
-    {
+    public static <T> T[] suffixInsert(
+            @Nonnull Allocator<T> allocator, @Nonnull T[] orig, int offset, int index, T value) {
         final int length = orig.length - offset;
         final int answerIndex = index - offset;
         final T[] answer = allocator.allocate(length + 1);
@@ -360,9 +292,7 @@ public final class ArrayHelper
     }
 
     @Nonnull
-    public static <T> T[] reverse(@Nonnull Allocator<T> allocator,
-                                  @Nonnull T[] orig)
-    {
+    public static <T> T[] reverse(@Nonnull Allocator<T> allocator, @Nonnull T[] orig) {
         final int length = orig.length;
         if (length == 0) {
             return orig;
@@ -375,48 +305,37 @@ public final class ArrayHelper
         }
     }
 
-    /**
-     * Creates an Allocator for arrays of the given class.
-     */
+    /** Creates an Allocator for arrays of the given class. */
     @Nonnull
-    public static <T> Allocator<T> allocator(final Class<T> klass)
-    {
-        return new Allocator<T>()
-        {
+    public static <T> Allocator<T> allocator(final Class<T> klass) {
+        return new Allocator<T>() {
             @SuppressWarnings("unchecked")
             @Nonnull
             @Override
-            public T[] allocate(int size)
-            {
-                return (T[])(Array.newInstance(klass, size));
+            public T[] allocate(int size) {
+                return (T[]) (Array.newInstance(klass, size));
             }
         };
     }
 
-    public static <T> void checkBounds(T[] values,
-                                       int index)
-    {
+    public static <T> void checkBounds(T[] values, int index) {
         if (index < 0 || index >= values.length) {
             throw new ArrayIndexOutOfBoundsException(index);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T[] allocate(int size)
-    {
-        return (T[])new Object[size];
+    public static <T> T[] allocate(int size) {
+        return (T[]) new Object[size];
     }
 
-    public static <T> T[] newArray(T a)
-    {
+    public static <T> T[] newArray(T a) {
         final T[] answer = allocate(1);
         answer[0] = a;
         return answer;
     }
 
-    public static <T> T[] newArray(T a,
-                                   T b)
-    {
+    public static <T> T[] newArray(T a, T b) {
         final T[] answer = allocate(2);
         answer[0] = a;
         answer[1] = b;

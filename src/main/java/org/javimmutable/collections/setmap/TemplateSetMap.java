@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,73 +33,56 @@
 
 package org.javimmutable.collections.setmap;
 
+import java.io.Serializable;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.serialization.TemplateSetMapProxy;
 
-import javax.annotation.Nonnull;
-import java.io.Serializable;
-
 /**
- * {@link ISetMap} implementation that uses arbitrary Map and Set templates.
- * Allows mix and match of map and set types to support all possible combinations.
+ * {@link ISetMap} implementation that uses arbitrary Map and Set templates. Allows mix and match of map and set types
+ * to support all possible combinations.
  */
-public class TemplateSetMap<K, V>
-    extends AbstractSetMap<K, V>
-    implements Serializable
-{
+public class TemplateSetMap<K, V> extends AbstractSetMap<K, V> implements Serializable {
     private static final long serialVersionUID = -121805;
 
     private final IMap<K, ISet<V>> emptyMap;
 
-    private TemplateSetMap(IMap<K, ISet<V>> contents,
-                           IMap<K, ISet<V>> emptyMap,
-                           ISet<V> emptySet)
-    {
+    private TemplateSetMap(IMap<K, ISet<V>> contents, IMap<K, ISet<V>> emptyMap, ISet<V> emptySet) {
         super(contents, emptySet);
         this.emptyMap = emptyMap;
     }
 
-    private TemplateSetMap(IMap<K, ISet<V>> emptyMap,
-                           ISet<V> emptySet)
-    {
+    private TemplateSetMap(IMap<K, ISet<V>> emptyMap, ISet<V> emptySet) {
         this(emptyMap, emptyMap, emptySet);
     }
 
     /**
-     * Creates a new empty {@link ISetMap} object using the specified template map and set implementations.
-     * The provided templates are always emptied before use.
+     * Creates a new empty {@link ISetMap} object using the specified template map and set implementations. The provided
+     * templates are always emptied before use.
      */
-    public static <K, V> ISetMap<K, V> of(@Nonnull IMap<K, ISet<V>> emptyMap,
-                                          @Nonnull ISet<V> emptySet)
-    {
+    public static <K, V> ISetMap<K, V> of(@Nonnull IMap<K, ISet<V>> emptyMap, @Nonnull ISet<V> emptySet) {
         return new TemplateSetMap<>(emptyMap.deleteAll(), emptySet.deleteAll());
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
+    public void checkInvariants() {}
 
-    public IMap<K, ISet<V>> getEmptyMap()
-    {
+    public IMap<K, ISet<V>> getEmptyMap() {
         return emptyMap;
     }
 
-    public ISet<V> getEmptySet()
-    {
+    public ISet<V> getEmptySet() {
         return emptySet;
     }
 
     @Override
-    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
-    {
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map) {
         return new TemplateSetMap<>(map, emptyMap, emptySet);
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new TemplateSetMapProxy(this);
     }
 }

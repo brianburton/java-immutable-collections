@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,26 +33,19 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
-/**
- * Interface for immutable sets.
- */
+/** Interface for immutable sets. */
 @SuppressWarnings("ClassWithTooManyMethods")
 @Immutable
-public interface ISet<T>
-    extends ICollection<T>,
-            Mapped<T, T>,
-            InvariantCheckable,
-            Serializable
-{
+public interface ISet<T> extends ICollection<T>, Mapped<T, T>, InvariantCheckable, Serializable {
     /**
      * Adds the single value to the Set.
      *
@@ -118,7 +109,7 @@ public interface ISet<T>
     boolean containsAny(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Removes the value from the Set.  Has no effect if the value is not in the Set.
+     * Removes the value from the Set. Has no effect if the value is not in the Set.
      *
      * @return instance of set without the value
      */
@@ -126,7 +117,7 @@ public interface ISet<T>
     ISet<T> delete(T value);
 
     /**
-     * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
+     * Removes all values of other from the Set. Has no effect if none of the values are in the Set
      *
      * @return instance of set without the values
      */
@@ -134,7 +125,7 @@ public interface ISet<T>
     ISet<T> deleteAll(@Nonnull Iterable<? extends T> other);
 
     /**
-     * Removes all values of other from the Set.  Has no effect if none of the values are in the Set
+     * Removes all values of other from the Set. Has no effect if none of the values are in the Set
      *
      * @return instance of set without the values
      */
@@ -191,70 +182,59 @@ public interface ISet<T>
     @Nonnull
     ISet<T> intersection(@Nonnull Set<? extends T> other);
 
-    /**
-     * @return an equivalent collection with no values
-     */
+    /** @return an equivalent collection with no values */
     @Nonnull
     @Override
     ISet<T> deleteAll();
 
-    /**
-     * @return an unmodifiable Set implementation backed by this set.
-     */
+    /** @return an unmodifiable Set implementation backed by this set. */
     @Nonnull
     Set<T> getSet();
 
     /**
-     * Returns the specified key if its contained in the set.  Otherwise returns null.
+     * Returns the specified key if its contained in the set. Otherwise returns null.
      *
      * @param key identifies the value to retrieve
      * @return the key or null
      */
     @Nullable
     @Override
-    default T get(T key)
-    {
+    default T get(T key) {
         return contains(key) ? key : null;
     }
 
     /**
-     * Returns the specified key if its contained in the set.  Otherwise returns defaultValue.
+     * Returns the specified key if its contained in the set. Otherwise returns defaultValue.
      *
      * @param key identifies the value to retrieve
      * @return the key or defaultValue
      */
     @Override
-    default T getValueOr(T key,
-                         T defaultValue)
-    {
+    default T getValueOr(T key, T defaultValue) {
         return contains(key) ? key : defaultValue;
     }
 
     /**
-     * Returns a Holder containing the specified key if its contained in the set.
-     * Otherwise returns an empty Holder.
+     * Returns a Holder containing the specified key if its contained in the set. Otherwise returns an empty Holder.
      *
      * @param key identifies the value to retrieve
      * @return possibly empty Holder
      */
     @Nonnull
     @Override
-    default Maybe<T> find(T key)
-    {
+    default Maybe<T> find(T key) {
         return contains(key) ? Maybe.of(key) : Maybe.empty();
     }
 
     /**
-     * Returns a set of the same type as this containing only those elements for which
-     * predicate returns true.  Implementations are optimized assuming predicate will
-     * return false more often than true.
+     * Returns a set of the same type as this containing only those elements for which predicate returns true.
+     * Implementations are optimized assuming predicate will return false more often than true.
      *
      * @param predicate decides whether to include an element
      * @return set of same type as this containing only those elements for which predicate returns true
      */
     @Nonnull
-    default ISet<T> select(@Nonnull Predicate<T> predicate)
-    {
+    default ISet<T> select(@Nonnull Predicate<T> predicate) {
         ISet<T> answer = deleteAll();
         for (T value : this) {
             if (predicate.test(value)) {
@@ -265,16 +245,14 @@ public interface ISet<T>
     }
 
     /**
-     * Returns a set of the same type as this containing all those elements for which
-     * predicate returns false.  Implementations are optimized assuming predicate will
-     * return false more often than true.
+     * Returns a set of the same type as this containing all those elements for which predicate returns false.
+     * Implementations are optimized assuming predicate will return false more often than true.
      *
      * @param predicate decides whether to include an element
      * @return set of same type as this containing only those elements for which predicate returns false
      */
     @Nonnull
-    default ISet<T> reject(@Nonnull Predicate<T> predicate)
-    {
+    default ISet<T> reject(@Nonnull Predicate<T> predicate) {
         ISet<T> answer = this;
         for (T value : this) {
             if (predicate.test(value)) {
@@ -285,12 +263,12 @@ public interface ISet<T>
     }
 
     /**
-     * Returns a Collector that creates a set of the same type as this containing all
-     * of the collected values inserted over whatever starting values this already contained.
+     * Returns a Collector that creates a set of the same type as this containing all of the collected values inserted
+     * over whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, ISet<T>> setCollector()
-    {
-        return GenericCollector.unordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    default Collector<T, ?, ISet<T>> setCollector() {
+        return GenericCollector.unordered(
+                this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 }

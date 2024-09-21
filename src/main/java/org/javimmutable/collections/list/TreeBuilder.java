@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2018-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,30 +33,26 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.Indexed;
-
+import java.util.Arrays;
+import java.util.Iterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.Arrays;
-import java.util.Iterator;
+import org.javimmutable.collections.Indexed;
 
 @ThreadSafe
-class TreeBuilder<T>
-{
+class TreeBuilder<T> {
     private final T[] buffer;
     private int count;
     private int size;
     private BranchBuilder<T> parent;
 
     @SuppressWarnings("unchecked")
-    TreeBuilder()
-    {
-        buffer = (T[])new Object[MultiValueNode.MAX_SIZE];
+    TreeBuilder() {
+        buffer = (T[]) new Object[MultiValueNode.MAX_SIZE];
     }
 
-    synchronized void clear()
-    {
+    synchronized void clear() {
         Arrays.fill(buffer, null);
         count = 0;
         size = 0;
@@ -66,8 +60,7 @@ class TreeBuilder<T>
     }
 
     @Nonnull
-    synchronized AbstractNode<T> build()
-    {
+    synchronized AbstractNode<T> build() {
         AbstractNode<T> answer;
         switch (count) {
             case 0:
@@ -86,19 +79,16 @@ class TreeBuilder<T>
         return answer;
     }
 
-    synchronized int size()
-    {
+    synchronized int size() {
         return size;
     }
 
     /**
-     * Clears any existing data in this builder and then populates the builder with
-     * nodes from the provided tree.  At each level of the tree it creates a parent
-     * branch using the left node and proceeds further using the right node.
+     * Clears any existing data in this builder and then populates the builder with nodes from the provided tree. At
+     * each level of the tree it creates a parent branch using the left node and proceeds further using the right node.
      * At the leaf all values are copied into the buffer.
      */
-    synchronized void rebuild(@Nonnull AbstractNode<T> node)
-    {
+    synchronized void rebuild(@Nonnull AbstractNode<T> node) {
         count = 0;
         size = node.size();
         parent = null;
@@ -111,8 +101,7 @@ class TreeBuilder<T>
         }
     }
 
-    synchronized void add(T value)
-    {
+    synchronized void add(T value) {
         buffer[count++] = value;
         if (count == MultiValueNode.MAX_SIZE) {
             final AbstractNode<T> leaf = new MultiValueNode<>(buffer, count);
@@ -126,55 +115,44 @@ class TreeBuilder<T>
         size += 1;
     }
 
-    synchronized void add(@Nonnull Iterator<? extends T> source)
-    {
+    synchronized void add(@Nonnull Iterator<? extends T> source) {
         while (source.hasNext()) {
             add(source.next());
         }
     }
 
-    synchronized void add(@Nonnull Iterable<? extends T> source)
-    {
+    synchronized void add(@Nonnull Iterable<? extends T> source) {
         add(source.iterator());
     }
 
     @SafeVarargs
-    final synchronized <K extends T> void add(K... source)
-    {
+    final synchronized <K extends T> void add(K... source) {
         for (K k : source) {
             add(k);
         }
     }
 
-    synchronized void add(@Nonnull Indexed<? extends T> source,
-                          int offset,
-                          int limit)
-    {
+    synchronized void add(@Nonnull Indexed<? extends T> source, int offset, int limit) {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));
         }
     }
 
     @Nonnull
-    static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> source,
-                                               int offset,
-                                               int limit)
-    {
+    static <T> AbstractNode<T> nodeFromIndexed(@Nonnull Indexed<? extends T> source, int offset, int limit) {
         TreeBuilder<T> builder = new TreeBuilder<>();
         builder.add(source, offset, limit);
         return builder.build();
     }
 
     @Nonnull
-    static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values)
-    {
+    static <T> AbstractNode<T> nodeFromIterator(@Nonnull Iterator<? extends T> values) {
         TreeBuilder<T> builder = new TreeBuilder<>();
         builder.add(values);
         return builder.build();
     }
 
-    synchronized void checkInvariants()
-    {
+    synchronized void checkInvariants() {
         if (size != computeSize()) {
             throw new IllegalStateException("size mismatch");
         }
@@ -183,8 +161,7 @@ class TreeBuilder<T>
         }
     }
 
-    private int computeSize()
-    {
+    private int computeSize() {
         int answer = count;
         if (parent != null) {
             answer += parent.computeSize();
@@ -192,25 +169,20 @@ class TreeBuilder<T>
         return answer;
     }
 
-    private static class BranchBuilder<T>
-    {
+    private static class BranchBuilder<T> {
         private BranchBuilder<T> parent;
         private AbstractNode<T> buffer;
 
-        private BranchBuilder(@Nullable BranchBuilder<T> parent,
-                              @Nonnull AbstractNode<T> node)
-        {
+        private BranchBuilder(@Nullable BranchBuilder<T> parent, @Nonnull AbstractNode<T> node) {
             this.parent = parent;
             buffer = node;
         }
 
-        private BranchBuilder(@Nonnull AbstractNode<T> node)
-        {
+        private BranchBuilder(@Nonnull AbstractNode<T> node) {
             buffer = node;
         }
 
-        private void add(@Nonnull AbstractNode<T> node)
-        {
+        private void add(@Nonnull AbstractNode<T> node) {
             if (buffer == null) {
                 buffer = node;
             } else {
@@ -225,8 +197,7 @@ class TreeBuilder<T>
         }
 
         @Nonnull
-        private AbstractNode<T> build(@Nonnull AbstractNode<T> extra)
-        {
+        private AbstractNode<T> build(@Nonnull AbstractNode<T> extra) {
             AbstractNode<T> answer;
             if (buffer == null) {
                 answer = extra;
@@ -239,8 +210,7 @@ class TreeBuilder<T>
             return answer;
         }
 
-        private int computeSize()
-        {
+        private int computeSize() {
             int answer = 0;
             if (buffer != null) {
                 answer += buffer.size();
@@ -251,8 +221,7 @@ class TreeBuilder<T>
             return answer;
         }
 
-        private void checkInvariants()
-        {
+        private void checkInvariants() {
             if (buffer == null && parent == null) {
                 throw new IllegalStateException("buffer is null");
             }

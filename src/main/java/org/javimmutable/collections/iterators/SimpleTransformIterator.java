@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,38 +33,30 @@
 
 package org.javimmutable.collections.iterators;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 
-public class SimpleTransformIterator<S, T>
-    implements Iterator<T>
-{
+public class SimpleTransformIterator<S, T> implements Iterator<T> {
     private final Iterator<S> source;
     private final Function<S, T> transforminator;
 
-    public SimpleTransformIterator(@Nonnull Iterator<S> source,
-                                   @Nonnull Function<S, T> transforminator)
-    {
+    public SimpleTransformIterator(@Nonnull Iterator<S> source, @Nonnull Function<S, T> transforminator) {
         this.source = source;
         this.transforminator = transforminator;
     }
 
-    public static <S, T> Iterator<T> of(@Nonnull Iterator<S> source,
-                                        @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> Iterator<T> of(@Nonnull Iterator<S> source, @Nonnull Function<S, T> transforminator) {
         return new SimpleTransformIterator<>(source, transforminator);
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return source.hasNext();
     }
 
     @Override
-    public T next()
-    {
+    public T next() {
         return transforminator.apply(source.next());
     }
 }

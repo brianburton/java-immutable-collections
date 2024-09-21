@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,65 +33,52 @@
 
 package org.javimmutable.collections.indexed;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
+import static org.javimmutable.collections.Maybe.empty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
-import static org.javimmutable.collections.Maybe.empty;
-
-/**
- * Indexed implementation backed by a java array.
- */
+/** Indexed implementation backed by a java array. */
 @Immutable
-public class IndexedArray<T>
-    implements Indexed<T>
-{
+public class IndexedArray<T> implements Indexed<T> {
     private final T[] values;
 
     /**
-     * Produces an instance using a clone of the specified array to ensure that changes to the array
-     * will not influence the values returned by the instance's methods.  This is generally preferred
-     * to the unsafe() constructor.
+     * Produces an instance using a clone of the specified array to ensure that changes to the array will not influence
+     * the values returned by the instance's methods. This is generally preferred to the unsafe() constructor.
      */
-    public static <T> IndexedArray<T> copied(T[] values)
-    {
+    public static <T> IndexedArray<T> copied(T[] values) {
         return new IndexedArray<T>(values.clone());
     }
 
     /**
-     * Produces an instance using the provided array.  This makes the instance unsafe for sharing since
-     * changes to the array will cause changes to this instance's values.  However this can be useful
-     * when performance is important and the instance will not be shared or retained beyond a single
-     * method scope.
+     * Produces an instance using the provided array. This makes the instance unsafe for sharing since changes to the
+     * array will cause changes to this instance's values. However this can be useful when performance is important and
+     * the instance will not be shared or retained beyond a single method scope.
      */
-    public static <T> IndexedArray<T> retained(T[] values)
-    {
+    public static <T> IndexedArray<T> retained(T[] values) {
         return new IndexedArray<T>(values);
     }
 
-    private IndexedArray(T[] values)
-    {
+    private IndexedArray(T[] values) {
         this.values = values;
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         return values[index];
     }
 
     @Nonnull
     @Override
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         return index >= 0 && index < values.length ? Maybe.of(values[index]) : empty();
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return values.length;
     }
 }

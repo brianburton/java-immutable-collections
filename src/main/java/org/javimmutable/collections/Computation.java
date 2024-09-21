@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,24 +33,22 @@
 
 package org.javimmutable.collections;
 
+import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.concurrent.Callable;
 
 /**
- * A deferred computation.  Allows multiple processing steps to be queued into an immutable
- * object for later evaluation.  Nothing is done until the {@link #compute} method is called.
- * An exception at any step stops the computation at that point.
+ * A deferred computation. Allows multiple processing steps to be queued into an immutable object for later evaluation.
+ * Nothing is done until the {@link #compute} method is called. An exception at any step stops the computation at that
+ * point.
  */
 @Immutable
-public abstract class Computation<T>
-    implements Callable<T>
-{
+public abstract class Computation<T> implements Callable<T> {
     /**
      * Add a step to the computation that applies the function to the current value to produce a new value.
      *
      * @param func function to apply
-     * @param <U>  the type of the new value
+     * @param <U> the type of the new value
      * @return the new computation
      */
     @Nonnull
@@ -62,15 +58,15 @@ public abstract class Computation<T>
      * Add a step to the computation that applies the function to the current value to produce a new computation.
      *
      * @param func function to apply
-     * @param <U>  the type of the new value
+     * @param <U> the type of the new value
      * @return the new computation
      */
     @Nonnull
     public abstract <U> Computation<U> flatMap(@Nonnull Func1Throws<T, Computation<U>, ? super Exception> func);
 
     /**
-     * Add a step to the computation that executes the procedure on the current value without changing that value.
-     * If the procedure throws it will terminate the computation at that point.
+     * Add a step to the computation that executes the procedure on the current value without changing that value. If
+     * the procedure throws it will terminate the computation at that point.
      *
      * @param proc the procedure to apply
      * @return the new computation
@@ -79,14 +75,13 @@ public abstract class Computation<T>
     public abstract Computation<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc);
 
     /**
-     * Execute the computation and return a {@link Result} containing the final value or an exception
-     * that terminated the computation.
+     * Execute the computation and return a {@link Result} containing the final value or an exception that terminated
+     * the computation.
      *
      * @return the outcome as a {@link Result}
      */
     @Nonnull
-    public Result<T> compute()
-    {
+    public Result<T> compute() {
         return Result.attempt(this);
     }
 
@@ -97,23 +92,19 @@ public abstract class Computation<T>
      * @throws Exception if the computation terminates due to an exception
      */
     @Override
-    public abstract T call()
-        throws Exception;
+    public abstract T call() throws Exception;
 
-    private Computation()
-    {
-    }
+    private Computation() {}
 
     /**
      * Produce a {@link Computation} that simply returns the value.
      *
      * @param value the value to return
-     * @param <T>   the type of value
+     * @param <T> the type of value
      * @return the computation
      */
     @Nonnull
-    public static <T> Computation<T> success(T value)
-    {
+    public static <T> Computation<T> success(T value) {
         return new Mapped<>(() -> value);
     }
 
@@ -121,12 +112,11 @@ public abstract class Computation<T>
      * Produce a {@link Computation} that simply throws an exception.
      *
      * @param exception the exception to throw
-     * @param <T>       the type of value
+     * @param <T> the type of value
      * @return the computation
      */
     @Nonnull
-    public static <T> Computation<T> failure(Exception exception)
-    {
+    public static <T> Computation<T> failure(Exception exception) {
         return new Mapped<>(() -> {
             throw exception;
         });
@@ -136,43 +126,36 @@ public abstract class Computation<T>
      * Produce a {@link Computation} that evaluations the function and returns its result.
      *
      * @param func the function to evaluate
-     * @param <T>  the type of the result
+     * @param <T> the type of the result
      * @return the computation
      */
     @Nonnull
-    public static <T> Computation<T> of(@Nonnull Func0Throws<T, ? super Exception> func)
-    {
+    public static <T> Computation<T> of(@Nonnull Func0Throws<T, ? super Exception> func) {
         return new Mapped<>(func);
     }
 
-    private static class Mapped<T>
-        extends Computation<T>
-    {
+    private static class Mapped<T> extends Computation<T> {
         private final Func0Throws<T, ? extends Exception> func;
 
-        private Mapped(Func0Throws<T, ? extends Exception> func)
-        {
+        private Mapped(Func0Throws<T, ? extends Exception> func) {
             this.func = func;
         }
 
         @Nonnull
         @Override
-        public <U> Computation<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
-        {
+        public <U> Computation<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func) {
             return new Mapped<>(() -> func.apply(this.func.apply()));
         }
 
         @Nonnull
         @Override
-        public <U> Computation<U> flatMap(@Nonnull Func1Throws<T, Computation<U>, ? super Exception> func)
-        {
+        public <U> Computation<U> flatMap(@Nonnull Func1Throws<T, Computation<U>, ? super Exception> func) {
             return new FlatMapped<>(() -> func.apply(this.func.apply()));
         }
 
         @Nonnull
         @Override
-        public Computation<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
-        {
+        public Computation<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc) {
             return map(x -> {
                 proc.apply(x);
                 return x;
@@ -180,41 +163,33 @@ public abstract class Computation<T>
         }
 
         @Override
-        public T call()
-            throws Exception
-        {
+        public T call() throws Exception {
             return func.apply();
         }
     }
 
-    private static class FlatMapped<T>
-        extends Computation<T>
-    {
+    private static class FlatMapped<T> extends Computation<T> {
         private final Func0Throws<Computation<T>, ? extends Exception> func;
 
-        private FlatMapped(Func0Throws<Computation<T>, ? extends Exception> func)
-        {
+        private FlatMapped(Func0Throws<Computation<T>, ? extends Exception> func) {
             this.func = func;
         }
 
         @Nonnull
         @Override
-        public <U> Computation<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func)
-        {
+        public <U> Computation<U> map(@Nonnull Func1Throws<T, U, ? super Exception> func) {
             return new FlatMapped<>(() -> this.func.apply().map(func));
         }
 
         @Nonnull
         @Override
-        public <U> Computation<U> flatMap(@Nonnull Func1Throws<T, Computation<U>, ? super Exception> func)
-        {
+        public <U> Computation<U> flatMap(@Nonnull Func1Throws<T, Computation<U>, ? super Exception> func) {
             return new FlatMapped<>(() -> this.func.apply().flatMap(func));
         }
 
         @Nonnull
         @Override
-        public Computation<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc)
-        {
+        public Computation<T> apply(@Nonnull Proc1Throws<T, ? super Exception> proc) {
             return map(x -> {
                 proc.apply(x);
                 return x;
@@ -222,9 +197,7 @@ public abstract class Computation<T>
         }
 
         @Override
-        public T call()
-            throws Exception
-        {
+        public T call() throws Exception {
             return func.apply().call();
         }
     }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,31 +33,24 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Interface for containers that store items in list form with individual items available
- * for get() and assign() using their indexes.  Items inserted into the list are always
- * added at either the front or the end of the list and indexes of items are always in
- * the range 0 through size() - 1.
+ * Interface for containers that store items in list form with individual items available for get() and assign() using
+ * their indexes. Items inserted into the list are always added at either the front or the end of the list and indexes
+ * of items are always in the range 0 through size() - 1.
  */
 @Immutable
-public interface IDeque<T>
-    extends ICollection<T>,
-            Indexed<T>,
-            InvariantCheckable,
-            Serializable
-{
+public interface IDeque<T> extends ICollection<T>, Indexed<T>, InvariantCheckable, Serializable {
     /**
-     * Retrieves the value at the specified index (which must be within the bounds
-     * of the list).
+     * Retrieves the value at the specified index (which must be within the bounds of the list).
      *
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
@@ -67,38 +58,29 @@ public interface IDeque<T>
     T get(int index);
 
     /**
-     * Replaces the value at the specified index (which must be within current
-     * bounds of the list) with the new value.
+     * Replaces the value at the specified index (which must be within current bounds of the list) with the new value.
      *
      * @throws IndexOutOfBoundsException if index is out of bounds
      */
     @Nonnull
-    IDeque<T> assign(int index,
-                     @Nullable T value);
+    IDeque<T> assign(int index, @Nullable T value);
 
-    /**
-     * Adds a value to the end of the list.  May be invoked on an empty list.
-     */
+    /** Adds a value to the end of the list. May be invoked on an empty list. */
     @Nonnull
     @Override
     IDeque<T> insert(@Nullable T value);
 
-    /**
-     * Adds a value to the front of the list.  May be invoked on an empty list.
-     * Synonym for insert()
-     */
+    /** Adds a value to the front of the list. May be invoked on an empty list. Synonym for insert() */
     @Nonnull
     IDeque<T> insertFirst(@Nullable T value);
 
-    /**
-     * Adds a value to the end of the list.  May be invoked on an empty list.
-     * Synonym for insert().
-     */
+    /** Adds a value to the end of the list. May be invoked on an empty list. Synonym for insert(). */
     @Nonnull
     IDeque<T> insertLast(@Nullable T value);
 
     /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Adds the values to the end of the list in the same order they appear in the Iterable. May be invoked on an empty
+     * list.
      *
      * @return instance of list containing the collection
      */
@@ -107,7 +89,8 @@ public interface IDeque<T>
     IDeque<T> insertAll(@Nonnull Iterable<? extends T> values);
 
     /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Adds the values to the end of the list in the same order they appear in the Iterable. May be invoked on an empty
+     * list.
      *
      * @return instance of list containing the collection
      */
@@ -116,7 +99,8 @@ public interface IDeque<T>
     IDeque<T> insertAll(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Adds the values to the beginning of the list in the same order they appear in the Iterable. May be invoked on an
+     * empty list.
      *
      * @return instance of list containing the collection
      */
@@ -124,7 +108,8 @@ public interface IDeque<T>
     IDeque<T> insertAllFirst(@Nonnull Iterable<? extends T> values);
 
     /**
-     * Adds the values to the beginning of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
+     * Adds the values to the beginning of the list in the same order they appear in the Iterable. May be invoked on an
+     * empty list.
      *
      * @return instance of list containing the collection
      */
@@ -132,8 +117,8 @@ public interface IDeque<T>
     IDeque<T> insertAllFirst(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAll()
+     * Adds the values to the end of the list in the same order they appear in the Iterable. May be invoked on an empty
+     * list. Synonym for insertAll()
      *
      * @return instance of list containing the collection
      */
@@ -141,8 +126,8 @@ public interface IDeque<T>
     IDeque<T> insertAllLast(@Nonnull Iterable<? extends T> values);
 
     /**
-     * Adds the values to the end of the list in the same order they appear in the Iterable.  May be invoked on an empty list.
-     * Synonym for insertAll()
+     * Adds the values to the end of the list in the same order they appear in the Iterable. May be invoked on an empty
+     * list. Synonym for insertAll()
      *
      * @return instance of list containing the collection
      */
@@ -150,7 +135,7 @@ public interface IDeque<T>
     IDeque<T> insertAllLast(@Nonnull Iterator<? extends T> values);
 
     /**
-     * Removes the first value from the list and reduces size by 1.  size() must be greater than zero
+     * Removes the first value from the list and reduces size by 1. size() must be greater than zero
      *
      * @return new {@link IList} without last value
      * @throws IndexOutOfBoundsException if list is already empty
@@ -159,7 +144,7 @@ public interface IDeque<T>
     IDeque<T> deleteFirst();
 
     /**
-     * Removes the last value from the list and reduces size by 1.  size() must be greater than zero
+     * Removes the last value from the list and reduces size by 1. size() must be greater than zero
      *
      * @return new {@link IList} without last value
      * @throws IndexOutOfBoundsException if list is already empty
@@ -167,30 +152,25 @@ public interface IDeque<T>
     @Nonnull
     IDeque<T> deleteLast();
 
-    /**
-     * @return an equivalent collection with no values
-     */
+    /** @return an equivalent collection with no values */
     @Nonnull
     @Override
     IDeque<T> deleteAll();
 
-    /**
-     * Returns an unmodifiable List implementation backed by this list.
-     */
+    /** Returns an unmodifiable List implementation backed by this list. */
     @Nonnull
     List<T> getList();
 
     /**
-     * Returns a list containing the same elements as this list but with their order reversed
-     * so that first in this list is last in returned list etc.
+     * Returns a list containing the same elements as this list but with their order reversed so that first in this list
+     * is last in returned list etc.
      */
     @Nonnull
     IDeque<T> reverse();
 
     /**
-     * Returns a list of the same type as this containing only those elements for which
-     * predicate returns true.  Implementations are optimized assuming predicate will
-     * return false more often than true.
+     * Returns a list of the same type as this containing only those elements for which predicate returns true.
+     * Implementations are optimized assuming predicate will return false more often than true.
      *
      * @param predicate decides whether to include an element
      * @return list of same type as this containing only those elements for which predicate returns true
@@ -199,9 +179,8 @@ public interface IDeque<T>
     IDeque<T> select(@Nonnull Predicate<T> predicate);
 
     /**
-     * Returns a list of the same type as this containing all those elements for which
-     * predicate returns false.  Implementations can be optimized assuming predicate will
-     * return false more often than true.
+     * Returns a list of the same type as this containing all those elements for which predicate returns false.
+     * Implementations can be optimized assuming predicate will return false more often than true.
      *
      * @param predicate decides whether to include an element
      * @return list of same type as this containing only those elements for which predicate returns false
@@ -210,18 +189,18 @@ public interface IDeque<T>
     IDeque<T> reject(@Nonnull Predicate<T> predicate);
 
     /**
-     * Returns a Collector that creates a list of the same type as this containing all
-     * of the collected values inserted after whatever starting values this already contained.
+     * Returns a Collector that creates a list of the same type as this containing all of the collected values inserted
+     * after whatever starting values this already contained.
      */
     @Nonnull
-    default Collector<T, ?, IDeque<T>> dequeCollector()
-    {
-        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    default Collector<T, ?, IDeque<T>> dequeCollector() {
+        return GenericCollector.ordered(
+                this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     /**
-     * Apply the transform function to all elements in iterator order and add each transformed
-     * value to a new collection of this type.
+     * Apply the transform function to all elements in iterator order and add each transformed value to a new collection
+     * of this type.
      *
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
@@ -229,8 +208,8 @@ public interface IDeque<T>
     <A> IDeque<A> transform(@Nonnull Func1<T, A> transform);
 
     /**
-     * Apply the transform function to all elements in iterator order and add the contents of
-     * non-empty Holders to a new collection of this type.
+     * Apply the transform function to all elements in iterator order and add the contents of non-empty Holders to a new
+     * collection of this type.
      *
      * @param transform transformation applied to each element
      * @return the collection after all elements have been processed
@@ -239,12 +218,11 @@ public interface IDeque<T>
 
     /**
      * Returns a Holder containing a value if this list contains only a single value and that value is non-null.
-     * Otherwise returns and empty Holder.  i.e. empty unless size() == 1 and get(0) returns a non-null value.
+     * Otherwise returns and empty Holder. i.e. empty unless size() == 1 and get(0) returns a non-null value.
      *
      * @return Holder possibly containing the single non-null value in this list
      */
-    default Maybe<T> single()
-    {
+    default Maybe<T> single() {
         if (size() == 1) {
             T value = get(0);
             return Maybe.of(value);
@@ -263,8 +241,8 @@ public interface IDeque<T>
     IDeque<T> prefix(int limit);
 
     /**
-     * Return the (possibly empty) list containing the values starting at offset (inclusive)
-     * and including all remaining items.
+     * Return the (possibly empty) list containing the values starting at offset (inclusive) and including all remaining
+     * items.
      *
      * @param offset first index (inclusive) of values to include
      * @return a possibly empty list containing the values
@@ -273,14 +251,13 @@ public interface IDeque<T>
     IDeque<T> suffix(int offset);
 
     /**
-     * Return the (possibly empty) list containing the values starting at offset (inclusive)
-     * and including all remaining items up to but excluding the value at index limit.
+     * Return the (possibly empty) list containing the values starting at offset (inclusive) and including all remaining
+     * items up to but excluding the value at index limit.
      *
      * @param offset first index (inclusive) of values to include
-     * @param limit  last index (exclusive) of values to include
+     * @param limit last index (exclusive) of values to include
      * @return a possibly empty list containing the values
      */
     @Nonnull
-    IDeque<T> middle(int offset,
-                     int limit);
+    IDeque<T> middle(int offset, int limit);
 }

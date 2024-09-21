@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,27 +33,20 @@
 
 package org.javimmutable.collections.serialization;
 
+import java.util.function.Supplier;
 import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.list.TreeList;
 
-import java.util.function.Supplier;
-
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
-public class TreeListProxy
-    extends AbstractListProxy
-{
+/** Serialization proxy class to safely serialize immutable collection. */
+public class TreeListProxy extends AbstractListProxy {
     private static final Supplier<IListBuilder> BUILDER_FACTORY = () -> TreeList.listBuilder();
     private static final long serialVersionUID = -121805;
 
-    public TreeListProxy()
-    {
+    public TreeListProxy() {
         super(BUILDER_FACTORY, TreeList.of());
     }
 
-    public TreeListProxy(TreeList list)
-    {
+    public TreeListProxy(TreeList list) {
         super(BUILDER_FACTORY, list);
     }
 }

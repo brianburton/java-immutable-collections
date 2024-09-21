@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,34 +33,27 @@
 
 package org.javimmutable.collections;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Map;
 
 /**
- * An immutable entry in the map.  Contains the key and value for that entry.
- * key must not be null but value can be null.
+ * An immutable entry in the map. Contains the key and value for that entry. key must not be null but value can be null.
  */
 @Immutable
-public
-interface IMapEntry<K, V>
-{
+public interface IMapEntry<K, V> {
     @Nonnull
-    static <K, V> IMapEntry<K, V> of(@Nonnull Map.Entry<K, V> entry)
-    {
+    static <K, V> IMapEntry<K, V> of(@Nonnull Map.Entry<K, V> entry) {
         return new MapEntry<K, V>(entry);
     }
 
     @Nonnull
-    static <K, V> IMapEntry<K, V> of(@Nonnull IMapEntry<K, V> entry)
-    {
+    static <K, V> IMapEntry<K, V> of(@Nonnull IMapEntry<K, V> entry) {
         return new MapEntry<K, V>(entry);
     }
 
     @Nonnull
-    static <K, V> IMapEntry<K, V> of(@Nonnull K key,
-                                     V value)
-    {
+    static <K, V> IMapEntry<K, V> of(@Nonnull K key, V value) {
         return new MapEntry<K, V>(key, value);
     }
 

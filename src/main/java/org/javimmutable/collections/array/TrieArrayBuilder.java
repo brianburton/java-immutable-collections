@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,76 +33,61 @@
 
 package org.javimmutable.collections.array;
 
+import static org.javimmutable.collections.common.BitmaskMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
+
+import java.util.Arrays;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.ArrayHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
-import java.util.Arrays;
-
-import static org.javimmutable.collections.common.BitmaskMath.*;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
-
 @NotThreadSafe
-public class TrieArrayBuilder<T>
-{
+public class TrieArrayBuilder<T> {
     private final Node<T> root = new Node<>(TrieArrayNode.ROOT_SHIFT_COUNT, 0);
     private int nextIndex = 0;
 
     @Nonnull
-    public TrieArrayNode<T> buildRoot()
-    {
+    public TrieArrayNode<T> buildRoot() {
         return root.toNode();
     }
 
-    public int getNextIndex()
-    {
+    public int getNextIndex() {
         return nextIndex;
     }
 
-    public void setNextIndex(int nextIndex)
-    {
+    public void setNextIndex(int nextIndex) {
         this.nextIndex = nextIndex;
     }
 
-    public void add(T value)
-    {
+    public void add(T value) {
         put(nextIndex++, value);
     }
 
-    public void put(int index,
-                    T value)
-    {
+    public void put(int index, T value) {
         root.put(TrieArrayNode.flip(index), value);
     }
 
-    public <K, V> void assign(@Nonnull ArrayAssignMapper<K, V, T> mapper,
-                              @Nonnull K key,
-                              V value)
-    {
+    public <K, V> void assign(@Nonnull ArrayAssignMapper<K, V, T> mapper, @Nonnull K key, V value) {
         root.mappedPut(mapper, TrieArrayNode.flip(key.hashCode()), key, value);
     }
 
-    public int size()
-    {
+    public int size() {
         return root.size();
     }
 
-    public void reset()
-    {
+    public void reset() {
         nextIndex = 0;
         root.reset();
     }
 
     @Nonnull
-    public SplitableIterator<IMapEntry<Integer, T>> iterator()
-    {
+    public SplitableIterator<IMapEntry<Integer, T>> iterator() {
         return buildRoot().entries().iterator();
     }
 
-    private static class Node<T>
-    {
+    private static class Node<T> {
         private final int shiftCount;
         private final int baseIndex;
         private long valuesBitmask;
@@ -113,9 +96,7 @@ public class TrieArrayBuilder<T>
         private final Node<T>[] nodes;
         private int size;
 
-        private Node(int shiftCount,
-                     int index)
-        {
+        private Node(int shiftCount, int index) {
             assert shiftCount <= TrieArrayNode.ROOT_SHIFT_COUNT;
             assert shiftCount >= TrieArrayNode.LEAF_SHIFT_COUNT;
             this.shiftCount = shiftCount;
@@ -126,8 +107,7 @@ public class TrieArrayBuilder<T>
             nodes = allocate();
         }
 
-        private void reset()
-        {
+        private void reset() {
             Arrays.fill(values, null);
             Arrays.fill(nodes, null);
             valuesBitmask = 0;
@@ -135,9 +115,7 @@ public class TrieArrayBuilder<T>
             size = 0;
         }
 
-        private void put(int index,
-                         T value)
-        {
+        private void put(int index, T value) {
             assert baseIndexAtShift(shiftCount, index) == baseIndex;
             final int myIndex = indexAtShift(shiftCount, index);
             final long bit = bitFromIndex(myIndex);
@@ -161,11 +139,7 @@ public class TrieArrayBuilder<T>
             }
         }
 
-        private <K, V> void mappedPut(@Nonnull ArrayAssignMapper<K, V, T> mapper,
-                                      int index,
-                                      @Nonnull K key,
-                                      V value)
-        {
+        private <K, V> void mappedPut(@Nonnull ArrayAssignMapper<K, V, T> mapper, int index, @Nonnull K key, V value) {
             assert baseIndexAtShift(shiftCount, index) == baseIndex;
             final int myIndex = indexAtShift(shiftCount, index);
             final long bit = bitFromIndex(myIndex);
@@ -193,25 +167,23 @@ public class TrieArrayBuilder<T>
         }
 
         @Nonnull
-        private TrieArrayNode<T> toNode()
-        {
+        private TrieArrayNode<T> toNode() {
             final T[] answerValues = TrieArrayNode.allocateValues(bitCount(valuesBitmask));
             copyToCompactArrayUsingBitmask(valuesBitmask, values, answerValues, x -> x);
             final TrieArrayNode<T>[] answerNodes = TrieArrayNode.allocateNodes(bitCount(nodesBitmask));
             copyToCompactArrayUsingBitmask(nodesBitmask, nodes, answerNodes, child -> child.toNode());
-            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size);
+            return new TrieArrayNode<>(
+                    shiftCount, baseIndex, valuesBitmask, answerValues, nodesBitmask, answerNodes, size);
         }
 
-        private int size()
-        {
+        private int size() {
             return size;
         }
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> Node<T>[] allocate()
-    {
-        return (Node<T>[])new Node[ARRAY_SIZE];
+    private static <T> Node<T>[] allocate() {
+        return (Node<T>[]) new Node[ARRAY_SIZE];
     }
 }

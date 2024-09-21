@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,12 +33,8 @@
 
 package org.javimmutable.collections;
 
-/**
- * Interface for lambdas that accept 2 parameters and return nothing.
- */
+/** Interface for lambdas that accept 2 parameters and return nothing. */
 @FunctionalInterface
-public interface Proc2<A, B>
-{
-    void apply(A a,
-               B b);
+public interface Proc2<A, B> {
+    void apply(A a, B b);
 }

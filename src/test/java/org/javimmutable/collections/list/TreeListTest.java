@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,8 +35,19 @@ package org.javimmutable.collections.list;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import junit.framework.TestCase;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
+import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
+import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.ICollectors;
@@ -54,43 +63,28 @@ import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIndexed;
-import static org.javimmutable.collections.list.TreeBuilder.nodeFromIterator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
-
-public class TreeListTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class TreeListTest extends TestCase {
+    public void testStandard() {
         StandardListTests.standardTests(TreeList.of());
     }
 
-    public void test()
-    {
+    public void test() {
         TreeList<Integer> list = TreeList.of();
         assertEquals(0, list.size());
         assertEquals(true, list.isEmpty());
         list = list.insert(100);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(100, (int)list.get(0));
+        assertEquals(100, (int) list.get(0));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.insert(200);
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(100, (int)list.get(0));
-        assertEquals(200, (int)list.get(1));
+        assertEquals(100, (int) list.get(0));
+        assertEquals(200, (int) list.get(1));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
         assertEquals("[100,200]", list.toString());
@@ -101,24 +95,24 @@ public class TreeListTest
         list = list.insertFirst(80);
         assertEquals(3, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(80, (int)list.get(0));
-        assertEquals(100, (int)list.get(1));
-        assertEquals(200, (int)list.get(2));
+        assertEquals(80, (int) list.get(0));
+        assertEquals(100, (int) list.get(1));
+        assertEquals(200, (int) list.get(2));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteLast();
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(80, (int)list.get(0));
-        assertEquals(100, (int)list.get(1));
+        assertEquals(80, (int) list.get(0));
+        assertEquals(100, (int) list.get(1));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.deleteFirst();
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(100, (int)list.get(0));
+        assertEquals(100, (int) list.get(0));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
 
@@ -132,15 +126,15 @@ public class TreeListTest
         list = list.assign(1, 210);
         assertEquals(2, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(100, (int)list.get(0));
-        assertEquals(210, (int)list.get(1));
+        assertEquals(100, (int) list.get(0));
+        assertEquals(210, (int) list.get(1));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
 
         list = list.delete(0);
         assertEquals(1, list.size());
         assertEquals(false, list.isEmpty());
-        assertEquals(210, (int)list.get(0));
+        assertEquals(210, (int) list.get(0));
         list.checkInvariants();
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
 
@@ -151,8 +145,7 @@ public class TreeListTest
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
-    public void testInsertIterable()
-    {
+    public void testInsertIterable() {
         IList<Integer> list = TreeList.of();
         StandardIteratorTests.emptyIteratorTest(list.iterator());
 
@@ -163,93 +156,92 @@ public class TreeListTest
         StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3, 6, 10, 11, 12, 20), list.iterator());
     }
 
-    public void testInsertAllAtIndex()
-    {
+    public void testInsertAllAtIndex() {
         TreeList<Integer> checkIterable;
         TreeList<Integer> checkCollection;
         TreeList<Integer> checkIterator;
 
-        //insert at negative index -- all should fail
-        //empty into empty
+        // insert at negative index -- all should fail
+        // empty into empty
         TreeList<Integer> list = TreeList.of();
         try {
             list.insertAll(-1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Collections.<Integer>emptyList().iterator());
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //values into empty
+        // values into empty
         try {
             list.insertAll(-1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Arrays.asList(0, 1, 2, 3));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Arrays.asList(0, 1, 2, 3));
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //empty into values
+        // empty into values
         list = list.insert(4).insert(5);
         try {
             list.insertAll(-1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Collections.<Integer>emptyList().iterator());
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //values into values
+        // values into values
         try {
             list.insertAll(-1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Arrays.asList(0, 1, 2, 3));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(-1, Arrays.asList(0, 1, 2, 3));
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //insert at 0 -- all should work
-        //empty into empty
+        // insert at 0 -- all should work
+        // empty into empty
         list = TreeList.of();
         TreeList<Integer> expected = list;
         checkIterable = list.insertAll(0, plainIterable(Collections.emptyList()));
@@ -259,7 +251,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into empty
+        // values into empty
         expected = list.insert(4).insert(5);
         checkIterable = list.insertAll(0, plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAll(0, Arrays.asList(4, 5));
@@ -268,7 +260,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //empty into values
+        // empty into values
         list = list.insert(4).insert(5);
         checkIterable = list.insertAll(0, plainIterable(Collections.emptyList()));
         checkCollection = list.insertAll(0, Collections.emptyList());
@@ -277,7 +269,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into values
+        // values into values
         expected = TreeList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3).insert(4).insert(5);
         checkIterable = list.insertAll(0, plainIterable(Arrays.asList(0, 1, 2, 3)));
@@ -287,47 +279,47 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //insert in middle
-        //empty into empty -- should fail
+        // insert in middle
+        // empty into empty -- should fail
         list = TreeList.of();
         try {
             list.insertAll(1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(1, Collections.<Integer>emptyList().iterator());
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //values into empty -- should fail
+        // values into empty -- should fail
         try {
             list.insertAll(1, plainIterable(Arrays.asList(1, 2)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(1, Arrays.asList(1, 2));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(1, Arrays.asList(1, 2));
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //empty into values -- should work
+        // empty into values -- should work
         list = list.insert(0).insert(3);
         expected = list;
         checkIterable = list.insertAll(0, plainIterable(Collections.emptyList()));
@@ -337,7 +329,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into values -- should work
+        // values into values -- should work
         expected = TreeList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3);
         checkIterable = list.insertAll(1, plainIterable(Arrays.asList(1, 2)));
@@ -347,18 +339,19 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //insert at size -- all should work
-        //empty into empty
+        // insert at size -- all should work
+        // empty into empty
         list = TreeList.of();
         expected = list;
         checkIterable = list.insertAll(list.size(), plainIterable(Collections.emptyList()));
         checkCollection = list.insertAll(list.size(), Collections.emptyList());
-        checkIterator = list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
+        checkIterator =
+                list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkIterable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into empty
+        // values into empty
         expected = list.insert(0).insert(1).insert(2).insert(3);
         checkIterable = list.insertAll(list.size(), plainIterable(Arrays.asList(0, 1, 2, 3)));
         checkCollection = list.insertAll(list.size(), Arrays.asList(0, 1, 2, 3));
@@ -367,16 +360,17 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //empty into values
+        // empty into values
         list = list.insert(0).insert(1).insert(2).insert(3);
         checkIterable = list.insertAll(list.size(), plainIterable(Collections.emptyList()));
         checkCollection = list.insertAll(list.size(), Collections.emptyList());
-        checkIterator = list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
+        checkIterator =
+                list.insertAll(list.size(), Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkIterable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into values
+        // values into values
         expected = expected.insert(4).insert(5);
         checkIterable = list.insertAll(list.size(), plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAll(list.size(), Arrays.asList(4, 5));
@@ -385,101 +379,101 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //insert at >size -- all should fail
+        // insert at >size -- all should fail
         // empty into empty
         list = TreeList.of();
         try {
             list.insertAll(list.size() + 1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Collections.<Integer>emptyList().iterator());
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //values into empty
+        // values into empty
         try {
             list.insertAll(list.size() + 1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Arrays.asList(0, 1, 2, 3));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Arrays.asList(0, 1, 2, 3));
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //empty into values
+        // empty into values
         list = list.insert(4).insert(5);
         try {
             list.insertAll(list.size() + 1, plainIterable(Collections.emptyList()));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Collections.emptyList());
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Collections.<Integer>emptyList().iterator());
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
 
-        //values into values
+        // values into values
         try {
             list.insertAll(list.size() + 1, plainIterable(Arrays.asList(0, 1, 2, 3)));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Arrays.asList(0, 1, 2, 3));
             fail();
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
         try {
             list.insertAll(list.size() + 1, Arrays.asList(0, 1, 2, 3));
         } catch (IndexOutOfBoundsException ignored) {
-            //expected
+            // expected
         }
     }
 
-    public void testInsertAllFirst()
-    {
-        //empty into empty
+    public void testInsertAllFirst() {
+        // empty into empty
         TreeList<Integer> list = TreeList.of();
         TreeList<Integer> expected = list;
         TreeList<Integer> checkIterable = list.insertAllFirst(plainIterable(Collections.emptyList()));
         TreeList<Integer> checkCollection = list.insertAllFirst(Collections.emptyList());
-        TreeList<Integer> checkIterator = list.insertAllFirst(Collections.<Integer>emptyList().iterator());
+        TreeList<Integer> checkIterator =
+                list.insertAllFirst(Collections.<Integer>emptyList().iterator());
         TreeList<Integer> checkTree = list.insertAllFirst(btree());
         assertEquals(expected, checkIterable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
         assertEquals(expected, checkTree);
 
-        //values into empty
+        // values into empty
         expected = list.insert(4).insert(5);
         checkIterable = list.insertAllFirst(plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAllFirst(Arrays.asList(4, 5));
@@ -490,7 +484,7 @@ public class TreeListTest
         assertEquals(expected, checkIterator);
         assertEquals(expected, checkTree);
 
-        //empty into values
+        // empty into values
         list = list.insert(4).insert(5);
         expected = list;
         checkIterable = list.insertAllFirst(plainIterable(Collections.emptyList()));
@@ -502,7 +496,7 @@ public class TreeListTest
         assertEquals(expected, checkIterator);
         assertEquals(expected, checkTree);
 
-        //values into values
+        // values into values
         expected = TreeList.of();
         expected = expected.insert(0).insert(1).insert(2).insert(3).insert(4).insert(5);
         checkIterable = list.insertAllFirst(plainIterable(Arrays.asList(0, 1, 2, 3)));
@@ -515,8 +509,7 @@ public class TreeListTest
         assertEquals(expected, checkTree);
     }
 
-    public void testAppend()
-    {
+    public void testAppend() {
         assertEquals(range(1, 50), range(1, 15).insertAllLast(range(16, 50)));
         assertEquals(range(1, 50), range(36, 50).insertAllFirst(range(1, 35)));
 
@@ -527,42 +520,40 @@ public class TreeListTest
         assertEquals(range(1, 600), range(101, 600).insertAllFirst(range(1, 100)));
     }
 
-    public void testAssignAtSize()
-    {
+    public void testAssignAtSize() {
         TestUtil.verifyOutOfBounds(() -> range(1, 1).assign(1, -999));
         TestUtil.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE).assign(MultiValueNode.MAX_SIZE, -999));
-        TestUtil.verifyOutOfBounds(() -> range(1, MultiValueNode.MAX_SIZE + 1).assign(MultiValueNode.MAX_SIZE + 1, -999));
-        TestUtil.verifyOutOfBounds(() -> range(1, 2 * MultiValueNode.MAX_SIZE + 1).assign(2 * MultiValueNode.MAX_SIZE + 1, -999));
+        TestUtil.verifyOutOfBounds(
+                () -> range(1, MultiValueNode.MAX_SIZE + 1).assign(MultiValueNode.MAX_SIZE + 1, -999));
+        TestUtil.verifyOutOfBounds(
+                () -> range(1, 2 * MultiValueNode.MAX_SIZE + 1).assign(2 * MultiValueNode.MAX_SIZE + 1, -999));
     }
 
     @SafeVarargs
-    private final <T> TreeList<T> btree(T... values)
-    {
+    private final <T> TreeList<T> btree(T... values) {
         return TreeList.of(IndexedArray.retained(values));
     }
 
-    private IList<Integer> range(int first,
-                                 int last)
-    {
+    private IList<Integer> range(int first, int last) {
         return TreeList.<Integer>listBuilder()
-            .addAll(IndexedIterator.forRange(first, last))
-            .build();
+                .addAll(IndexedIterator.forRange(first, last))
+                .build();
     }
 
-    public void testInsertAllLast()
-    {
-        //test insertAll
-        //empty into empty
+    public void testInsertAllLast() {
+        // test insertAll
+        // empty into empty
         TreeList<Integer> list = TreeList.of();
         TreeList<Integer> expected = list;
         TreeList<Integer> checkIterable = list.insertAll(plainIterable(Collections.emptyList()));
         TreeList<Integer> checkCollection = list.insertAll(Collections.emptyList());
-        TreeList<Integer> checkIterator = list.insertAll(Collections.<Integer>emptyList().iterator());
+        TreeList<Integer> checkIterator =
+                list.insertAll(Collections.<Integer>emptyList().iterator());
         assertEquals(expected, checkIterable);
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into empty
+        // values into empty
         expected = list.insert(0);
         checkIterable = list.insertAll(plainIterable(Collections.singletonList(0)));
         checkCollection = list.insertAll(Collections.singletonList(0));
@@ -571,7 +562,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //empty into values
+        // empty into values
         list = list.insert(0);
         expected = list;
         checkIterable = list.insertAll(plainIterable(Collections.emptyList()));
@@ -581,7 +572,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into values
+        // values into values
         expected = list.insert(1).insert(2).insert(3);
         checkIterable = list.insertAll(plainIterable(Arrays.asList(1, 2, 3)));
         checkCollection = list.insertAll(Arrays.asList(1, 2, 3));
@@ -590,8 +581,8 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //test insertAllLast
-        //empty into empty
+        // test insertAllLast
+        // empty into empty
         list = TreeList.of();
         expected = list;
         checkIterable = list.insertAllLast(plainIterable(Collections.emptyList()));
@@ -601,7 +592,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into empty
+        // values into empty
         expected = list.insert(0).insert(1).insert(2).insert(3);
         checkIterable = list.insertAllLast(plainIterable(Arrays.asList(0, 1, 2, 3)));
         checkCollection = list.insertAllLast(Arrays.asList(0, 1, 2, 3));
@@ -610,7 +601,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //empty into values
+        // empty into values
         list = list.insert(0).insert(1).insert(2).insert(3);
         expected = list;
         checkIterable = list.insertAllLast(plainIterable(Collections.emptyList()));
@@ -620,7 +611,7 @@ public class TreeListTest
         assertEquals(expected, checkCollection);
         assertEquals(expected, checkIterator);
 
-        //values into values
+        // values into values
         expected = list.insert(4).insert(5);
         checkIterable = list.insertAllLast(plainIterable(Arrays.asList(4, 5)));
         checkCollection = list.insertAllLast(Arrays.asList(4, 5));
@@ -630,37 +621,36 @@ public class TreeListTest
         assertEquals(expected, checkIterator);
     }
 
-    public void testInsertDeleteFirst()
-    {
+    public void testInsertDeleteFirst() {
         TreeList<Integer> list = TreeList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insertFirst(index);
             list.checkInvariants();
             assertEquals(index + 1, list.size());
             for (int k = 0; k <= index; ++k) {
-                assertEquals(index - k, (int)list.get(k));
+                assertEquals(index - k, (int) list.get(k));
             }
 
             int kk = 0;
             for (Integer value : list) {
-                assertEquals(index - kk, (int)value);
+                assertEquals(index - kk, (int) value);
                 kk += 1;
             }
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
         }
 
         for (int index = 0; index < 100; ++index) {
-            assertEquals(list.size() - 1, (int)list.get(0));
+            assertEquals(list.size() - 1, (int) list.get(0));
             list = list.deleteFirst();
             list.checkInvariants();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
-                assertEquals(list.size() - k - 1, (int)list.get(k));
+                assertEquals(list.size() - k - 1, (int) list.get(k));
             }
 
             int kk = 0;
             for (Integer value : list) {
-                assertEquals(list.size() - kk - 1, (int)value);
+                assertEquals(list.size() - kk - 1, (int) value);
                 kk += 1;
             }
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
@@ -677,19 +667,18 @@ public class TreeListTest
         }
     }
 
-    public void testDeleteLast()
-    {
+    public void testDeleteLast() {
         TreeList<Integer> list = TreeList.of();
         for (int index = 0; index < 100; ++index) {
             list = list.insert(index);
             assertEquals(index + 1, list.size());
             for (int k = 0; k <= index; ++k) {
-                assertEquals(k, (int)list.get(k));
+                assertEquals(k, (int) list.get(k));
             }
 
             int kk = 0;
             for (Integer value : list) {
-                assertEquals(kk, (int)value);
+                assertEquals(kk, (int) value);
                 kk += 1;
             }
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
@@ -699,12 +688,12 @@ public class TreeListTest
             list = list.deleteLast();
             assertEquals(99 - index, list.size());
             for (int k = 0; k < list.size(); ++k) {
-                assertEquals(k, (int)list.get(k));
+                assertEquals(k, (int) list.get(k));
             }
 
             int kk = 0;
             for (Integer value : list) {
-                assertEquals(kk, (int)value);
+                assertEquals(kk, (int) value);
                 kk += 1;
             }
             StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
@@ -721,8 +710,7 @@ public class TreeListTest
         }
     }
 
-    public void testInsert()
-    {
+    public void testInsert() {
         TreeList<Integer> list = TreeList.of();
         List<Integer> expected = new ArrayList<>();
         list = list.insert(0);
@@ -744,8 +732,7 @@ public class TreeListTest
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
-    public void testInsertAtSize()
-    {
+    public void testInsertAtSize() {
         TreeList<Integer> list = TreeList.of();
         List<Integer> expected = new ArrayList<>();
         for (int i = 1; i <= 1000; ++i) {
@@ -757,8 +744,7 @@ public class TreeListTest
         StandardIteratorTests.indexedIteratorTest(list, list.size(), list.iterator());
     }
 
-    public void testSlice()
-    {
+    public void testSlice() {
         final IList<Integer> list = rangeList(1, 9);
 
         assertThat(list.slice(0, 9)).isEqualTo(list);
@@ -775,8 +761,7 @@ public class TreeListTest
         assertThat(list.slice(12, 9)).isEqualTo(TreeList.of());
     }
 
-    public void testIndexedBuild()
-    {
+    public void testIndexedBuild() {
         List<Integer> values = new ArrayList<>();
         IListBuilder<Integer> builder = TreeList.listBuilder();
         for (int i = 1; i <= 4096; ++i) {
@@ -797,7 +782,8 @@ public class TreeListTest
         int size = 0;
         long start = System.currentTimeMillis();
         for (int i = 1; i <= 3000; ++i) {
-            size += TreeList.create(nodeFromIndexed(IndexedList.retained(values), 0, values.size())).size();
+            size += TreeList.create(nodeFromIndexed(IndexedList.retained(values), 0, values.size()))
+                    .size();
         }
         long ibTime = System.currentTimeMillis() - start;
 
@@ -806,12 +792,11 @@ public class TreeListTest
             size -= TreeList.create(nodeFromIterator(values.iterator())).size();
         }
         long ofTime = System.currentTimeMillis() - start;
-//        System.out.printf("indexBuilder=%d  builder=%d\n", ibTime, ofTime);
+        //        System.out.printf("indexBuilder=%d  builder=%d\n", ibTime, ofTime);
         assertEquals(0, size);
     }
 
-    public void testRandom()
-    {
+    public void testRandom() {
         Random random = new Random(100L);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(500);
@@ -862,8 +847,7 @@ public class TreeListTest
         }
     }
 
-    public void testRandom2()
-    {
+    public void testRandom2() {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
@@ -872,19 +856,23 @@ public class TreeListTest
 
             for (int loops = 1; loops <= 200; ++loops) {
                 switch (random.nextInt(4)) {
-                    case 0: { //insertAllFirst(Collection)
+                    case 0: { // insertAllFirst(Collection)
                         List<Integer> values = makeValues(random, size);
-                        list = (random.nextBoolean()) ? list.insertAllFirst(values) : list.insertAllFirst(values.iterator());
+                        list = (random.nextBoolean())
+                                ? list.insertAllFirst(values)
+                                : list.insertAllFirst(values.iterator());
                         expected.addAll(0, values);
                         break;
                     }
-                    case 1: {//insertAllLast(Collection)
+                    case 1: { // insertAllLast(Collection)
                         List<Integer> values = makeValues(random, size);
-                        list = (random.nextBoolean()) ? list.insertAllLast(values) : list.insertAllLast(values.iterator());
+                        list = (random.nextBoolean())
+                                ? list.insertAllLast(values)
+                                : list.insertAllLast(values.iterator());
                         expected.addAll(values);
                         break;
                     }
-                    case 2: { //deleteFirst
+                    case 2: { // deleteFirst
                         if (list.size() > 0) {
                             list = list.deleteFirst();
                             expected.remove(0);
@@ -893,12 +881,12 @@ public class TreeListTest
                                 list = list.deleteFirst();
                                 fail();
                             } catch (IndexOutOfBoundsException ignore) {
-                                //expected
+                                // expected
                             }
                         }
                         break;
                     }
-                    case 3: { //deleteLast
+                    case 3: { // deleteLast
                         if (list.size() > 0) {
                             list = list.deleteLast();
                             expected.remove(expected.size() - 1);
@@ -907,7 +895,7 @@ public class TreeListTest
                                 list = list.deleteLast();
                                 fail();
                             } catch (IndexOutOfBoundsException ignore) {
-                                //expected
+                                // expected
                             }
                         }
                         break;
@@ -932,8 +920,7 @@ public class TreeListTest
         }
     }
 
-    public void testRandom3()
-    {
+    public void testRandom3() {
         Random random = new Random(100L);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = random.nextInt(3000);
@@ -974,9 +961,7 @@ public class TreeListTest
         }
     }
 
-
-    public void testRandom4()
-    {
+    public void testRandom4() {
         Random random = new Random(2500L);
         for (int loop = 1; loop <= 200; ++loop) {
             int size = 1 + random.nextInt(3000);
@@ -988,13 +973,13 @@ public class TreeListTest
                 expected.addAll(index, values);
                 int parameter = random.nextInt(3);
                 switch (parameter) {
-                    case 0: //insertAll(Collection)
+                    case 0: // insertAll(Collection)
                         list = list.insertAll(index, values);
                         break;
-                    case 1: //insertAll(Iterator)
+                    case 1: // insertAll(Iterator)
                         list = list.insertAll(index, values.iterator());
                         break;
-                    case 2: //insertAll(JImmutableTreeList)
+                    case 2: // insertAll(JImmutableTreeList)
                         list = list.insertAll(index, TreeList.of(values.iterator()));
                         break;
                 }
@@ -1038,8 +1023,7 @@ public class TreeListTest
         }
     }
 
-    public void testIterator()
-    {
+    public void testIterator() {
         TreeList<Integer> list = TreeList.of();
         Iterator<Integer> iterator = list.iterator();
         assertEquals(false, iterator.hasNext());
@@ -1077,15 +1061,13 @@ public class TreeListTest
         }
     }
 
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() {
         TreeList<Integer> list = TreeList.of();
         list = list.insert(1).insert(2);
         assertSame(TreeList.of(), list.deleteAll());
     }
 
-    public void testSelect()
-    {
+    public void testSelect() {
         IList<Integer> list = list();
         assertSame(list, list.select(x -> false));
         assertSame(list, list.select(x -> true));
@@ -1099,8 +1081,7 @@ public class TreeListTest
         assertEquals(list(2), list.select(x -> x % 2 == 0));
     }
 
-    public void testReject()
-    {
+    public void testReject() {
         IList<Integer> list = list();
         assertSame(list, list.reject(x -> false));
         assertSame(list, list.reject(x -> true));
@@ -1114,11 +1095,12 @@ public class TreeListTest
         assertEquals(list(1, 3), list.reject(x -> x % 2 == 0));
     }
 
-    public void testStreams()
-    {
-        IList<Integer> list = TreeList.<Integer>listBuilder().addAll(1, 2, 3, 4, 5, 6, 7).build();
+    public void testStreams() {
+        IList<Integer> list =
+                TreeList.<Integer>listBuilder().addAll(1, 2, 3, 4, 5, 6, 7).build();
         assertEquals(asList(1, 2, 3, 4), list.stream().filter(x -> x < 5).collect(toList()));
-        assertEquals(asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
+        assertEquals(
+                asList(1, 2, 3, 4), list.parallelStream().filter(x -> x < 5).collect(toList()));
 
         List<Integer> expected = new ArrayList<>();
         for (int i = 1; i <= 2048; ++i) {
@@ -1127,13 +1109,15 @@ public class TreeListTest
         list = TreeList.of(IndexedList.retained(expected));
         assertEquals(expected.stream().collect(toList()), list.stream().collect(toList()));
         assertEquals(list, list.stream().collect(TreeList.createListCollector()));
-        assertEquals(expected.parallelStream().collect(toList()), list.parallelStream().collect(toList()));
+        assertEquals(
+                expected.parallelStream().collect(toList()),
+                list.parallelStream().collect(toList()));
         assertEquals(list, list.parallelStream().collect(TreeList.createListCollector()));
     }
 
-    public void testParallelStreams()
-    {
-        final IList<Integer> original = TreeList.of(IndexedList.retained(TestUtil.makeList(IndexedIterator.forRange(1, 10000))));
+    public void testParallelStreams() {
+        final IList<Integer> original =
+                TreeList.of(IndexedList.retained(TestUtil.makeList(IndexedIterator.forRange(1, 10000))));
         final IList<Object> collected = original.stream().parallel().collect(ICollectors.toList());
         collected.checkInvariants();
         assertEquals(original, collected);
@@ -1141,8 +1125,7 @@ public class TreeListTest
         assertEquals(original, original.stream().parallel().collect(TreeList.createListCollector()));
     }
 
-    public void testReverse()
-    {
+    public void testReverse() {
         TreeList<Integer> list = TreeList.of();
         assertSame(list, list.reverse());
         list = TreeList.of(IndexedList.retained(Arrays.asList(1)));
@@ -1154,9 +1137,7 @@ public class TreeListTest
         }
     }
 
-    public void testBuilder()
-        throws InterruptedException
-    {
+    public void testBuilder() throws InterruptedException {
         assertSame(TreeList.of(), TreeList.listBuilder().build());
 
         final TreeList.ListBuilder<Integer> builder = TreeList.listBuilder();
@@ -1186,13 +1167,11 @@ public class TreeListTest
         StandardBuilderTests.verifyThreadSafety(this::builder);
     }
 
-    private BuilderTestAdapter<Integer> builder()
-    {
+    private BuilderTestAdapter<Integer> builder() {
         return new BuilderTestAdapter<>(TreeList.listBuilder());
     }
 
-    public void testStaticBuilderMethod()
-    {
+    public void testStaticBuilderMethod() {
         List<Integer> source = new ArrayList<>();
         for (int i = 0; i <= 11842; ++i) {
             source.add(i);
@@ -1202,21 +1181,27 @@ public class TreeListTest
         }
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IList)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IList) a).iterator();
         final IList<String> empty = TreeList.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBIr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9cksLgkoyq+o/A8C/1SMeRgYKooYbEgwxjGpuKQoMbkEq1EF5RwMDMwvGYCgAgBVyk0lowAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBIr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9cksLgkoyq+o/A8C/1SMeRgYKooYbEgwxjGpuKQoMbkEq1EF5RwMDMwvGRgYGEsYGBMrAG4hKmKnAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBIr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9cksLgkoyq+o/A8C/1SMeRgYKooYbEgwxjGpuKQoMbkEq1EF5RwMDMwvGYBECQNjIhAnAXFyBQC7IsN1rwAAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBIr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9cksLgkoyq+o/A8C/1SMeRgYKooYbEgwxjGpuKQoMbkEq1EF5RwMDMwvGYCgAgBVyk0lowAAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBIr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9cksLgkoyq+o/A8C/1SMeRgYKooYbEgwxjGpuKQoMbkEq1EF5RwMDMwvGRgYGEsYGBMrAG4hKmKnAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList("a", "b", "c")),
+                "H4sIAAAAAAAA/1vzloG1uIjBIr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9cksLgkoyq+o/A8C/1SMeRgYKooYbEgwxjGpuKQoMbkEq1EF5RwMDMwvGYBECQNjIhAnAXFyBQC7IsN1rwAAAA==");
     }
 
-    public void testForEach()
-    {
+    public void testForEach() {
         final StringBuilder sb = new StringBuilder();
         final IList<Integer> empty = TreeList.of();
         empty.forEach(i -> sb.append("[").append(i).append("]"));
@@ -1227,9 +1212,7 @@ public class TreeListTest
         assertEquals("[1]", sb.toString());
 
         sb.delete(0, sb.length());
-        list = IntStream.range(1, 500)
-            .boxed()
-            .collect(TreeList.createListCollector());
+        list = IntStream.range(1, 500).boxed().collect(TreeList.createListCollector());
         String expected = IntStream.range(1, 500).boxed().reduce("", (s, i) -> s + "[" + i + "]", (a, b) -> a + b);
         list.forEach(i -> sb.append("[").append(i).append("]"));
         assertEquals(expected, sb.toString());
@@ -1264,16 +1247,13 @@ public class TreeListTest
         }
     }
 
-    public void testInject()
-    {
+    public void testInject() {
         final IList<Integer> empty = TreeList.of();
 
         assertEquals("", empty.reduce("", (s, i) -> s + "[" + i + "]"));
         assertEquals("[1]", empty.insert(1).reduce("", (s, i) -> s + "[" + i + "]"));
 
-        IList<Integer> list = IntStream.range(1, 500)
-            .boxed()
-            .collect(TreeList.createListCollector());
+        IList<Integer> list = IntStream.range(1, 500).boxed().collect(TreeList.createListCollector());
         String expected = IntStream.range(1, 500).boxed().reduce("", (s, i) -> s + "[" + i + "]", (a, b) -> a + b);
         assertEquals(expected, list.reduce("", (s, i) -> s + "[" + i + "]"));
 
@@ -1303,8 +1283,7 @@ public class TreeListTest
         }
     }
 
-    public void testSeek()
-    {
+    public void testSeek() {
         IList<Integer> list = TreeList.of();
         assertEquals(Maybe.empty(), list.find(0));
 
@@ -1321,14 +1300,11 @@ public class TreeListTest
         assertEquals(Maybe.empty(), list.find(25000));
     }
 
-    private IList<Integer> list(Integer... values)
-    {
+    private IList<Integer> list(Integer... values) {
         return TreeList.of(IndexedArray.retained(values));
     }
 
-    private List<Integer> makeValues(Random random,
-                                     int size)
-    {
+    private List<Integer> makeValues(Random random, int size) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0, limit = random.nextInt(3); i < limit; ++i) {
             list.add(random.nextInt(size));
@@ -1336,9 +1312,7 @@ public class TreeListTest
         return list;
     }
 
-    private IList<Integer> rangeList(int first,
-                                     int last)
-    {
+    private IList<Integer> rangeList(int first, int last) {
         IListBuilder<Integer> builder = TreeList.listBuilder();
         for (int i = first; i <= last; ++i) {
             builder.add(i);
@@ -1346,8 +1320,7 @@ public class TreeListTest
         return builder.build();
     }
 
-    private Iterable<Integer> plainIterable(List<Integer> values)
-    {
+    private Iterable<Integer> plainIterable(List<Integer> values) {
         return values::iterator;
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,17 +34,13 @@
 package org.javimmutable.collections.stress_test;
 
 import com.google.common.base.MoreObjects;
-
-import javax.annotation.Nonnull;
 import java.io.Serializable;
+import javax.annotation.Nonnull;
 
-public abstract class KeyWrapper<T>
-    implements Serializable
-{
+public abstract class KeyWrapper<T> implements Serializable {
     protected final T value;
 
-    KeyWrapper(T value)
-    {
+    KeyWrapper(T value) {
         this.value = value;
     }
 
@@ -54,94 +48,68 @@ public abstract class KeyWrapper<T>
 
     public abstract boolean equals(Object obj);
 
-    T getValue()
-    {
+    T getValue() {
         return value;
     }
 
-    static class RegularKey<T>
-        extends KeyWrapper<T>
-        implements Serializable
-    {
-        public RegularKey(T value)
-        {
+    static class RegularKey<T> extends KeyWrapper<T> implements Serializable {
+        public RegularKey(T value) {
             super(value);
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return value.hashCode();
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            return (obj instanceof RegularKey) && value.equals(((RegularKey)obj).getValue());
+        public boolean equals(Object obj) {
+            return (obj instanceof RegularKey) && value.equals(((RegularKey) obj).getValue());
         }
     }
 
-    static class ComparableRegularKey<T extends Comparable<T>>
-        extends RegularKey<T>
-        implements Comparable<ComparableRegularKey<T>>,
-                   Serializable
-    {
-        public ComparableRegularKey(T value)
-        {
+    static class ComparableRegularKey<T extends Comparable<T>> extends RegularKey<T>
+            implements Comparable<ComparableRegularKey<T>>, Serializable {
+        public ComparableRegularKey(T value) {
             super(value);
         }
 
         @Override
-        public int compareTo(@Nonnull ComparableRegularKey<T> other)
-        {
+        public int compareTo(@Nonnull ComparableRegularKey<T> other) {
             return getValue().compareTo(other.getValue());
         }
     }
 
-    static class BadHashKey<T>
-        extends KeyWrapper<T>
-        implements Serializable
-    {
-        public BadHashKey(T value)
-        {
+    static class BadHashKey<T> extends KeyWrapper<T> implements Serializable {
+        public BadHashKey(T value) {
             super(value);
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return value.hashCode() & 0xff;
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            return (obj instanceof BadHashKey) && value.equals(((BadHashKey)obj).getValue());
+        public boolean equals(Object obj) {
+            return (obj instanceof BadHashKey) && value.equals(((BadHashKey) obj).getValue());
         }
     }
 
-    static class ComparableBadHashKey<T extends Comparable<T>>
-        extends BadHashKey<T>
-        implements Comparable<ComparableBadHashKey<T>>,
-                   Serializable
-    {
-        public ComparableBadHashKey(T value)
-        {
+    static class ComparableBadHashKey<T extends Comparable<T>> extends BadHashKey<T>
+            implements Comparable<ComparableBadHashKey<T>>, Serializable {
+        public ComparableBadHashKey(T value) {
             super(value);
         }
 
         @Override
-        public int compareTo(@Nonnull ComparableBadHashKey<T> other)
-        {
+        public int compareTo(@Nonnull ComparableBadHashKey<T> other) {
             return getValue().compareTo(other.getValue());
         }
     }
 
     @Override
-    public String toString()
-    {
-        return MoreObjects.toStringHelper(this)
-            .add("value", value)
-            .toString();
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("value", value).toString();
     }
 }

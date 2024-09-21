@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,8 +35,6 @@ package org.javimmutable.collections.array;
 
 import javax.annotation.Nonnull;
 
-public interface ArrayContainsMapper<K, T>
-{
-    boolean mappedContains(@Nonnull T mapping,
-                           @Nonnull K key);
+public interface ArrayContainsMapper<K, T> {
+    boolean mappedContains(@Nonnull T mapping, @Nonnull K key);
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,18 +33,13 @@
 
 package org.javimmutable.collections.hash;
 
+import java.util.Random;
 import org.javimmutable.collections.IMap;
 
-import java.util.Random;
+public final class TimingLoop {
+    private TimingLoop() {}
 
-public final class TimingLoop
-{
-    private TimingLoop()
-    {
-    }
-
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         final int maxLoops = 250000;
         final int maxKey = 999999999;
         final int maxValue = 999999999;

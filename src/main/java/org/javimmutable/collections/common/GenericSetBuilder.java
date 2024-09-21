@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,52 +33,43 @@
 
 package org.javimmutable.collections.common;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
 
-import javax.annotation.Nonnull;
-
-public class GenericSetBuilder<T>
-    implements ISetBuilder<T>
-{
+public class GenericSetBuilder<T> implements ISetBuilder<T> {
     private final IMapBuilder<T, Boolean> mapBuilder;
     private final Func1<IMap<T, Boolean>, ISet<T>> setFactory;
 
-    public GenericSetBuilder(IMapBuilder<T, Boolean> mapBuilder,
-                             Func1<IMap<T, Boolean>, ISet<T>> setFactory)
-    {
+    public GenericSetBuilder(IMapBuilder<T, Boolean> mapBuilder, Func1<IMap<T, Boolean>, ISet<T>> setFactory) {
         this.mapBuilder = mapBuilder;
         this.setFactory = setFactory;
     }
 
     @Nonnull
     @Override
-    public ISet<T> build()
-    {
+    public ISet<T> build() {
         return setFactory.apply(mapBuilder.build());
     }
 
     @Nonnull
     @Override
-    public ISetBuilder<T> clear()
-    {
+    public ISetBuilder<T> clear() {
         mapBuilder.clear();
         return this;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return mapBuilder.size();
     }
 
     @Nonnull
     @Override
-    public ISetBuilder<T> add(T value)
-    {
+    public ISetBuilder<T> add(T value) {
         mapBuilder.add(value, Boolean.TRUE);
         return this;
     }

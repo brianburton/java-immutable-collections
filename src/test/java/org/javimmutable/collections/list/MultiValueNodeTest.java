@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,18 +33,16 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import org.javimmutable.collections.Maybe;
-import org.javimmutable.collections.common.TestUtil;
 import static org.javimmutable.collections.list.MultiValueNode.MAX_SIZE;
 
-public class MultiValueNodeTest
-    extends TestCase
-{
-    public void testSeek()
-    {
+import junit.framework.TestCase;
+import org.javimmutable.collections.Maybe;
+import org.javimmutable.collections.common.TestUtil;
+
+public class MultiValueNodeTest extends TestCase {
+    public void testSeek() {
         final AbstractNode<Integer> node = leaf(0, 1);
         assertThat(node.get(0)).isEqualTo(0);
         assertThatThrownBy(() -> node.get(1)).isInstanceOf(IndexOutOfBoundsException.class);
@@ -55,8 +51,7 @@ public class MultiValueNodeTest
         assertEquals(Maybe.empty(), node.findImpl(1, () -> Maybe.empty(), value -> Maybe.of(value)));
     }
 
-    public void testVarious()
-    {
+    public void testVarious() {
         assertThat(leaf(0, 1).isEmpty()).isFalse();
         assertThat(leaf(0, 1).size()).isEqualTo(1);
         assertThat(leaf(0, 5).size()).isEqualTo(5);
@@ -69,13 +64,16 @@ public class MultiValueNodeTest
         assertThat(leaf(0, 5).append(5)).isEqualTo(leaf(0, 6));
         assertThat(leaf(0, 5).append(leaf(5, 10))).isEqualTo(leaf(0, 10));
         assertThat(leaf(0, MAX_SIZE - 3).append(leaf(MAX_SIZE - 3, MAX_SIZE))).isEqualTo(leaf(0, MAX_SIZE));
-        assertThat(leaf(0, MAX_SIZE - 3).append(leaf(MAX_SIZE - 3, MAX_SIZE + 1))).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
-        assertThat(leaf(0, MAX_SIZE).append(MAX_SIZE)).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE), leaf(MAX_SIZE, MAX_SIZE + 1)));
+        assertThat(leaf(0, MAX_SIZE - 3).append(leaf(MAX_SIZE - 3, MAX_SIZE + 1)))
+                .isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
+        assertThat(leaf(0, MAX_SIZE).append(MAX_SIZE))
+                .isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE), leaf(MAX_SIZE, MAX_SIZE + 1)));
 
         assertThat(leaf(1, 5).prepend(0)).isEqualTo(leaf(0, 5));
         assertThat(leaf(5, 10).prepend(leaf(0, 5))).isEqualTo(leaf(0, 10));
         assertThat(leaf(MAX_SIZE - 3, MAX_SIZE).prepend(leaf(0, MAX_SIZE - 3))).isEqualTo(leaf(0, MAX_SIZE));
-        assertThat(leaf(MAX_SIZE - 3, MAX_SIZE + 1).prepend(leaf(0, MAX_SIZE - 3))).isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
+        assertThat(leaf(MAX_SIZE - 3, MAX_SIZE + 1).prepend(leaf(0, MAX_SIZE - 3)))
+                .isEqualTo(new BranchNode<>(leaf(0, MAX_SIZE - 3), leaf(MAX_SIZE - 3, MAX_SIZE + 1)));
         assertThat(leaf(1, MAX_SIZE + 1).prepend(0)).isEqualTo(new BranchNode<>(leaf(0, 1), leaf(1, MAX_SIZE + 1)));
 
         TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(-1, 9));
@@ -84,8 +82,8 @@ public class MultiValueNodeTest
         TestUtil.verifyOutOfBounds(() -> leaf(0, 5).assign(5, 9));
 
         TestUtil.verifyOutOfBounds(() -> leaf(0, 5).insert(-1, 9));
-        assertThat(leaf(0, 5).insert(3, 9)).isEqualTo(new MultiValueNode<>(new Integer[]{0, 1, 2, 9, 3, 4}, 6));
-        assertThat(leaf(0, 5).insert(5, 9)).isEqualTo(new MultiValueNode<>(new Integer[]{0, 1, 2, 3, 4, 9}, 6));
+        assertThat(leaf(0, 5).insert(3, 9)).isEqualTo(new MultiValueNode<>(new Integer[] {0, 1, 2, 9, 3, 4}, 6));
+        assertThat(leaf(0, 5).insert(5, 9)).isEqualTo(new MultiValueNode<>(new Integer[] {0, 1, 2, 3, 4, 9}, 6));
         TestUtil.verifyOutOfBounds(() -> leaf(0, 5).insert(6, 9));
 
         assertThat(leaf(0, 5).deleteFirst()).isEqualTo(leaf(1, 5));
@@ -114,16 +112,15 @@ public class MultiValueNodeTest
         TestUtil.verifyOutOfBounds(() -> self.suffix(-1));
         TestUtil.verifyOutOfBounds(() -> self.suffix(6));
 
-        Integer[] values = new Integer[]{-1, -1, -1, -1, -1, -1, -1};
+        Integer[] values = new Integer[] {-1, -1, -1, -1, -1, -1, -1};
         self.copyTo(values, 1);
-        assertThat(values).isEqualTo(new Integer[]{-1, 0, 1, 2, 3, 4, -1});
+        assertThat(values).isEqualTo(new Integer[] {-1, 0, 1, 2, 3, 4, -1});
 
         TestUtil.verifyUnsupported(() -> self.left());
         TestUtil.verifyUnsupported(() -> self.right());
     }
 
-    public void testReverse()
-    {
+    public void testReverse() {
         for (int len = 2; len <= MultiValueNode.MAX_SIZE; ++len) {
             AbstractNode<Integer> node = leaf(0, len);
             assertThat(node.reverse()).isEqualTo(reversed(0, len));
@@ -131,9 +128,7 @@ public class MultiValueNodeTest
         }
     }
 
-    static AbstractNode<Integer> leaf(int start,
-                                      int limit)
-    {
+    static AbstractNode<Integer> leaf(int start, int limit) {
         final int length = limit - start;
         if (length == 0) {
             return EmptyNode.instance();
@@ -148,9 +143,7 @@ public class MultiValueNodeTest
         }
     }
 
-    static AbstractNode<Integer> reversed(int start,
-                                          int limit)
-    {
+    static AbstractNode<Integer> reversed(int start, int limit) {
         final int length = limit - start;
         if (length == 0) {
             return EmptyNode.instance();
@@ -166,11 +159,7 @@ public class MultiValueNodeTest
         }
     }
 
-    static AbstractNode<Integer> leaf(int start,
-                                      int limit,
-                                      int index,
-                                      int value)
-    {
+    static AbstractNode<Integer> leaf(int start, int limit, int index, int value) {
         final int length = limit - start;
         Integer[] values = new Integer[length];
         for (int i = 0; i < length; ++i) {

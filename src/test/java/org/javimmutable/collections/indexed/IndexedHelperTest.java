@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,33 +35,28 @@ package org.javimmutable.collections.indexed;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import junit.framework.TestCase;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import java.util.List;
+import junit.framework.TestCase;
 import org.assertj.core.api.ThrowableAssert;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Maybe;
 
-import java.util.List;
-
-public class IndexedHelperTest
-    extends TestCase
-{
-    public void testEmpty()
-    {
+public class IndexedHelperTest extends TestCase {
+    public void testEmpty() {
         verifyIndexed(emptyList(), IndexedHelper.empty());
     }
 
-    public void testIndexed()
-    {
+    public void testIndexed() {
         verifyIndexed(asList(1), IndexedHelper.indexed(1));
         verifyIndexed(asList(1, 2), IndexedHelper.indexed(1, 2));
         verifyIndexed(asList(1, 2, 3), IndexedHelper.indexed(1, 2, 3));
         verifyIndexed(asList(1, 2, 3, 4, 5), IndexedHelper.indexed(1, 2, 3, 4, 5));
     }
 
-    public void testRepeating()
-    {
+    public void testRepeating() {
         verifyOutOfBounds(() -> IndexedHelper.repeating(1, -1));
         verifyIndexed(emptyList(), IndexedHelper.repeating(1, 0));
         verifyIndexed(asList(1), IndexedHelper.repeating(1, 1));
@@ -71,8 +64,7 @@ public class IndexedHelperTest
         verifyIndexed(asList(1, 1, 1), IndexedHelper.repeating(1, 3));
     }
 
-    public void testRange()
-    {
+    public void testRange() {
         verifyOutOfBounds(() -> IndexedHelper.range(1, -1));
         verifyIndexed(emptyList(), IndexedHelper.range(1, 0));
         verifyIndexed(asList(1), IndexedHelper.range(1, 1));
@@ -80,13 +72,11 @@ public class IndexedHelperTest
         verifyIndexed(asList(1, 2, 3), IndexedHelper.range(1, 3));
     }
 
-    public void testTransformed()
-    {
+    public void testTransformed() {
         verifyIndexed(asList(-1, -2, -3), IndexedHelper.indexed(1, 2, 3).transformed(x -> -x));
     }
 
-    public void testReversed()
-    {
+    public void testReversed() {
         final Indexed<Integer> empty = IndexedHelper.empty();
         assertSame(empty, empty.reversed());
 
@@ -94,11 +84,11 @@ public class IndexedHelperTest
         verifyIndexed(asList(1), IndexedHelper.indexed(1).reversed());
         verifyIndexed(asList(2, 1), IndexedHelper.indexed(1, 2).reversed());
         verifyIndexed(asList(3, 2, 1), IndexedHelper.indexed(1, 2, 3).reversed());
-        verifyIndexed(asList(5, 4, 3, 2, 1), IndexedHelper.indexed(1, 2, 3, 4, 5).reversed());
+        verifyIndexed(
+                asList(5, 4, 3, 2, 1), IndexedHelper.indexed(1, 2, 3, 4, 5).reversed());
     }
 
-    public void testPrefix()
-    {
+    public void testPrefix() {
         final Indexed<Integer> empty = IndexedHelper.empty();
         verifyOutOfBounds(() -> empty.prefix(-1));
         assertSame(empty, empty.prefix(0));
@@ -113,9 +103,7 @@ public class IndexedHelperTest
         verifyOutOfBounds(() -> full.prefix(4));
     }
 
-    private void verifyIndexed(List<Integer> expected,
-                               Indexed<Integer> actual)
-    {
+    private void verifyIndexed(List<Integer> expected, Indexed<Integer> actual) {
         assertThat(actual.size()).isEqualTo(expected.size());
         for (int i = 0; i < expected.size(); ++i) {
             assertThat(actual.get(i)).isEqualTo(expected.get(i));
@@ -126,9 +114,7 @@ public class IndexedHelperTest
         assertEquals(Maybe.empty(), actual.find(expected.size()));
     }
 
-    private void verifyOutOfBounds(ThrowableAssert.ThrowingCallable callable)
-    {
-        assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
-            .isThrownBy(callable);
+    private void verifyOutOfBounds(ThrowableAssert.ThrowingCallable callable) {
+        assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class).isThrownBy(callable);
     }
 }

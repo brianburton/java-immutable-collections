@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,57 +33,43 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 
-/**
- * Immutable container for 3 values.
- */
+/** Immutable container for 3 values. */
 @Immutable
-public class Tuple3<A, B, C>
-    implements Serializable
-{
+public class Tuple3<A, B, C> implements Serializable {
     private static final long serialVersionUID = -121805;
 
     private final A first;
     private final B second;
     private final C third;
 
-    public Tuple3(A first,
-                  B second,
-                  C third)
-    {
+    public Tuple3(A first, B second, C third) {
         this.first = first;
         this.second = second;
         this.third = third;
     }
 
-    public static <A, B, C> Tuple3<A, B, C> of(A first,
-                                               B second,
-                                               C third)
-    {
+    public static <A, B, C> Tuple3<A, B, C> of(A first, B second, C third) {
         return new Tuple3<>(first, second, third);
     }
 
-    public A getFirst()
-    {
+    public A getFirst() {
         return first;
     }
 
-    public B getSecond()
-    {
+    public B getSecond() {
         return second;
     }
 
-    public C getThird()
-    {
+    public C getThird() {
         return third;
     }
 
     @SuppressWarnings("RedundantIfStatement")
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -93,7 +77,7 @@ public class Tuple3<A, B, C>
             return false;
         }
 
-        Tuple3 tuple3 = (Tuple3)o;
+        Tuple3 tuple3 = (Tuple3) o;
 
         if (first != null ? !first.equals(tuple3.first) : tuple3.first != null) {
             return false;
@@ -109,8 +93,7 @@ public class Tuple3<A, B, C>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = first != null ? first.hashCode() : 0;
         result = 31 * result + (second != null ? second.hashCode() : 0);
         result = 31 * result + (third != null ? third.hashCode() : 0);

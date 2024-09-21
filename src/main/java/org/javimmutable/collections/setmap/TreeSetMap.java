@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.setmap;
 
+import java.io.Serializable;
+import java.util.Comparator;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
@@ -42,83 +43,64 @@ import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.serialization.TreeSetMapProxy;
 import org.javimmutable.collections.tree.TreeMap;
 
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
-
 /**
- * {@link ISetMap} implementation that allows keys to be traversed in sorted order using a Comparator
- * of the natural ordering of the keys if they implement Comparable.
+ * {@link ISetMap} implementation that allows keys to be traversed in sorted order using a Comparator of the natural
+ * ordering of the keys if they implement Comparable.
  */
 @Immutable
-public class TreeSetMap<K, V>
-    extends AbstractSetMap<K, V>
-    implements Serializable
-{
+public class TreeSetMap<K, V> extends AbstractSetMap<K, V> implements Serializable {
     @SuppressWarnings({"unchecked"})
     private static final TreeSetMap EMPTY = new TreeSetMap(TreeMap.of(), HashSet.of());
+
     private static final long serialVersionUID = -121805;
 
     private final Comparator<K> comparator;
 
-    private TreeSetMap(TreeMap<K, ISet<V>> contents,
-                       ISet<V> emptySet)
-    {
+    private TreeSetMap(TreeMap<K, ISet<V>> contents, ISet<V> emptySet) {
         this(contents, contents.getComparator(), emptySet);
     }
 
-    private TreeSetMap(IMap<K, ISet<V>> contents,
-                       Comparator<K> comparator,
-                       ISet<V> emptySet)
-    {
+    private TreeSetMap(IMap<K, ISet<V>> contents, Comparator<K> comparator, ISet<V> emptySet) {
         super(contents, emptySet);
         this.comparator = comparator;
     }
 
     /**
-     * Constructs an empty set map whose keys are sorted in their natural ordering. The keys must
-     * implement Comparable.
+     * Constructs an empty set map whose keys are sorted in their natural ordering. The keys must implement Comparable.
      */
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> TreeSetMap<K, V> of()
-    {
+    public static <K extends Comparable<K>, V> TreeSetMap<K, V> of() {
         return EMPTY;
     }
 
     /**
-     * Constructs an empty set map using the specified Comparator. Note that the Comparator MUST BE IMMUTABLE.
-     * The Comparator will be retained and used throughout the life of the map and its offspring and will
-     * be aggressively shared, so it is imperative that the Comparator be completely immutable.
+     * Constructs an empty set map using the specified Comparator. Note that the Comparator MUST BE IMMUTABLE. The
+     * Comparator will be retained and used throughout the life of the map and its offspring and will be aggressively
+     * shared, so it is imperative that the Comparator be completely immutable.
      */
-    public static <K, V> TreeSetMap<K, V> of(Comparator<K> comparator)
-    {
+    public static <K, V> TreeSetMap<K, V> of(Comparator<K> comparator) {
         return new TreeSetMap<>(TreeMap.of(comparator), HashSet.of());
     }
 
-    public Comparator<K> getComparator()
-    {
+    public Comparator<K> getComparator() {
         return comparator;
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         checkSetMapInvariants();
     }
 
     @Override
-    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
-    {
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map) {
         return new TreeSetMap<>(map, comparator, emptySet);
     }
 
-    IMap<K, ISet<V>> getMap()
-    {
+    IMap<K, ISet<V>> getMap() {
         return contents;
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new TreeSetMapProxy(this);
     }
 }

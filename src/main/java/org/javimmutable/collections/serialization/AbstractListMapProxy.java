@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,41 +33,35 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListMap;
-import org.javimmutable.collections.IMapEntry;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListMap;
+import org.javimmutable.collections.IMapEntry;
 
 @SuppressWarnings("unchecked")
-abstract class AbstractListMapProxy
-    implements Externalizable
-{
+abstract class AbstractListMapProxy implements Externalizable {
     private static final int MAP_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
     protected IListMap map;
 
-    protected AbstractListMapProxy(IListMap map)
-    {
+    protected AbstractListMapProxy(IListMap map) {
         this.map = map;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(MAP_VERSION);
         writeMap(out);
         out.writeInt(map.size());
         final Iterator<IMapEntry> iterator = map.iterator();
         while (iterator.hasNext()) {
             final IMapEntry entry = iterator.next();
-            final IList list = (IList)entry.getValue();
+            final IList list = (IList) entry.getValue();
             out.writeObject(entry.getKey());
             out.writeInt(list.size());
             for (Object value : list) {
@@ -79,9 +71,7 @@ abstract class AbstractListMapProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != MAP_VERSION) {
             throw new IOException("unexpected version number: expected " + MAP_VERSION + " found " + version);
@@ -99,19 +89,13 @@ abstract class AbstractListMapProxy
         }
     }
 
-    protected Object readResolve()
-    {
+    protected Object readResolve() {
         return map;
     }
 
-    protected IListMap readMap(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    protected IListMap readMap(ObjectInput in) throws IOException, ClassNotFoundException {
         return map;
     }
 
-    protected void writeMap(ObjectOutput out)
-        throws IOException
-    {
-    }
+    protected void writeMap(ObjectOutput out) throws IOException {}
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,25 +33,18 @@
 
 package org.javimmutable.collections;
 
+import java.util.Iterator;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.list.TreeList;
 
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.stream.Collector;
+public final class ILists {
+    private ILists() {}
 
-public final class ILists
-{
-    private ILists()
-    {
-    }
-
-    /**
-     * Produces an empty {@link IList} built atop a balanced binary tree.
-     */
+    /** Produces an empty {@link IList} built atop a balanced binary tree. */
     @Nonnull
-    public static <T> IList<T> of()
-    {
+    public static <T> IList<T> of() {
         return TreeList.of();
     }
 
@@ -62,8 +53,7 @@ public final class ILists
      */
     @Nonnull
     @SafeVarargs
-    public static <T> IList<T> of(T... values)
-    {
+    public static <T> IList<T> of(T... values) {
         return TreeList.of(IndexedArray.retained(values));
     }
 
@@ -71,8 +61,7 @@ public final class ILists
      * Efficiently produces a {@link IList} containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IList<T> allOf(@Nonnull Iterator<? extends T> source)
-    {
+    public static <T> IList<T> allOf(@Nonnull Iterator<? extends T> source) {
         return TreeList.of(source);
     }
 
@@ -80,26 +69,19 @@ public final class ILists
      * Efficiently produces a {@link IList} containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IList<T> allOf(@Nonnull Iterable<? extends T> source)
-    {
+    public static <T> IList<T> allOf(@Nonnull Iterable<? extends T> source) {
         return TreeList.of(source.iterator());
     }
 
-    /**
-     * Produces a Builder for efficiently constructing a IList built atop a balanced binary tree.
-     */
+    /** Produces a Builder for efficiently constructing a IList built atop a balanced binary tree. */
     @Nonnull
-    public static <T> IListBuilder<T> builder()
-    {
+    public static <T> IListBuilder<T> builder() {
         return TreeList.listBuilder();
     }
 
-    /**
-     * Efficiently collects values into a {@link IList} built atop a balanced binary tree.
-     */
+    /** Efficiently collects values into a {@link IList} built atop a balanced binary tree. */
     @Nonnull
-    public static <T> Collector<T, ?, IList<T>> collector()
-    {
+    public static <T> Collector<T, ?, IList<T>> collector() {
         return TreeList.createListCollector();
     }
 }

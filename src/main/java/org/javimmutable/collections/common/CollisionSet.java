@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.common;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.SplitableIterable;
@@ -43,18 +43,12 @@ import org.javimmutable.collections.Sum1;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
- * Interface for simple collection objects that manage the contents of leaf nodes in the hash table.
- * Implementations are free to use any class for their leaf nodes and manage them as needed.
+ * Interface for simple collection objects that manage the contents of leaf nodes in the hash table. Implementations are
+ * free to use any class for their leaf nodes and manage them as needed.
  */
-public interface CollisionSet<T>
-{
-    interface Node
-    {
-    }
+public interface CollisionSet<T> {
+    interface Node {}
 
     @Nonnull
     Node empty();
@@ -63,78 +57,57 @@ public interface CollisionSet<T>
     Node single(@Nonnull T value);
 
     @Nonnull
-    Node dual(@Nonnull T value1,
-              @Nonnull T value2);
+    Node dual(@Nonnull T value1, @Nonnull T value2);
 
     int size(@Nonnull Node node);
 
-    boolean contains(@Nonnull Node node,
-                     @Nonnull T value);
+    boolean contains(@Nonnull Node node, @Nonnull T value);
 
     @Nonnull
-    Node insert(@Nonnull Node node,
-                @Nonnull T value);
+    Node insert(@Nonnull Node node, @Nonnull T value);
 
     @Nonnull
-    Node delete(@Nonnull Node node,
-                @Nonnull T value);
+    Node delete(@Nonnull Node node, @Nonnull T value);
 
     @Nonnull
     T first(@Nonnull Node node);
 
     @Nullable
-    GenericIterator.State<T> iterateOverRange(@Nonnull Node node,
-                                              @Nullable GenericIterator.State<T> parent,
-                                              int offset,
-                                              int limit);
+    GenericIterator.State<T> iterateOverRange(
+            @Nonnull Node node, @Nullable GenericIterator.State<T> parent, int offset, int limit);
 
     @Nonnull
-    default GenericIterator.Iterable<T> genericIterable(@Nonnull Node node)
-    {
-        return new GenericIterator.Iterable<T>()
-        {
+    default GenericIterator.Iterable<T> genericIterable(@Nonnull Node node) {
+        return new GenericIterator.Iterable<T>() {
             @Nullable
             @Override
-            public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
-                                                             int offset,
-                                                             int limit)
-            {
+            public GenericIterator.State<T> iterateOverRange(
+                    @Nullable GenericIterator.State<T> parent, int offset, int limit) {
                 return CollisionSet.this.iterateOverRange(node, parent, offset, limit);
             }
 
             @Override
-            public int iterableSize()
-            {
+            public int iterableSize() {
                 return size(node);
             }
         };
     }
 
     @Nonnull
-    default SplitableIterable<T> iterable(@Nonnull CollisionSet.Node node)
-    {
+    default SplitableIterable<T> iterable(@Nonnull CollisionSet.Node node) {
         return genericIterable(node);
     }
 
     @Nonnull
-    default SplitableIterator<T> iterator(@Nonnull Node node)
-    {
+    default SplitableIterator<T> iterator(@Nonnull Node node) {
         return genericIterable(node).iterator();
     }
 
-    void forEach(@Nonnull Node node,
-                 @Nonnull Proc1<T> proc);
+    void forEach(@Nonnull Node node, @Nonnull Proc1<T> proc);
 
-    <E extends Exception> void forEachThrows(@Nonnull Node node,
-                                             @Nonnull Proc1Throws<T, E> proc)
-        throws E;
+    <E extends Exception> void forEachThrows(@Nonnull Node node, @Nonnull Proc1Throws<T, E> proc) throws E;
 
-    <R> R reduce(@Nonnull Node node,
-                 R sum,
-                 @Nonnull Sum1<T, R> proc);
+    <R> R reduce(@Nonnull Node node, R sum, @Nonnull Sum1<T, R> proc);
 
-    <R, E extends Exception> R reduceThrows(@Nonnull Node node,
-                                            R sum,
-                                            @Nonnull Sum1Throws<T, R, E> proc)
-        throws E;
+    <R, E extends Exception> R reduceThrows(@Nonnull Node node, R sum, @Nonnull Sum1Throws<T, R, E> proc) throws E;
 }

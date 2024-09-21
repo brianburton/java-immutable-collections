@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,7 @@
 
 package org.javimmutable.collections.list;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.InvariantCheckable;
@@ -43,15 +42,12 @@ import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-
 abstract class AbstractNode<T>
-    implements SplitableIterable<T>,
-               InvariantCheckable,
-               GenericIterator.Iterable<T>,
-               CollisionMap.Node,
-               CollisionSet.Node
-{
+        implements SplitableIterable<T>,
+                InvariantCheckable,
+                GenericIterator.Iterable<T>,
+                CollisionMap.Node,
+                CollisionSet.Node {
     abstract boolean isEmpty();
 
     abstract int size();
@@ -60,9 +56,7 @@ abstract class AbstractNode<T>
 
     abstract T get(int index);
 
-    abstract <C> C findImpl(int index,
-                            Func0<C> defaultMapping,
-                            Func1<T, C> valueMapping);
+    abstract <C> C findImpl(int index, Func0<C> defaultMapping, Func1<T, C> valueMapping);
 
     @Nonnull
     abstract AbstractNode<T> append(T value);
@@ -77,12 +71,10 @@ abstract class AbstractNode<T>
     abstract AbstractNode<T> prepend(@Nonnull AbstractNode<T> node);
 
     @Nonnull
-    abstract AbstractNode<T> assign(int index,
-                                    T value);
+    abstract AbstractNode<T> assign(int index, T value);
 
     @Nonnull
-    abstract AbstractNode<T> insert(int index,
-                                    T value);
+    abstract AbstractNode<T> insert(int index, T value);
 
     @Nonnull
     abstract AbstractNode<T> deleteFirst();
@@ -102,24 +94,20 @@ abstract class AbstractNode<T>
     @Nonnull
     abstract AbstractNode<T> reverse();
 
-    abstract void copyTo(T[] array,
-                         int offset);
+    abstract void copyTo(T[] array, int offset);
 
     @Nonnull
-    AbstractNode<T> left()
-    {
+    AbstractNode<T> left() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
-    AbstractNode<T> right()
-    {
+    AbstractNode<T> right() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int iterableSize()
-    {
+    public int iterableSize() {
         return size();
     }
 }

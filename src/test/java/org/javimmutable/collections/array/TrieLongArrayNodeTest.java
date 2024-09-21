@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,9 +33,8 @@
 
 package org.javimmutable.collections.array;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.common.LongArrayMappedTrieMath;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.lang.Long.*;
+import static org.javimmutable.collections.array.TrieLongArrayNode.flip;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,15 +42,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import junit.framework.TestCase;
+import org.javimmutable.collections.common.LongArrayMappedTrieMath;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import static java.lang.Long.*;
-import static org.javimmutable.collections.array.TrieLongArrayNode.flip;
-
-public class TrieLongArrayNodeTest
-    extends TestCase
-{
-    public void testRandom()
-    {
+public class TrieLongArrayNodeTest extends TestCase {
+    public void testRandom() {
         final Random r = new Random(234567);
         final Map<Long, Integer> known = new TreeMap<>();
         final List<Long> indexes = new ArrayList<>();
@@ -91,15 +85,16 @@ public class TrieLongArrayNodeTest
             array = array.delete(index);
             if (known.size() % checkInterval == 0) {
                 array.checkInvariants();
-                StandardIteratorTests.listIteratorTest(new ArrayList<>(known.keySet()), array.keys().iterator());
-                StandardIteratorTests.listIteratorTest(new ArrayList<>(known.values()), array.values().iterator());
+                StandardIteratorTests.listIteratorTest(
+                        new ArrayList<>(known.keySet()), array.keys().iterator());
+                StandardIteratorTests.listIteratorTest(
+                        new ArrayList<>(known.values()), array.values().iterator());
             }
         }
         assertEquals(0, array.size());
     }
 
-    public void testFlip()
-    {
+    public void testFlip() {
         assertEquals(0L, flip(Long.MIN_VALUE));
         assertEquals(-1L, flip(Long.MAX_VALUE));
         final Random r = new Random(10000);
@@ -114,8 +109,7 @@ public class TrieLongArrayNodeTest
         }
     }
 
-    public void testCommonAncestorShift()
-    {
+    public void testCommonAncestorShift() {
         // 352321536 (3)
         final int rootIndex = 352321536 + 1;
         // 368460608 (0)
@@ -129,19 +123,31 @@ public class TrieLongArrayNodeTest
         assertEquals(0, LongArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(leafIndex));
         assertEquals(2, LongArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(assignIndex));
         assertEquals(0, LongArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(rootIndex));
-        assertEquals(1, LongArrayMappedTrieMath.findMaxCommonShift(TrieLongArrayNode.ROOT_SHIFT_COUNT, leafIndex, assignIndex));
+        assertEquals(
+                1,
+                LongArrayMappedTrieMath.findMaxCommonShift(TrieLongArrayNode.ROOT_SHIFT_COUNT, leafIndex, assignIndex));
         assertEquals(2, TrieLongArrayNode.findCommonAncestorShift(leafIndex, assignIndex));
         assertEquals(3, TrieLongArrayNode.findCommonAncestorShift(rootIndex, assignIndex));
         assertEquals(0, TrieLongArrayNode.findCommonAncestorShift(1, 2));
-        assertEquals(TrieLongArrayNode.ROOT_SHIFT_COUNT, TrieLongArrayNode.findCommonAncestorShift(0b11_000000_000000_000000_000000_000000,
-                                                                                                   0b01_000000_000000_000000_000000_000000));
-        assertEquals(4, TrieLongArrayNode.findCommonAncestorShift(0b11_000001_000000_000000_000000_000000,
-                                                                  0b11_000001_000001_000000_000000_000000));
-        assertEquals(3, TrieLongArrayNode.findCommonAncestorShift(0b11_000001_000010_000000_000000_000000,
-                                                                  0b11_000001_000001_000000_000000_000000));
-        assertEquals(1, LongArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(0b11_000001_000011_000000_000001_000000));
-        assertEquals(2, TrieLongArrayNode.findCommonAncestorShift(0b11_000001_000011_000000_000000_000001,
-                                                                  0b11_000001_000011_000001_000000_000000));
+        assertEquals(
+                TrieLongArrayNode.ROOT_SHIFT_COUNT,
+                TrieLongArrayNode.findCommonAncestorShift(
+                        0b11_000000_000000_000000_000000_000000, 0b01_000000_000000_000000_000000_000000));
+        assertEquals(
+                4,
+                TrieLongArrayNode.findCommonAncestorShift(
+                        0b11_000001_000000_000000_000000_000000, 0b11_000001_000001_000000_000000_000000));
+        assertEquals(
+                3,
+                TrieLongArrayNode.findCommonAncestorShift(
+                        0b11_000001_000010_000000_000000_000000, 0b11_000001_000001_000000_000000_000000));
+        assertEquals(
+                1,
+                LongArrayMappedTrieMath.findMinimumShiftForZeroBelowHashCode(0b11_000001_000011_000000_000001_000000));
+        assertEquals(
+                2,
+                TrieLongArrayNode.findCommonAncestorShift(
+                        0b11_000001_000011_000000_000000_000001, 0b11_000001_000011_000001_000000_000000));
 
         assertEquals(3, TrieLongArrayNode.findCommonAncestorShift(rootIndex, leafIndex));
         assertEquals(2, TrieLongArrayNode.findCommonAncestorShift(leafIndex, assignIndex));

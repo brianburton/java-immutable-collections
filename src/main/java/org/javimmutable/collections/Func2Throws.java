@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,14 +33,8 @@
 
 package org.javimmutable.collections;
 
-/**
- * Interface for functions that take two parameters and might
- * throw an exception.
- */
+/** Interface for functions that take two parameters and might throw an exception. */
 @FunctionalInterface
-public interface Func2Throws<P1, P2, R, E extends Exception>
-{
-    R apply(P1 p1,
-            P2 p2)
-        throws E;
+public interface Func2Throws<P1, P2, R, E extends Exception> {
+    R apply(P1 p1, P2 p2) throws E;
 }

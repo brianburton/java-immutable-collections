@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,85 +33,69 @@
 
 package org.javimmutable.collections.indexed;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
+import static org.javimmutable.collections.Maybe.empty;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.javimmutable.collections.Maybe.empty;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
 @Immutable
-public class IndexedList<T>
-    implements Indexed<T>,
-               Iterable<T>
-{
+public class IndexedList<T> implements Indexed<T>, Iterable<T> {
     private final List<? extends T> values;
 
-    private IndexedList(List<? extends T> values)
-    {
+    private IndexedList(List<? extends T> values) {
         this.values = values;
     }
 
     /**
-     * Produces an instance using a copy of the specified List to ensure that changes to the List
-     * will not influence the values returned by the instance's methods.  This is generally preferred
-     * to the unsafe() constructor.
+     * Produces an instance using a copy of the specified List to ensure that changes to the List will not influence the
+     * values returned by the instance's methods. This is generally preferred to the unsafe() constructor.
      */
-    public static <T> IndexedList<T> copied(List<? extends T> values)
-    {
+    public static <T> IndexedList<T> copied(List<? extends T> values) {
         return new IndexedList<T>(new ArrayList<T>(values));
     }
 
     /**
-     * Produces an instance using the provided List.  This makes the instance unsafe for sharing since
-     * changes to the List will cause changes to this instance's values.  However this can be useful
-     * when performance is important and the instance will not be shared or retained beyond a single
-     * method scope.
+     * Produces an instance using the provided List. This makes the instance unsafe for sharing since changes to the
+     * List will cause changes to this instance's values. However this can be useful when performance is important and
+     * the instance will not be shared or retained beyond a single method scope.
      */
-    public static <T> IndexedList<T> retained(List<? extends T> values)
-    {
+    public static <T> IndexedList<T> retained(List<? extends T> values) {
         return new IndexedList<T>(values);
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         return values.get(index);
     }
 
     @Nonnull
     @Override
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         return index >= 0 && index < values.size() ? Maybe.of(values.get(index)) : empty();
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return values.size();
     }
 
     @Override
     @Nonnull
-    public Iterator<T> iterator()
-    {
+    public Iterator<T> iterator() {
         final Iterator<? extends T> i = values.iterator();
-        return new Iterator<T>()
-        {
+        return new Iterator<T>() {
             @Override
-            public boolean hasNext()
-            {
+            public boolean hasNext() {
                 return i.hasNext();
             }
 
             @Override
-            public T next()
-            {
+            public T next() {
                 return i.next();
             }
         };

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.listmap;
 
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMap;
@@ -42,47 +42,34 @@ import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.list.TreeList;
 import org.javimmutable.collections.serialization.HashListMapProxy;
 
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-
-/**
- * {@link IListMap} using a hash map for fast lookup.
- */
+/** {@link IListMap} using a hash map for fast lookup. */
 @Immutable
-public class HashListMap<K, V>
-    extends AbstractListMap<K, V>
-    implements Serializable
-{
+public class HashListMap<K, V> extends AbstractListMap<K, V> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final HashListMap EMPTY = new HashListMap(HashMap.of(), TreeList.of());
+
     private static final long serialVersionUID = -121805;
 
-    private HashListMap(IMap<K, IList<V>> contents,
-                        IList<V> emptyList)
-    {
+    private HashListMap(IMap<K, IList<V>> contents, IList<V> emptyList) {
         super(contents, emptyList);
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashListMap<K, V> of()
-    {
+    public static <K, V> HashListMap<K, V> of() {
         return EMPTY;
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         checkListMapInvariants();
     }
 
     @Override
-    protected IListMap<K, V> create(IMap<K, IList<V>> map)
-    {
+    protected IListMap<K, V> create(IMap<K, IList<V>> map) {
         return (map == contents) ? this : new HashListMap<>(map, emptyList);
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new HashListMapProxy(this);
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,46 +33,35 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.ISetMap;
-import org.javimmutable.collections.setmap.TreeSetMap;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.ISetMap;
+import org.javimmutable.collections.setmap.TreeSetMap;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("unchecked")
-public class TreeSetMapProxy
-    extends AbstractSetMapProxy
-{
+public class TreeSetMapProxy extends AbstractSetMapProxy {
     private static final long serialVersionUID = -121805;
 
-    public TreeSetMapProxy()
-    {
+    public TreeSetMapProxy() {
         super(TreeSetMap.of());
     }
 
-    public TreeSetMapProxy(TreeSetMap map)
-    {
+    public TreeSetMapProxy(TreeSetMap map) {
         super(map);
     }
 
     @Override
-    protected ISetMap readMap(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        Comparator comparator = (Comparator)in.readObject();
+    protected ISetMap readMap(ObjectInput in) throws IOException, ClassNotFoundException {
+        Comparator comparator = (Comparator) in.readObject();
         return TreeSetMap.of(comparator);
     }
 
     @Override
-    protected void writeMap(ObjectOutput out)
-        throws IOException
-    {
-        TreeSetMap treeMap = (TreeSetMap)map;
+    protected void writeMap(ObjectOutput out) throws IOException {
+        TreeSetMap treeMap = (TreeSetMap) map;
         out.writeObject(treeMap.getComparator());
     }
 }

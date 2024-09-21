@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,13 @@
 
 package org.javimmutable.collections.tree;
 
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
@@ -50,19 +55,8 @@ import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.serialization.TreeMapProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 @Immutable
-public class TreeMap<K, V>
-    extends AbstractMap<K, V>
-    implements Serializable
-{
+public class TreeMap<K, V> extends AbstractMap<K, V> implements Serializable {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static final TreeMap EMPTY = new TreeMap(ComparableComparator.of(), FringeNode.instance());
 
@@ -71,107 +65,91 @@ public class TreeMap<K, V>
     private final Comparator<K> comparator;
     private final AbstractNode<K, V> root;
 
-    TreeMap(@Nonnull Comparator<K> comparator,
-            @Nonnull AbstractNode<K, V> root)
-    {
+    TreeMap(@Nonnull Comparator<K> comparator, @Nonnull AbstractNode<K, V> root) {
         this.comparator = comparator;
         this.root = root;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <K extends Comparable<K>, V> TreeMap<K, V> of()
-    {
+    public static <K extends Comparable<K>, V> TreeMap<K, V> of() {
         return EMPTY;
     }
 
     @Nonnull
-    public static <K, V> TreeMap<K, V> of(@Nonnull Comparator<K> comparator)
-    {
+    public static <K, V> TreeMap<K, V> of(@Nonnull Comparator<K> comparator) {
         return new TreeMap<>(comparator, FringeNode.instance());
     }
 
     @Nonnull
-    public static <K extends Comparable<K>, V> IMapBuilder<K, V> builder()
-    {
+    public static <K extends Comparable<K>, V> IMapBuilder<K, V> builder() {
         return new TreeMapBuilder<>(ComparableComparator.<K>of());
     }
 
     @Nonnull
-    public static <K, V> IMapBuilder<K, V> builder(@Nonnull Comparator<K> comparator)
-    {
+    public static <K, V> IMapBuilder<K, V> builder(@Nonnull Comparator<K> comparator) {
         return new TreeMapBuilder<>(comparator);
     }
 
     @Nonnull
     @Override
-    public IMapBuilder<K, V> mapBuilder()
-    {
+    public IMapBuilder<K, V> mapBuilder() {
         return new TreeMapBuilder<>(comparator);
     }
 
     @Nonnull
-    public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector()
-    {
+    public static <K extends Comparable<K>, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector() {
         return createMapCollector(ComparableComparator.<K>of());
     }
 
     @Nonnull
-    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector(@Nonnull Comparator<K> comparator)
-    {
-        return Collector.<IMapEntry<K, V>, IMapBuilder<K, V>, IMap<K, V>>of(() -> new TreeMapBuilder<>(comparator),
-                                                                            (b, v) -> b.add(v),
-                                                                            (b1, b2) -> b1.add(b2),
-                                                                            b -> b.build(),
-                                                                            Collector.Characteristics.CONCURRENT);
+    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector(
+            @Nonnull Comparator<K> comparator) {
+        return Collector.<IMapEntry<K, V>, IMapBuilder<K, V>, IMap<K, V>>of(
+                () -> new TreeMapBuilder<>(comparator),
+                (b, v) -> b.add(v),
+                (b1, b2) -> b1.add(b2),
+                b -> b.build(),
+                Collector.Characteristics.CONCURRENT);
     }
 
     @Override
-    public V getValueOr(K key,
-                        V defaultValue)
-    {
+    public V getValueOr(K key, V defaultValue) {
         Conditions.stopNull(key);
         return root.get(comparator, key, defaultValue);
     }
 
     @Nonnull
     @Override
-    public Maybe<V> find(@Nonnull K key)
-    {
+    public Maybe<V> find(@Nonnull K key) {
         Conditions.stopNull(key);
         return root.find(comparator, key);
     }
 
     @Nonnull
     @Override
-    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
-    {
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key) {
         Conditions.stopNull(key);
         return root.findEntry(comparator, key);
     }
 
     @Nonnull
     @Override
-    public TreeMap<K, V> assign(@Nonnull K key,
-                                V value)
-    {
+    public TreeMap<K, V> assign(@Nonnull K key, V value) {
         Conditions.stopNull(key);
         return create(root.assign(comparator, key, value));
     }
 
     @Nonnull
     @Override
-    public TreeMap<K, V> update(@Nonnull K key,
-                                @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    public TreeMap<K, V> update(@Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator) {
         Conditions.stopNull(key);
         return create(root.update(comparator, key, generator));
     }
 
     @Nonnull
     @Override
-    public TreeMap<K, V> delete(@Nonnull K key)
-    {
+    public TreeMap<K, V> delete(@Nonnull K key) {
         Conditions.stopNull(key);
         final AbstractNode<K, V> newRoot = root.delete(comparator, key);
         if (newRoot.isEmpty()) {
@@ -182,81 +160,65 @@ public class TreeMap<K, V>
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return root.size();
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public TreeMap<K, V> deleteAll()
-    {
+    public TreeMap<K, V> deleteAll() {
         return (comparator == ComparableComparator.of()) ? EMPTY : new TreeMap<>(comparator, FringeNode.instance());
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<IMapEntry<K, V>> iterator()
-    {
+    public SplitableIterator<IMapEntry<K, V>> iterator() {
         return root.iterator();
     }
 
     @Override
-    public void forEach(@Nonnull Proc2<K, V> proc)
-    {
+    public void forEach(@Nonnull Proc2<K, V> proc) {
         root.forEach(proc);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc) throws E {
         root.forEachThrows(proc);
     }
 
     @Override
-    public <R> R reduce(R sum,
-                        @Nonnull Sum2<K, V, R> proc)
-    {
+    public <R> R reduce(R sum, @Nonnull Sum2<K, V, R> proc) {
         return root.reduce(sum, proc);
     }
 
     @Override
-    public <R, E extends Exception> R reduceThrows(R sum,
-                                                   @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E
-    {
+    public <R, E extends Exception> R reduceThrows(R sum, @Nonnull Sum2Throws<K, V, R, E> proc) throws E {
         return root.reduceThrows(sum, proc);
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         root.checkInvariants(comparator);
     }
 
     @Nonnull
-    public Comparator<K> getComparator()
-    {
+    public Comparator<K> getComparator() {
         return comparator;
     }
 
     @Nonnull
-    List<K> getKeysList()
-    {
+    List<K> getKeysList() {
         return keys().stream().collect(Collectors.toList());
     }
 
     @Nonnull
-    private TreeMap<K, V> create(AbstractNode<K, V> newRoot)
-    {
+    private TreeMap<K, V> create(AbstractNode<K, V> newRoot) {
         if (newRoot == root) {
             return this;
         } else {
@@ -264,8 +226,7 @@ public class TreeMap<K, V>
         }
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new TreeMapProxy(this);
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,33 +33,27 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMultiset;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
 
 @SuppressWarnings("unchecked")
-abstract class AbstractMultisetProxy
-    implements Externalizable
-{
+abstract class AbstractMultisetProxy implements Externalizable {
     private static final int MULTISET_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
     protected IMultiset set;
 
-    protected AbstractMultisetProxy(IMultiset set)
-    {
+    protected AbstractMultisetProxy(IMultiset set) {
         this.set = set;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(MULTISET_VERSION);
         writeSet(out);
         out.writeInt(set.size());
@@ -69,14 +61,12 @@ abstract class AbstractMultisetProxy
         while (iterator.hasNext()) {
             IMapEntry e = iterator.next();
             out.writeObject(e.getKey());
-            out.writeInt((Integer)e.getValue());
+            out.writeInt((Integer) e.getValue());
         }
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != MULTISET_VERSION) {
             throw new IOException("unexpected version number: expected " + MULTISET_VERSION + " found " + version);
@@ -90,19 +80,13 @@ abstract class AbstractMultisetProxy
         }
     }
 
-    protected Object readResolve()
-    {
+    protected Object readResolve() {
         return set;
     }
 
-    protected IMultiset readSet(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    protected IMultiset readSet(ObjectInput in) throws IOException, ClassNotFoundException {
         return set;
     }
 
-    protected void writeSet(ObjectOutput out)
-        throws IOException
-    {
-    }
+    protected void writeSet(ObjectOutput out) throws IOException {}
 }

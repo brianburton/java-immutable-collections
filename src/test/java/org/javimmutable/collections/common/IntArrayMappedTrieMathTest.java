@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,16 +33,13 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.TestCase;
-
 import static org.javimmutable.collections.common.BitmaskMath.MAX_INDEX;
 import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
 
-public class IntArrayMappedTrieMathTest
-    extends TestCase
-{
-    public void testVarious()
-    {
+import junit.framework.TestCase;
+
+public class IntArrayMappedTrieMathTest extends TestCase {
+    public void testVarious() {
         assertEquals(6, MAX_SHIFTS);
         assertEquals(5, MAX_FULL_SHIFTS);
         final int hashCode = hash(1, 2, 3, 4, 5, 6);
@@ -54,26 +49,32 @@ public class IntArrayMappedTrieMathTest
         verifyEquals(hash(0, 1, 2, 3, 4, 5), remainderFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
         verifyEquals(hash(0, 1, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(1, 2, 3, 4, MAX_INDEX, 6)));
         verifyEquals(hash(0, 3, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, 2, 3, 4, MAX_INDEX, 6)));
-        verifyEquals(hash(0, 3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 6)));
+        verifyEquals(
+                hash(0, 3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX),
+                remainderFromHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 6)));
         verifyEquals(hash(1, 2, 3, 4, 5, 0), baseIndexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(6, indexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(MAX_INDEX, indexFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
-        verifyEquals(hash(3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 0), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 0));
-        verifyEquals(hash(3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 1), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 1));
+        verifyEquals(
+                hash(3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 0),
+                liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 0));
+        verifyEquals(
+                hash(3, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 1),
+                liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 1));
         assertEquals(11, maxShiftsForBitCount(64));
         assertEquals(10, maxShiftsForBitCount(60));
     }
 
-    public void testHash()
-    {
+    public void testHash() {
         verifyEquals(0b01000010000011000100000101000110, hash(1, 2, 3, 4, 5, 6));
         verifyEquals(0b01000010000011000100000101111111, hash(1, 2, 3, 4, 5, MAX_INDEX));
         verifyEquals(0b11000010000011000100000101000110, hash(MAX_INDEX, 2, 3, 4, 5, 6));
-        verifyEquals(0b11111111111111111111111111111111, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX));
+        verifyEquals(
+                0b11111111111111111111111111111111,
+                hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX));
     }
 
-    public void testShifts()
-    {
+    public void testShifts() {
         assertEquals(MAX_INDEX, indexAtShift(0, MAX_INDEX));
         assertEquals(MAX_INDEX, indexAtShift(0, -1));
         assertEquals(3, indexAtShift(MAX_SHIFT_NUMBER, -1));
@@ -93,8 +94,7 @@ public class IntArrayMappedTrieMathTest
         verifyEquals(hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0), baseIndexAtShift(0, hashCode));
     }
 
-    public void testHashCodeBelowShift()
-    {
+    public void testHashCodeBelowShift() {
         final int hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
         assertEquals(0, hashCodeBelowShift(0, hashCode));
         assertEquals(hash(0, 0, 0, 0, 0, 0b101011), hashCodeBelowShift(1, hashCode));
@@ -104,8 +104,7 @@ public class IntArrayMappedTrieMathTest
         assertEquals(hash(0, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011), hashCodeBelowShift(5, hashCode));
     }
 
-    public void testFindMinimumShiftForZeroBelowHashCode()
-    {
+    public void testFindMinimumShiftForZeroBelowHashCode() {
         assertEquals(0, findMinimumShiftForZeroBelowHashCode(0));
         assertEquals(0, findMinimumShiftForZeroBelowHashCode(0b0_100000));
         assertEquals(1, findMinimumShiftForZeroBelowHashCode(0b1_000000));
@@ -114,33 +113,18 @@ public class IntArrayMappedTrieMathTest
         assertEquals(2, findMinimumShiftForZeroBelowHashCode(0b100000_000000_000000));
     }
 
-    public void testFindMaxCommonShift()
-    {
+    public void testFindMaxCommonShift() {
         assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, 0, 0));
         assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, 1, 2));
-        assertEquals(5, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(9, 5, 4, 3, 2, 1)));
-        assertEquals(4, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 9, 4, 3, 2, 1)));
-        assertEquals(3, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 9, 3, 2, 1)));
-        assertEquals(2, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 4, 9, 2, 1)));
-        assertEquals(1, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 4, 3, 9, 1)));
-        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 4, 3, 2, 9)));
+        assertEquals(5, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(9, 5, 4, 3, 2, 1)));
+        assertEquals(4, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 9, 4, 3, 2, 1)));
+        assertEquals(3, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 9, 3, 2, 1)));
+        assertEquals(2, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 4, 9, 2, 1)));
+        assertEquals(1, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 4, 3, 9, 1)));
+        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 4, 3, 2, 9)));
     }
 
-    private void verifyEquals(int a,
-                              int b)
-    {
+    private void verifyEquals(int a, int b) {
         assertEquals(Integer.toBinaryString(a), Integer.toBinaryString(b));
     }
 }

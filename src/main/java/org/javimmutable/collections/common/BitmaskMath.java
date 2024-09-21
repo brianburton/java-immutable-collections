@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,90 +33,68 @@
 
 package org.javimmutable.collections.common;
 
+import static org.javimmutable.collections.Maybe.empty;
+
+import java.util.function.Function;
+import java.util.function.IntConsumer;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.Temp;
 
-import javax.annotation.Nonnull;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-
-import static org.javimmutable.collections.Maybe.empty;
-
 /**
- * Helper class with static methods to manipulate long bitmasks.
- * Used in array map trie calculations.
- * Methods are short to allow inlining.
+ * Helper class with static methods to manipulate long bitmasks. Used in array map trie calculations. Methods are short
+ * to allow inlining.
  */
-public final class BitmaskMath
-{
+public final class BitmaskMath {
     public static final int ARRAY_SIZE = 64;
     public static final int MAX_INDEX = ARRAY_SIZE - 1;
     public static final long ALL_BITS = -1L;
 
-    private BitmaskMath()
-    {
-    }
+    private BitmaskMath() {}
 
-    public static long bitFromIndex(int index)
-    {
+    public static long bitFromIndex(int index) {
         return 1L << index;
     }
 
-    public static boolean bitIsAbsent(long bitmask,
-                                      long bit)
-    {
+    public static boolean bitIsAbsent(long bitmask, long bit) {
         return (bitmask & bit) == 0L;
     }
 
-    public static boolean bitIsPresent(long bitmask,
-                                       long bit)
-    {
+    public static boolean bitIsPresent(long bitmask, long bit) {
         return (bitmask & bit) != 0L;
     }
 
-    public static long addBit(long bitmask,
-                              long bit)
-    {
+    public static long addBit(long bitmask, long bit) {
         return bitmask | bit;
     }
 
-    public static long removeBit(long bitmask,
-                                 long bit)
-    {
+    public static long removeBit(long bitmask, long bit) {
         return bitmask & ~bit;
     }
 
-    public static long leastBit(long bitmask)
-    {
+    public static long leastBit(long bitmask) {
         return Long.lowestOneBit(bitmask);
     }
 
-    public static int indexForBit(long bit)
-    {
+    public static int indexForBit(long bit) {
         return Long.numberOfTrailingZeros(bit);
     }
 
-    public static int arrayIndexForBit(long bitmask,
-                                       long bit)
-    {
+    public static int arrayIndexForBit(long bitmask, long bit) {
         return Long.bitCount(bitmask & (bit - 1));
     }
 
-    public static int bitCount(long bitmask)
-    {
+    public static int bitCount(long bitmask) {
         return Long.bitCount(bitmask);
     }
 
     @Nonnull
-    public static Indexed<Integer> indices(long bitmask)
-    {
+    public static Indexed<Integer> indices(long bitmask) {
         return new Indexes(bitmask);
     }
 
-    public static void forEachIndex(long bitmask,
-                                    IntConsumer proc)
-    {
+    public static void forEachIndex(long bitmask, IntConsumer proc) {
         while (bitmask != 0) {
             final long bit = leastBit(bitmask);
             proc.accept(indexForBit(bit));
@@ -126,11 +102,8 @@ public final class BitmaskMath
         }
     }
 
-    public static <S, D> void copyToCompactArrayUsingBitmask(long bitmask,
-                                                             @Nonnull S[] source,
-                                                             @Nonnull D[] dest,
-                                                             @Nonnull Function<S, D> transforminator)
-    {
+    public static <S, D> void copyToCompactArrayUsingBitmask(
+            long bitmask, @Nonnull S[] source, @Nonnull D[] dest, @Nonnull Function<S, D> transforminator) {
         assert dest.length == bitCount(bitmask);
         final Temp.Int1 destIndex = Temp.intVar(0);
         forEachIndex(bitmask, sourceIndex -> {
@@ -140,8 +113,7 @@ public final class BitmaskMath
         assert destIndex.a == dest.length;
     }
 
-    public static long bitmask(int... indices)
-    {
+    public static long bitmask(int... indices) {
         long answer = 0;
         for (int index : indices) {
             answer |= bitFromIndex(index);
@@ -149,19 +121,15 @@ public final class BitmaskMath
         return answer;
     }
 
-    private static class Indexes
-        implements Indexed<Integer>
-    {
+    private static class Indexes implements Indexed<Integer> {
         private final long bitmask;
 
-        private Indexes(long bitmask)
-        {
+        private Indexes(long bitmask) {
             this.bitmask = bitmask;
         }
 
         @Override
-        public Integer get(int index)
-        {
+        public Integer get(int index) {
             long bit = findBit(index);
             if (bit == 0) {
                 throw new ArrayIndexOutOfBoundsException(index);
@@ -172,8 +140,7 @@ public final class BitmaskMath
 
         @Nonnull
         @Override
-        public Maybe<Integer> find(int index)
-        {
+        public Maybe<Integer> find(int index) {
             long bit = findBit(index);
             if (bit == 0) {
                 return empty();
@@ -183,13 +150,11 @@ public final class BitmaskMath
         }
 
         @Override
-        public int size()
-        {
+        public int size() {
             return bitCount(bitmask);
         }
 
-        private long findBit(int index)
-        {
+        private long findBit(int index) {
             long remaining = bitmask;
             while (index > 0) {
                 remaining = remaining & ~Long.lowestOneBit(remaining);

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,20 +33,16 @@
 
 package org.javimmutable.collections.list;
 
+import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedIterable;
+
+import java.util.ArrayList;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.javimmutable.collections.iterators.StandardIteratorTests.verifyOrderedIterable;
-
-public class IteratorTest
-    extends TestCase
-{
-    public void testVarious()
-    {
+public class IteratorTest extends TestCase {
+    public void testVarious() {
         List<Integer> list = new ArrayList<>();
         TreeBuilder<Integer> tree = new TreeBuilder<>();
         for (int i = 1; i <= 1024; ++i) {
@@ -63,9 +57,7 @@ public class IteratorTest
         }
     }
 
-    private void traverse(List<Integer> values,
-                          SplitableIterator<Integer> source)
-    {
+    private void traverse(List<Integer> values, SplitableIterator<Integer> source) {
         if (source.isSplitAllowed()) {
             SplitIterator<Integer> split = source.splitIterator();
             traverse(values, split.getLeft());

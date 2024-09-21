@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,10 +33,9 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Func1;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -49,25 +46,17 @@ import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.javimmutable.collections.Func1;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.assertEquals;
+public class StandardSerializableTests {
+    /** Iterator factory for Iterable objects that just calls iterator() method. */
+    public static final Func1<Object, Iterator> standardIteratorFactory = o -> ((Iterable) o).iterator();
 
-public class StandardSerializableTests
-{
-    /**
-     * Iterator factory for Iterable objects that just calls iterator() method.
-     */
-    public static final Func1<Object, Iterator> standardIteratorFactory = o -> ((Iterable)o).iterator();
-
-    /**
-     * Intended for unit tests of non-iterable objects.  Just performs normal test and
-     * backwards compatibility test.
-     */
-    public static void verifySerializable(@Nonnull Object source,
-                                          @Nonnull String oldSerializedBase64)
-        throws Exception
-    {
+    /** Intended for unit tests of non-iterable objects. Just performs normal test and backwards compatibility test. */
+    public static void verifySerializable(@Nonnull Object source, @Nonnull String oldSerializedBase64)
+            throws Exception {
         byte[] bytes = serialize(source);
         Object dest = deserialize(bytes);
         assertEquals(source.getClass().getName(), dest.getClass().getName());
@@ -86,15 +75,13 @@ public class StandardSerializableTests
         assertEquals(source, dest);
     }
 
-    /**
-     * Intended for unit tests.  Performs iterator and extra tests as well as backwards compatibility test.
-     */
-    public static void verifySerializable(@Nonnull Func1<Object, Iterator> iteratorFactory,
-                                          @Nullable BiConsumer extraChecks,
-                                          @Nonnull Object source,
-                                          @Nonnull String oldSerializedBase64)
-        throws Exception
-    {
+    /** Intended for unit tests. Performs iterator and extra tests as well as backwards compatibility test. */
+    public static void verifySerializable(
+            @Nonnull Func1<Object, Iterator> iteratorFactory,
+            @Nullable BiConsumer extraChecks,
+            @Nonnull Object source,
+            @Nonnull String oldSerializedBase64)
+            throws Exception {
         byte[] bytes = serialize(source);
         Object dest = deserialize(bytes);
         assertEquals(source.getClass().getName(), dest.getClass().getName());
@@ -119,13 +106,9 @@ public class StandardSerializableTests
         verifyIterator(iteratorFactory.apply(source), iteratorFactory.apply(dest));
     }
 
-    /**
-     * Intended for use by stress tester.  Performs extra checks but not a backwards compatibility check.
-     */
-    public static void verifySerializable(@Nullable BiConsumer<?, ?> extraChecks,
-                                          @Nonnull Object source,
-                                          @Nonnull Class<?> collectionInterface)
-    {
+    /** Intended for use by stress tester. Performs extra checks but not a backwards compatibility check. */
+    public static void verifySerializable(
+            @Nullable BiConsumer<?, ?> extraChecks, @Nonnull Object source, @Nonnull Class<?> collectionInterface) {
         try {
             assertThat(collectionInterface).isAssignableFrom(source.getClass());
             byte[] bytes = serialize(source);
@@ -145,18 +128,14 @@ public class StandardSerializableTests
     }
 
     @SuppressWarnings("unchecked")
-    private static void performExtraChecks(@Nullable BiConsumer extraChecks,
-                                           @Nonnull Object source,
-                                           @Nonnull Object dest)
-    {
+    private static void performExtraChecks(
+            @Nullable BiConsumer extraChecks, @Nonnull Object source, @Nonnull Object dest) {
         if (extraChecks != null) {
             extraChecks.accept(source, dest);
         }
     }
 
-    private static byte[] serialize(Object source)
-        throws Exception
-    {
+    private static byte[] serialize(Object source) throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (ObjectOutputStream out = new ObjectOutputStream(new GZIPOutputStream(bytes))) {
             out.writeObject(source);
@@ -164,27 +143,19 @@ public class StandardSerializableTests
         return bytes.toByteArray();
     }
 
-    private static Object deserialize(byte[] source)
-        throws Exception
-    {
+    private static Object deserialize(byte[] source) throws Exception {
         try (ObjectInputStream inp = new ObjectInputStream(new GZIPInputStream(new ByteArrayInputStream(source)))) {
             return inp.readObject();
         }
     }
 
-    private static String encodingMismatchMessage(String oldSerializedBase64,
-                                                  byte[] newBytes)
-        throws NoSuchAlgorithmException
-    {
-        return String.format("mismatch regex: s@%s@%s@",
-                             oldSerializedBase64.replace("+", "\\+"),
-                             encode(newBytes));
+    private static String encodingMismatchMessage(String oldSerializedBase64, byte[] newBytes)
+            throws NoSuchAlgorithmException {
+        return String.format("mismatch regex: s@%s@%s@", oldSerializedBase64.replace("+", "\\+"), encode(newBytes));
     }
 
-    private static void verifyUnorderedIterator(@Nonnull Func1<Object, Iterator> iteratorFactory,
-                                                Object source,
-                                                Object dest)
-    {
+    private static void verifyUnorderedIterator(
+            @Nonnull Func1<Object, Iterator> iteratorFactory, Object source, Object dest) {
         ExpectedOrderSorter<Object> sorter = new ExpectedOrderSorter(iteratorFactory.apply(source));
         Iterator expected = iteratorFactory.apply(source);
         Iterator actual = sorter.sort(iteratorFactory.apply(dest), i -> i);
@@ -195,9 +166,7 @@ public class StandardSerializableTests
         assertEquals(expected.hasNext(), actual.hasNext());
     }
 
-    private static void verifyIterator(Iterator expected,
-                                       Iterator actual)
-    {
+    private static void verifyIterator(Iterator expected, Iterator actual) {
         while (expected.hasNext()) {
             assertEquals(expected.hasNext(), actual.hasNext());
             assertEquals(expected.next(), actual.next());
@@ -205,15 +174,11 @@ public class StandardSerializableTests
         assertEquals(expected.hasNext(), actual.hasNext());
     }
 
-    private static String encode(byte[] bytes)
-        throws NoSuchAlgorithmException
-    {
+    private static String encode(byte[] bytes) throws NoSuchAlgorithmException {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
-    private static byte[] decode(String base64)
-        throws Exception
-    {
+    private static byte[] decode(String base64) throws Exception {
         return Base64.getDecoder().decode(base64);
     }
 }

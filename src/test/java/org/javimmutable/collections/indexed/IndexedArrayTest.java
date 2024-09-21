@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,28 +33,21 @@
 
 package org.javimmutable.collections.indexed;
 
+import java.util.Arrays;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
 
-import java.util.Arrays;
-
-public class IndexedArrayTest
-    extends TestCase
-{
-    public static Indexed<Integer> makeIndexed(Integer... values)
-    {
+public class IndexedArrayTest extends TestCase {
+    public static Indexed<Integer> makeIndexed(Integer... values) {
         return IndexedList.retained(Arrays.asList(values));
     }
 
-    public void test()
-    {
-        verifyEquals(IndexedArray.retained(new Integer[]{7, 8, 9}), makeIndexed(7, 8, 9));
-        verifyEquals(IndexedArray.copied(new Integer[]{7, 8, 9}), makeIndexed(7, 8, 9));
+    public void test() {
+        verifyEquals(IndexedArray.retained(new Integer[] {7, 8, 9}), makeIndexed(7, 8, 9));
+        verifyEquals(IndexedArray.copied(new Integer[] {7, 8, 9}), makeIndexed(7, 8, 9));
     }
 
-    private void verifyEquals(Indexed<Integer> expected,
-                              Indexed<Integer> actual)
-    {
+    private void verifyEquals(Indexed<Integer> expected, Indexed<Integer> actual) {
         assertEquals(expected.size(), actual.size());
         for (int i = 0; i < expected.size(); ++i) {
             assertEquals(expected.get(i), actual.get(i));

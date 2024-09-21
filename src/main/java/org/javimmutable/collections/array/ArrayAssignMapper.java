@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,32 +35,25 @@ package org.javimmutable.collections.array;
 
 import javax.annotation.Nonnull;
 
-public interface ArrayAssignMapper<K, V, T>
-    extends ArraySizeMapper<T>
-{
+public interface ArrayAssignMapper<K, V, T> extends ArraySizeMapper<T> {
     /**
-     * Called during assign operation to create a new mapping
-     * for the given key and value.
+     * Called during assign operation to create a new mapping for the given key and value.
      *
-     * @param key   key being assigned to
+     * @param key key being assigned to
      * @param value value being assigned
      * @return non-null mapping
      */
     @Nonnull
-    T mappedAssign(@Nonnull K key,
-                   V value);
+    T mappedAssign(@Nonnull K key, V value);
 
     /**
-     * Called during assign operation to replace an existing mapping
-     * for the given key and value.
+     * Called during assign operation to replace an existing mapping for the given key and value.
      *
      * @param current mapping to be replaced
-     * @param key     key being assigned to
-     * @param value   value being assigned
+     * @param key key being assigned to
+     * @param value value being assigned
      * @return same to keep mapping or non-null to replace mapping
      */
     @Nonnull
-    T mappedAssign(@Nonnull T current,
-                   @Nonnull K key,
-                   V value);
+    T mappedAssign(@Nonnull T current, @Nonnull K key, V value);
 }

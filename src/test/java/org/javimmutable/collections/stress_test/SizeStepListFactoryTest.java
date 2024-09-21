@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2016-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,15 +33,11 @@
 
 package org.javimmutable.collections.stress_test;
 
+import java.util.Random;
 import junit.framework.TestCase;
 
-import java.util.Random;
-
-public class SizeStepListFactoryTest
-    extends TestCase
-{
-    public void testSteps()
-    {
+public class SizeStepListFactoryTest extends TestCase {
+    public void testSteps() {
         Random r = new Random();
         verifyTinySteps(6, 1, 1, r);
         verifyTinySteps(6, 3, 2, r);
@@ -65,16 +59,13 @@ public class SizeStepListFactoryTest
         }
     }
 
-    private void verifySteps(int requestedNumSteps,
-                             int expectedNumSteps,
-                             int maxSize,
-                             Random r)
-    {
+    private void verifySteps(int requestedNumSteps, int expectedNumSteps, int maxSize, Random r) {
         int stepCount = 0;
         SizeStepListFactory.Step lastStep = null;
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(requestedNumSteps, maxSize, r)) {
             stepCount += 1;
-//            System.out.printf("step %d: grow %d  shrink %d%n", stepCount, step.growthSize(), step.shrinkSize());
+            //            System.out.printf("step %d: grow %d  shrink %d%n", stepCount, step.growthSize(),
+            // step.shrinkSize());
             assertTrue(step.growthSize() <= maxSize);
             assertTrue(step.shrinkSize() <= maxSize);
             if (stepCount == expectedNumSteps) {
@@ -92,15 +83,11 @@ public class SizeStepListFactoryTest
         assertEquals(expectedNumSteps, stepCount);
     }
 
-    private void verifyTinySteps(int requestedNumSteps,
-                                 int expectedNumSteps,
-                                 int maxSize,
-                                 Random r)
-    {
+    private void verifyTinySteps(int requestedNumSteps, int expectedNumSteps, int maxSize, Random r) {
         int stepCount = 0;
         SizeStepListFactory.Step lastStep = null;
         for (SizeStepListFactory.Step step : SizeStepListFactory.steps(requestedNumSteps, maxSize, r)) {
-//            System.out.printf("grow %d  shrink %d%n", step.growthSize(), step.shrinkSize());
+            //            System.out.printf("grow %d  shrink %d%n", step.growthSize(), step.shrinkSize());
             assertTrue(step.growthSize() <= maxSize);
             assertTrue(step.shrinkSize() <= maxSize);
             assertTrue(step.growthSize() >= step.shrinkSize());

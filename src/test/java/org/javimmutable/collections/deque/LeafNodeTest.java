@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,18 +33,14 @@
 
 package org.javimmutable.collections.deque;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import junit.framework.TestCase;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-public class LeafNodeTest
-    extends TestCase
-{
-    public void testRandomInserts()
-    {
+public class LeafNodeTest extends TestCase {
+    public void testRandomInserts() {
         Random r = new Random(10L);
         for (int loop = 1; loop <= 1000; ++loop) {
             List<Integer> expected = new ArrayList<>();
@@ -66,8 +60,7 @@ public class LeafNodeTest
         }
     }
 
-    public void testRandomDeletes()
-    {
+    public void testRandomDeletes() {
         Random r = new Random(10L);
         for (int loop = 1; loop <= 1000; ++loop) {
             List<Integer> expected = new ArrayList<>();
@@ -98,8 +91,7 @@ public class LeafNodeTest
         }
     }
 
-    public void testInsertFirstBranchCreation()
-    {
+    public void testInsertFirstBranchCreation() {
         List<Integer> expected = new ArrayList<>();
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32; ++i) {
@@ -116,8 +108,7 @@ public class LeafNodeTest
         StandardIteratorTests.listIteratorTest(expected, node.iterator());
     }
 
-    public void testInsertLastBranchCreation()
-    {
+    public void testInsertLastBranchCreation() {
         List<Integer> expected = new ArrayList<>();
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32; ++i) {
@@ -134,8 +125,7 @@ public class LeafNodeTest
         StandardIteratorTests.listIteratorTest(expected, node.iterator());
     }
 
-    public void testAssign()
-    {
+    public void testAssign() {
         List<Integer> expected = new ArrayList<>();
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32; ++i) {

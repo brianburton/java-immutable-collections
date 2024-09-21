@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,17 +35,12 @@ package org.javimmutable.collections.stress_test;
 
 import java.util.Map;
 
-abstract class AbstractMapStressTestable
-    extends StressTester
-{
-    AbstractMapStressTestable(String testName)
-    {
+abstract class AbstractMapStressTestable extends StressTester {
+    AbstractMapStressTestable(String testName) {
         super(testName);
     }
 
-    protected <V> void verifyKeys(RandomKeyManager keys,
-                                  Map<String, V> expected)
-    {
+    protected <V> void verifyKeys(RandomKeyManager keys, Map<String, V> expected) {
         if (keys.size() != expected.size()) {
             throw new RuntimeException(String.format("expected %d allocated found %d", expected.size(), keys.size()));
         }
@@ -57,5 +50,4 @@ abstract class AbstractMapStressTestable
             }
         }
     }
-
 }

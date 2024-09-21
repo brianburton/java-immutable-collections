@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
@@ -42,78 +43,57 @@ import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.indexed.IndexedList;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.NoSuchElementException;
+public final class IndexedIterator {
+    private IndexedIterator() {}
 
-public final class IndexedIterator
-{
-    private IndexedIterator()
-    {
-    }
-
-    public static <T> SplitableIterator<T> forward(@Nonnull Indexed<T> values)
-    {
+    public static <T> SplitableIterator<T> forward(@Nonnull Indexed<T> values) {
         return new Forward<>(values, -1, values.size() - 1);
     }
 
-    public static <T> SplitableIterable<T> fwd(@Nonnull Indexed<T> values)
-    {
+    public static <T> SplitableIterable<T> fwd(@Nonnull Indexed<T> values) {
         return () -> forward(values);
     }
 
-    public static <T> SplitableIterator<T> iterator(@Nonnull Indexed<T> values)
-    {
+    public static <T> SplitableIterator<T> iterator(@Nonnull Indexed<T> values) {
         return forward(values);
     }
 
-    public static <T> SplitableIterator<T> reverse(@Nonnull Indexed<T> values)
-    {
+    public static <T> SplitableIterator<T> reverse(@Nonnull Indexed<T> values) {
         return new Reverse<>(values, values.size(), 0);
     }
 
-    public static <T> SplitableIterator<T> reverse(@Nonnull List<T> values)
-    {
+    public static <T> SplitableIterator<T> reverse(@Nonnull List<T> values) {
         return new Reverse<>(IndexedList.retained(values), values.size(), 0);
     }
 
-    public static <T> SplitableIterable<T> rev(@Nonnull Indexed<T> values)
-    {
+    public static <T> SplitableIterable<T> rev(@Nonnull Indexed<T> values) {
         return () -> reverse(values);
     }
 
-    public static SplitableIterator<Integer> forRange(int low,
-                                                      int high)
-    {
+    public static SplitableIterator<Integer> forRange(int low, int high) {
         return iterator(IndexedHelper.range(low, high));
     }
 
-    private static class Forward<T>
-        extends AbstractSplitableIterator<T>
-    {
+    private static class Forward<T> extends AbstractSplitableIterator<T> {
         @Nonnull
         private final Indexed<T> values;
+
         private final int limit;
         private int index;
 
-        public Forward(@Nonnull Indexed<T> values,
-                       int index,
-                       int limit)
-        {
+        public Forward(@Nonnull Indexed<T> values, int index, int limit) {
             this.values = values;
             this.limit = limit;
             this.index = index;
         }
 
         @Override
-        public boolean hasNext()
-        {
+        public boolean hasNext() {
             return index < limit;
         }
 
         @Override
-        public T next()
-        {
+        public T next() {
             if (index >= limit) {
                 throw new NoSuchElementException();
             }
@@ -122,50 +102,42 @@ public final class IndexedIterator
         }
 
         @Override
-        public boolean isSplitAllowed()
-        {
+        public boolean isSplitAllowed() {
             return (limit - index) > 1;
         }
 
         @Nonnull
         @Override
-        public SplitIterator<T> splitIterator()
-        {
+        public SplitIterator<T> splitIterator() {
             final int splitIndex = index + (limit - index) / 2;
             if (splitIndex == index) {
                 throw new UnsupportedOperationException();
             }
-            return new SplitIterator<>(new Forward<>(values, index, splitIndex),
-                                       new Forward<>(values, splitIndex, limit));
+            return new SplitIterator<>(
+                    new Forward<>(values, index, splitIndex), new Forward<>(values, splitIndex, limit));
         }
     }
 
-    private static class Reverse<T>
-        extends AbstractSplitableIterator<T>
-    {
+    private static class Reverse<T> extends AbstractSplitableIterator<T> {
         @Nonnull
         private final Indexed<T> values;
+
         private final int limit;
         private int index;
 
-        public Reverse(@Nonnull Indexed<T> values,
-                       int index,
-                       int limit)
-        {
+        public Reverse(@Nonnull Indexed<T> values, int index, int limit) {
             this.values = values;
             this.limit = limit;
             this.index = index;
         }
 
         @Override
-        public boolean hasNext()
-        {
+        public boolean hasNext() {
             return index > limit;
         }
 
         @Override
-        public T next()
-        {
+        public T next() {
             if (index <= limit) {
                 throw new NoSuchElementException();
             }
@@ -174,21 +146,19 @@ public final class IndexedIterator
         }
 
         @Override
-        public boolean isSplitAllowed()
-        {
+        public boolean isSplitAllowed() {
             return (index - limit) > 1;
         }
 
         @Nonnull
         @Override
-        public SplitIterator<T> splitIterator()
-        {
+        public SplitIterator<T> splitIterator() {
             final int splitIndex = index - (index - limit) / 2;
             if (splitIndex == index) {
                 throw new UnsupportedOperationException();
             }
-            return new SplitIterator<>(new Reverse<>(values, index, splitIndex),
-                                       new Reverse<>(values, splitIndex, limit));
+            return new SplitIterator<>(
+                    new Reverse<>(values, index, splitIndex), new Reverse<>(values, splitIndex, limit));
         }
     }
 }

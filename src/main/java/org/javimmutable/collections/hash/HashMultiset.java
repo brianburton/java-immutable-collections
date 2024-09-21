@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,59 +33,48 @@
 
 package org.javimmutable.collections.hash;
 
+import java.io.Serializable;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.common.AbstractMultiset;
 import org.javimmutable.collections.serialization.HashMultisetProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Map;
-
 @Immutable
-public class HashMultiset<T>
-    extends AbstractMultiset<T>
-    implements Serializable
-{
+public class HashMultiset<T> extends AbstractMultiset<T> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final HashMultiset EMPTY = new HashMultiset(HashMap.of(), 0);
+
     private static final long serialVersionUID = -121805;
 
-    private HashMultiset(IMap<T, Integer> map,
-                         int occurrences)
-    {
+    private HashMultiset(IMap<T, Integer> map, int occurrences) {
         super(map, occurrences);
     }
 
     @Override
-    protected IMultiset<T> create(IMap<T, Integer> map,
-                                  int occurrences)
-    {
+    protected IMultiset<T> create(IMap<T, Integer> map, int occurrences) {
         return new HashMultiset<>(map, occurrences);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> HashMultiset<T> of()
-    {
+    public static <T> HashMultiset<T> of() {
         return EMPTY;
     }
 
     @Nonnull
     @Override
-    public IMultiset<T> deleteAll()
-    {
+    public IMultiset<T> deleteAll() {
         return of();
     }
 
     @Override
-    protected Map<T, Integer> emptyMutableMap()
-    {
+    protected Map<T, Integer> emptyMutableMap() {
         return new java.util.HashMap<>();
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new HashMultisetProxy(this);
     }
 }

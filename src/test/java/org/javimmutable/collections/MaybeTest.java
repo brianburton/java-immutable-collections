@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,24 +33,20 @@
 
 package org.javimmutable.collections;
 
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.junit.Test;
+import static org.javimmutable.collections.common.TestUtil.makeList;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.junit.Test;
 
-import static org.javimmutable.collections.common.TestUtil.makeList;
-import static org.junit.Assert.*;
-
-public class MaybeTest
-{
+public class MaybeTest {
     @Test
-    public void testEmpty()
-        throws Exception
-    {
+    public void testEmpty() throws Exception {
         assertSame(Maybe.empty(), Maybe.empty());
         assertSame(Maybe.empty(), Maybe.cast(Float.class, 10));
         assertSame(Maybe.<Integer>empty(), Maybe.first(Collections.<Integer>emptySet()));
@@ -67,27 +61,37 @@ public class MaybeTest
         assertSame(Maybe.empty(), empty.map(Integer::parseInt));
         assertEquals(Maybe.of(1), empty.map(() -> 1, Integer::parseInt));
 
-        assertThrows(IOException.class, () -> empty.mapThrows(() -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> empty.mapThrows(() -> {
+                    throw new IOException();
+                }));
         assertEquals(Maybe.empty(), empty.mapThrows(MaybeTest::toIntThrows));
-        assertThrows(IOException.class, () -> empty.mapThrows(() -> {
-                                                                  throw new IOException();
-                                                              },
-                                                              MaybeTest::toIntThrows));
+        assertThrows(
+                IOException.class,
+                () -> empty.mapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        MaybeTest::toIntThrows));
 
         // test flatMap
         assertEquals(Maybe.of("a"), empty.flatMap(() -> Maybe.of("a")));
         assertEquals(Maybe.empty(), empty.flatMap(MaybeTest::toIntMaybe));
         assertEquals(Maybe.of(1), empty.flatMap(() -> Maybe.of(1), MaybeTest::toIntMaybe));
-        assertThrows(IOException.class, () -> empty.flatMapThrows(() -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> empty.flatMapThrows(() -> {
+                    throw new IOException();
+                }));
         assertEquals(Maybe.empty(), empty.flatMapThrows(MaybeTest::toIntMaybeThrows));
-        assertThrows(IOException.class, () -> empty.flatMapThrows(() -> {
-                                                                      throw new IOException();
-                                                                  },
-                                                                  MaybeTest::toIntMaybeThrows));
+        assertThrows(
+                IOException.class,
+                () -> empty.flatMapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        MaybeTest::toIntMaybeThrows));
 
         // test selection
         assertSame(empty, empty.select(x -> true));
@@ -103,9 +107,11 @@ public class MaybeTest
         assertEquals("1", change.x);
         assertSame(empty, empty.applyThrows(() -> change.x = "2"));
         assertEquals("2", change.x);
-        assertThrows(IOException.class, () -> empty.applyThrows(() -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> empty.applyThrows(() -> {
+                    throw new IOException();
+                }));
         assertSame(empty, empty.applyThrows(x -> change.x = x));
         assertEquals("2", change.x);
         assertSame(empty, empty.applyThrows(x -> {
@@ -136,9 +142,7 @@ public class MaybeTest
     }
 
     @Test
-    public void testFull()
-        throws Exception
-    {
+    public void testFull() throws Exception {
         final Maybe<String> full = Maybe.of("8");
         assertEquals(Maybe.of(1), Maybe.of(3 - 2));
         assertEquals(Maybe.of(null), Maybe.cast(Integer.class, null));
@@ -160,10 +164,13 @@ public class MaybeTest
             throw new IOException();
         }));
         assertEquals(Maybe.of(8), full.mapThrows(MaybeTest::toIntThrows));
-        assertEquals(Maybe.of(8), full.mapThrows(() -> {
-                                                     throw new IOException();
-                                                 },
-                                                 MaybeTest::toIntThrows));
+        assertEquals(
+                Maybe.of(8),
+                full.mapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        MaybeTest::toIntThrows));
 
         // test flatMap
         assertSame(full, full.flatMap(() -> Maybe.of("a")));
@@ -173,10 +180,13 @@ public class MaybeTest
             throw new IOException();
         }));
         assertEquals(Maybe.of(8), full.flatMapThrows(MaybeTest::toIntMaybeThrows));
-        assertEquals(Maybe.of(8), full.flatMapThrows(() -> {
-                                                         throw new IOException();
-                                                     },
-                                                     MaybeTest::toIntMaybeThrows));
+        assertEquals(
+                Maybe.of(8),
+                full.flatMapThrows(
+                        () -> {
+                            throw new IOException();
+                        },
+                        MaybeTest::toIntMaybeThrows));
 
         // test selection
         assertEquals(Maybe.empty(), full.select(x -> false));
@@ -198,9 +208,11 @@ public class MaybeTest
         change.x = "";
         assertSame(full, full.applyThrows(x -> change.x = x));
         assertEquals("8", change.x);
-        assertThrows(IOException.class, () -> full.applyThrows(x -> {
-            throw new IOException();
-        }));
+        assertThrows(
+                IOException.class,
+                () -> full.applyThrows(x -> {
+                    throw new IOException();
+                }));
 
         // test get
         assertEquals("8", full.unsafeGet());
@@ -237,23 +249,22 @@ public class MaybeTest
     }
 
     @Test
-    public void testSerialization()
-        throws Exception
-    {
+    public void testSerialization() throws Exception {
         Maybe<String> maybe = Maybe.empty();
-        StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65alUFAGt3se9TAAAA");
+        StandardSerializableTests.verifySerializable(
+                maybe,
+                "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65alUFAGt3se9TAAAA");
         maybe = Maybe.of(null);
-        StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65e3dBBQCRbMtrVAAAAA==");
+        StandardSerializableTests.verifySerializable(
+                maybe,
+                "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65e3dBBQCRbMtrVAAAAA==");
         maybe = Maybe.of("hello");
-        StandardSerializableTests.verifySerializable(maybe,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65e3cJA2tGak5OfgUAArGVkFsAAAA=");
+        StandardSerializableTests.verifySerializable(
+                maybe,
+                "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzTaxMSg0oyq+o/A8Cf05d5mFgqCgoZ2NgYH65e3cJA2tGak5OfgUAArGVkFsAAAA=");
     }
 
-    private static int toIntThrows(String s)
-        throws IOException
-    {
+    private static int toIntThrows(String s) throws IOException {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException ex) {
@@ -261,9 +272,7 @@ public class MaybeTest
         }
     }
 
-    private static Maybe<Integer> toIntMaybeThrows(String s)
-        throws IOException
-    {
+    private static Maybe<Integer> toIntMaybeThrows(String s) throws IOException {
         if (s.isEmpty()) {
             return Maybe.empty();
         }
@@ -274,8 +283,7 @@ public class MaybeTest
         }
     }
 
-    private static Maybe<Integer> toIntMaybe(String s)
-    {
+    private static Maybe<Integer> toIntMaybe(String s) {
         if (s.isEmpty()) {
             return Maybe.empty();
         }

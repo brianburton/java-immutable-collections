@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,52 +33,36 @@
 
 package org.javimmutable.collections;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.listmap.HashListMap;
 import org.javimmutable.collections.listmap.OrderedListMap;
 import org.javimmutable.collections.listmap.TreeListMap;
 
-import javax.annotation.Nonnull;
-import java.util.Comparator;
+public final class IListMaps {
+    private IListMaps() {}
 
-public final class IListMaps
-{
-    private IListMaps()
-    {
-    }
-
-    /**
-     * Creates a list map with higher performance but no specific ordering of keys.
-     */
+    /** Creates a list map with higher performance but no specific ordering of keys. */
     @Nonnull
-    public static <K, V> IListMap<K, V> hashed()
-    {
+    public static <K, V> IListMap<K, V> hashed() {
         return HashListMap.of();
     }
 
-    /**
-     * Creates a list map with keys sorted by order they are inserted.
-     */
+    /** Creates a list map with keys sorted by order they are inserted. */
     @Nonnull
-    public static <K, V> IListMap<K, V> ordered()
-    {
+    public static <K, V> IListMap<K, V> ordered() {
         return OrderedListMap.of();
     }
 
-    /**
-     * Creates a list map with keys sorted by their natural ordering.
-     */
+    /** Creates a list map with keys sorted by their natural ordering. */
     @Nonnull
-    public static <K extends Comparable<K>, V> IListMap<K, V> sorted()
-    {
+    public static <K extends Comparable<K>, V> IListMap<K, V> sorted() {
         return TreeListMap.of();
     }
 
-    /**
-     * Creates a list map with keys sorted by the specified Comparator.  The Comparator MUST BE IMMUTABLE.
-     */
+    /** Creates a list map with keys sorted by the specified Comparator. The Comparator MUST BE IMMUTABLE. */
     @Nonnull
-    public static <K, V> IListMap<K, V> sorted(@Nonnull Comparator<K> comparator)
-    {
+    public static <K, V> IListMap<K, V> sorted(@Nonnull Comparator<K> comparator) {
         return TreeListMap.of(comparator);
     }
 }

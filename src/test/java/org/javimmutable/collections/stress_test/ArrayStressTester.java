@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2015-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,12 @@
 
 package org.javimmutable.collections.stress_test;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 import org.javimmutable.collections.IArray;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
@@ -44,44 +48,29 @@ import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
-
 /**
- * Test program for all implementations of JImmutableArray. Divided into four sections: growing
- * (adds new values at random indices), updating (changes the value at existing indices), shrinking
- * (removes values), contains (tests methods that check for values at specific indices), and
- * cleanup (empties the array of all values).
+ * Test program for all implementations of JImmutableArray. Divided into four sections: growing (adds new values at
+ * random indices), updating (changes the value at existing indices), shrinking (removes values), contains (tests
+ * methods that check for values at specific indices), and cleanup (empties the array of all values).
  */
 @SuppressWarnings("Duplicates")
-public class ArrayStressTester
-    extends StressTester
-{
+public class ArrayStressTester extends StressTester {
     private final IArray<String> array;
     private final ArrayIndexRange indexRange;
 
-    public ArrayStressTester(IArray<String> array,
-                             ArrayIndexRange indexRange)
-    {
+    public ArrayStressTester(IArray<String> array, ArrayIndexRange indexRange) {
         super(getName(array));
         this.array = array;
         this.indexRange = indexRange;
     }
 
     @Override
-    public IList<String> getOptions()
-    {
+    public IList<String> getOptions() {
         return ILists.of("array", getNameOption(array));
     }
 
     @Override
-    public void execute(Random random,
-                        IList<String> tokens)
-    {
+    public void execute(Random random, IList<String> tokens) {
         final int size = 1 + random.nextInt(Math.min(100000, indexRange.maxSize()));
         final Map<Integer, String> expected = new TreeMap<>();
         IArray<String> array = this.array;
@@ -95,14 +84,14 @@ public class ArrayStressTester
                 indexList = indexList.insert(index);
                 String value = RandomKeyManager.makeValue(tokens, random);
                 switch (random.nextInt(2)) {
-                    case 0: {//assign(int, T)
+                    case 0: { // assign(int, T)
                         array = array.assign(index, value);
                         expected.put(index, value);
                         break;
                     }
-                    case 1: { //insert(Entry<Integer, T>)
+                    case 1: { // insert(Entry<Integer, T>)
                         IMapEntry<Integer, String> entry = new MapEntry<>(index, value);
-                        array = (IArray<String>)array.insert(entry);
+                        array = (IArray<String>) array.insert(entry);
                         expected.put(index, value);
                         break;
                     }
@@ -118,14 +107,14 @@ public class ArrayStressTester
                 int index = indexList.get(random.nextInt(indexList.size()));
                 String value = RandomKeyManager.makeValue(tokens, random);
                 switch (random.nextInt(2)) {
-                    case 0: { //assign(int, T)
+                    case 0: { // assign(int, T)
                         array = array.assign(index, value);
                         expected.put(index, value);
                         break;
                     }
-                    case 1: { //insert(Entry<Integer, T>)
+                    case 1: { // insert(Entry<Integer, T>)
                         IMapEntry<Integer, String> entry = new MapEntry<>(index, value);
-                        array = (IArray<String>)array.insert(entry);
+                        array = (IArray<String>) array.insert(entry);
                         expected.put(index, value);
                         break;
                     }
@@ -138,7 +127,7 @@ public class ArrayStressTester
 
             System.out.printf("shrinking %d to %d%n", array.size(), step.shrinkSize());
             while (expected.size() > step.shrinkSize()) {
-                //delete(int)
+                // delete(int)
                 final boolean deleteExisting = (random.nextInt(3) != 0);
                 if (deleteExisting) {
                     final int loc = random.nextInt(indexList.size());
@@ -157,28 +146,33 @@ public class ArrayStressTester
 
             System.out.printf("contains %d%n", array.size());
             for (int i = 0; i < size / 12; ++i) {
-                int index = (random.nextBoolean()) ? indexRange.randomIndex(random) : indexList.get(random.nextInt(indexList.size()));
+                int index = (random.nextBoolean())
+                        ? indexRange.randomIndex(random)
+                        : indexList.get(random.nextInt(indexList.size()));
                 switch (random.nextInt(4)) {
-                    case 0: { //get(int)
+                    case 0: { // get(int)
                         String value = array.get(index);
                         String expectedValue = expected.getOrDefault(index, null);
-                        if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
-                            throw new RuntimeException(String.format("get(index) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
+                        if (!((value == null && expectedValue == null)
+                                || (expectedValue != null && expectedValue.equals(value)))) {
+                            throw new RuntimeException(String.format(
+                                    "get(index) method call failed for %d - expected %s found %s%n",
+                                    index, expectedValue, value));
                         }
                         break;
-
                     }
-                    case 1: { //getValueOr(int, T)
+                    case 1: { // getValueOr(int, T)
                         String value = array.getValueOr(index, "");
                         String expectedValue = expected.getOrDefault(index, "");
                         assert value != null;
                         if (!value.equals(expectedValue)) {
-                            throw new RuntimeException(String.format("getValueOr(index, default) method call failed for %d - expected %s found %s%n", index, expectedValue, value));
+                            throw new RuntimeException(String.format(
+                                    "getValueOr(index, default) method call failed for %d - expected %s found %s%n",
+                                    index, expectedValue, value));
                         }
                         break;
-
                     }
-                    case 2: { //find(int)
+                    case 2: { // find(int)
                         Maybe<String> maybe = array.find(index);
                         Maybe<String> expectedMaybe;
                         if (expected.containsKey(index)) {
@@ -188,11 +182,13 @@ public class ArrayStressTester
                             expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
-                            throw new RuntimeException(String.format("find(index) method call failed for %d - expected %s found %s%n", index, expectedMaybe, maybe));
+                            throw new RuntimeException(String.format(
+                                    "find(index) method call failed for %d - expected %s found %s%n",
+                                    index, expectedMaybe, maybe));
                         }
                         break;
                     }
-                    case 3: { //findEntry(int)
+                    case 3: { // findEntry(int)
                         Maybe<IMapEntry<Integer, String>> maybe = array.findEntry(index);
                         Maybe<IMapEntry<Integer, String>> expectedMaybe;
                         if (expected.containsKey(index)) {
@@ -202,7 +198,9 @@ public class ArrayStressTester
                             expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
-                            throw new RuntimeException(String.format("findEntry(index) method call failed for %d - expected %s found %s%n", index, expectedMaybe, maybe));
+                            throw new RuntimeException(String.format(
+                                    "findEntry(index) method call failed for %d - expected %s found %s%n",
+                                    index, expectedMaybe, maybe));
                         }
                         break;
                     }
@@ -215,7 +213,7 @@ public class ArrayStressTester
         verifyFinalSize(size, array.size());
         System.out.printf("cleanup %d%n", array.size());
         while (indexList.size() > random.nextInt(20)) {
-            //delete(int)
+            // delete(int)
             int loc = random.nextInt(indexList.size());
             int index = indexList.get(loc);
             array = array.delete(index);
@@ -228,28 +226,30 @@ public class ArrayStressTester
             expected.clear();
         }
         if (array.size() != 0) {
-            throw new RuntimeException(String.format("expected array to be empty but it contained %d keys%n", array.size()));
+            throw new RuntimeException(
+                    String.format("expected array to be empty but it contained %d keys%n", array.size()));
         }
         verifyContents(array, expected);
         System.out.printf("ArrayStressTest on %s completed without errors%n", getName(array));
     }
 
-    public void verifyContents(IArray<String> array,
-                               Map<Integer, String> expected)
-    {
+    public void verifyContents(IArray<String> array, Map<Integer, String> expected) {
         System.out.printf("checking contents with size %d%n", array.size());
         if (array.isEmpty() != expected.isEmpty()) {
-            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), array.isEmpty()));
+            throw new RuntimeException(
+                    String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), array.isEmpty()));
         }
         if (array.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d", expected.size(), array.size()));
+            throw new RuntimeException(
+                    String.format("size mismatch - expected %d found %d", expected.size(), array.size()));
         }
         for (Map.Entry<Integer, String> entry : expected.entrySet()) {
             Integer index = entry.getKey();
             String expectedValue = entry.getValue();
             String value = array.getValueOr(index, null);
             if (!expectedValue.equals(value)) {
-                throw new RuntimeException(String.format("value mismatch at index %d - expected %s found %s%n", index, expectedValue, value));
+                throw new RuntimeException(String.format(
+                        "value mismatch at index %d - expected %s found %s%n", index, expectedValue, value));
             }
         }
         if (!expected.equals(array.getMap())) {
@@ -259,9 +259,7 @@ public class ArrayStressTester
         verifySerializable(null, array, IArray.class);
     }
 
-    private void verifyIteration(IArray<String> array,
-                                 Map<Integer, String> expected)
-    {
+    private void verifyIteration(IArray<String> array, Map<Integer, String> expected) {
         System.out.printf("checking cursor with size %d%n", array.size());
         final List<Integer> indices = asList(expected.keySet());
         final List<String> values = asList(expected.values());
@@ -275,18 +273,15 @@ public class ArrayStressTester
         StandardStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
-    private void verifyIndexList(IList<Integer> indexList,
-                                 Map<Integer, String> expected)
-    {
+    private void verifyIndexList(IList<Integer> indexList, Map<Integer, String> expected) {
         int indexListSize = indexList.size();
         if (indexListSize != expected.size()) {
-            throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), indexListSize));
+            throw new RuntimeException(
+                    String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), indexListSize));
         }
     }
 
-    private int unusedIndex(Map<Integer, String> expected,
-                            Random random)
-    {
+    private int unusedIndex(Map<Integer, String> expected, Random random) {
         int index = indexRange.randomIndex(random);
         while (expected.containsKey(index)) {
             index = indexRange.randomIndex(random);

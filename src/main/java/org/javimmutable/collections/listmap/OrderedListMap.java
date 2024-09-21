@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.listmap;
 
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMap;
@@ -42,48 +42,37 @@ import org.javimmutable.collections.inorder.OrderedMap;
 import org.javimmutable.collections.list.TreeList;
 import org.javimmutable.collections.serialization.OrderedListMapProxy;
 
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-
 /**
- * {@link IListMap} implementation that allows keys to be traversed in the same order as they
- * were inserted into the collection.
+ * {@link IListMap} implementation that allows keys to be traversed in the same order as they were inserted into the
+ * collection.
  */
 @Immutable
-public class OrderedListMap<K, V>
-    extends AbstractListMap<K, V>
-    implements Serializable
-{
+public class OrderedListMap<K, V> extends AbstractListMap<K, V> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final OrderedListMap EMPTY = new OrderedListMap(OrderedMap.of(), TreeList.of());
+
     private static final long serialVersionUID = -121805;
 
-    private OrderedListMap(IMap<K, IList<V>> contents,
-                           IList<V> emptyList)
-    {
+    private OrderedListMap(IMap<K, IList<V>> contents, IList<V> emptyList) {
         super(contents, emptyList);
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> OrderedListMap<K, V> of()
-    {
+    public static <K, V> OrderedListMap<K, V> of() {
         return EMPTY;
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         checkListMapInvariants();
     }
 
     @Override
-    protected IListMap<K, V> create(IMap<K, IList<V>> map)
-    {
+    protected IListMap<K, V> create(IMap<K, IList<V>> map) {
         return (map == contents) ? this : new OrderedListMap<>(map, emptyList);
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new OrderedListMapProxy(this);
     }
 }

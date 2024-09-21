@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,8 +34,6 @@
 package org.javimmutable.collections;
 
 @FunctionalInterface
-public interface IntFunc2<R>
-{
-    R apply(int p1,
-            int p2);
+public interface IntFunc2<R> {
+    R apply(int p1, int p2);
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,40 +33,32 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.NoSuchElementException;
 import org.javimmutable.collections.SplitableIterable;
 
-import java.util.NoSuchElementException;
-
-public class SingleValueIterator<T>
-    extends AbstractSplitableIterator<T>
-{
+public class SingleValueIterator<T> extends AbstractSplitableIterator<T> {
     private final T value;
     private boolean started;
 
-    private SingleValueIterator(T value)
-    {
+    private SingleValueIterator(T value) {
         this.value = value;
     }
 
-    public static <T> SingleValueIterator<T> of(T value)
-    {
+    public static <T> SingleValueIterator<T> of(T value) {
         return new SingleValueIterator<>(value);
     }
 
-    public static <T> SplitableIterable<T> iterable(T value)
-    {
+    public static <T> SplitableIterable<T> iterable(T value) {
         return () -> new SingleValueIterator<>(value);
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return !started;
     }
 
     @Override
-    public T next()
-    {
+    public T next() {
         if (started) {
             throw new NoSuchElementException();
         }

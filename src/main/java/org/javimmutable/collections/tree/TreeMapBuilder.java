@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,34 +33,29 @@
 
 package org.javimmutable.collections.tree;
 
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.IMapBuilder;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.IMapBuilder;
 
 @ThreadSafe
-class TreeMapBuilder<K, V>
-    implements IMapBuilder<K, V>
-{
+class TreeMapBuilder<K, V> implements IMapBuilder<K, V> {
     private final Comparator<K> comparator;
     private final Map<K, V> values;
 
-    TreeMapBuilder(@Nonnull Comparator<K> comparator)
-    {
+    TreeMapBuilder(@Nonnull Comparator<K> comparator) {
         this.comparator = comparator;
         values = new java.util.TreeMap<>(comparator);
     }
 
     @Nonnull
     @Override
-    public synchronized IMap<K, V> build()
-    {
+    public synchronized IMap<K, V> build() {
         if (values.isEmpty()) {
             return TreeMap.of(comparator);
         } else {
@@ -74,30 +67,23 @@ class TreeMapBuilder<K, V>
 
     @Nonnull
     @Override
-    public synchronized IMapBuilder<K, V> clear()
-    {
+    public synchronized IMapBuilder<K, V> clear() {
         values.clear();
         return this;
     }
 
     @Nonnull
     @Override
-    public synchronized IMapBuilder<K, V> add(@Nonnull K key,
-                                              V value)
-    {
+    public synchronized IMapBuilder<K, V> add(@Nonnull K key, V value) {
         values.put(key, value);
         return this;
     }
 
-    public synchronized int size()
-    {
+    public synchronized int size() {
         return values.size();
     }
 
-    private AbstractNode<K, V> buildTree(@Nonnull List<Entry<K, V>> values,
-                                         int offset,
-                                         int limit)
-    {
+    private AbstractNode<K, V> buildTree(@Nonnull List<Entry<K, V>> values, int offset, int limit) {
         assert limit > offset;
         int count = limit - offset;
         if (count == 1) {

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -44,46 +45,29 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Comparator;
-
-/**
- * ¬ * A Node containing one value and no children.
- */
-public class LeafNode<K, V>
-    extends AbstractNode<K, V>
-{
+/** ¬ * A Node containing one value and no children. */
+public class LeafNode<K, V> extends AbstractNode<K, V> {
     private final K key;
     private final V value;
 
-    LeafNode(@Nonnull K key,
-             @Nullable V value)
-    {
+    LeafNode(@Nonnull K key, @Nullable V value) {
         this.key = key;
         this.value = value;
     }
 
     @Override
-    boolean containsKey(@Nonnull Comparator<K> comp,
-                        @Nonnull K key)
-    {
+    boolean containsKey(@Nonnull Comparator<K> comp, @Nonnull K key) {
         return isMatch(comp, key);
     }
 
     @Override
-    V get(@Nonnull Comparator<K> comp,
-          @Nonnull K key,
-          V defaultValue)
-    {
+    V get(@Nonnull Comparator<K> comp, @Nonnull K key, V defaultValue) {
         return isMatch(comp, key) ? value : defaultValue;
     }
 
     @Nonnull
     @Override
-    Maybe<V> find(@Nonnull Comparator<K> comp,
-                  @Nonnull K key)
-    {
+    Maybe<V> find(@Nonnull Comparator<K> comp, @Nonnull K key) {
         if (isMatch(comp, key)) {
             return Maybe.of(value);
         } else {
@@ -93,9 +77,7 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
-    Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key)
-    {
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp, @Nonnull K key) {
         if (isMatch(comp, key)) {
             return Maybe.of(asEntry());
         } else {
@@ -104,23 +86,18 @@ public class LeafNode<K, V>
     }
 
     @Override
-    boolean isEmpty()
-    {
+    boolean isEmpty() {
         return false;
     }
 
     @Override
-    int size()
-    {
+    int size() {
         return 1;
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
-                              @Nonnull K key,
-                              @Nullable V value)
-    {
+    AbstractNode<K, V> assign(@Nonnull Comparator<K> comp, @Nonnull K key, @Nullable V value) {
         if (isMatch(comp, key)) {
             if (this.value == value) {
                 return this;
@@ -134,9 +111,7 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
-    AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
-                              @Nonnull K key)
-    {
+    AbstractNode<K, V> delete(@Nonnull Comparator<K> comp, @Nonnull K key) {
         if (isMatch(comp, key)) {
             return FringeNode.instance();
         } else {
@@ -146,10 +121,7 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
-    AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
-                              @Nonnull K key,
-                              @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    AbstractNode<K, V> update(@Nonnull Comparator<K> comp, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator) {
         if (isMatch(comp, key)) {
             final V value = generator.apply(Maybe.of(this.value));
             if (this.value == value) {
@@ -165,115 +137,91 @@ public class LeafNode<K, V>
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteLeftmost()
-    {
+    DeleteResult<K, V> deleteLeftmost() {
         return new DeleteResult<>(key, value, FringeNode.instance());
     }
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteRightmost()
-    {
+    DeleteResult<K, V> deleteRightmost() {
         return new DeleteResult<>(key, value, FringeNode.instance());
     }
 
     @Override
-    int depth()
-    {
+    int depth() {
         return 1;
     }
 
     @Nonnull
     @Override
-    K key()
-    {
+    K key() {
         return key;
     }
 
     @Nullable
     @Override
-    V value()
-    {
+    V value() {
         return value;
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> leftMost()
-    {
+    AbstractNode<K, V> leftMost() {
         return this;
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> left()
-    {
+    AbstractNode<K, V> left() {
         return FringeNode.instance();
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> right()
-    {
+    AbstractNode<K, V> right() {
         return FringeNode.instance();
     }
 
     @Override
-    void checkInvariants(@Nonnull Comparator<K> comp)
-    {
-    }
+    void checkInvariants(@Nonnull Comparator<K> comp) {}
 
     @Override
-    void forEach(@Nonnull Proc2<K, V> proc)
-    {
+    void forEach(@Nonnull Proc2<K, V> proc) {
         proc.apply(key, value);
     }
 
     @Override
-    <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-        throws E
-    {
+    <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc) throws E {
         proc.apply(key, value);
     }
 
     @Override
-    <R> R reduce(R sum,
-                 @Nonnull Sum2<K, V, R> proc)
-    {
+    <R> R reduce(R sum, @Nonnull Sum2<K, V, R> proc) {
         return proc.apply(sum, key, value);
     }
 
     @Override
-    <R, E extends Exception> R reduceThrows(R sum,
-                                            @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E
-    {
+    <R, E extends Exception> R reduceThrows(R sum, @Nonnull Sum2Throws<K, V, R, E> proc) throws E {
         return proc.apply(sum, key, value);
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
-                                                                   int offset,
-                                                                   int limit)
-    {
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(
+            @Nullable GenericIterator.State<IMapEntry<K, V>> parent, int offset, int limit) {
         return GenericIterator.singleValueState(parent, asEntry(), offset, limit);
     }
 
     @Override
-    public int iterableSize()
-    {
+    public int iterableSize() {
         return 1;
     }
 
-    private boolean isMatch(@Nonnull Comparator<K> comp,
-                            @Nonnull K key)
-    {
+    private boolean isMatch(@Nonnull Comparator<K> comp, @Nonnull K key) {
         return comp.compare(key, this.key) == 0;
     }
 
-    private IMapEntry<K, V> asEntry()
-    {
+    private IMapEntry<K, V> asEntry() {
         return IMapEntry.of(key, value);
     }
 }

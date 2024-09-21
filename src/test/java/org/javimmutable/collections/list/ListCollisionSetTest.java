@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.list;
 
+import java.io.IOException;
+import java.util.stream.IntStream;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Proc1;
@@ -42,19 +42,12 @@ import org.javimmutable.collections.Sum1;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.common.StandardCollisionSetTests;
 
-import java.io.IOException;
-import java.util.stream.IntStream;
-
-public class ListCollisionSetTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class ListCollisionSetTest extends TestCase {
+    public void testStandard() {
         StandardCollisionSetTests.randomTests(ListCollisionSet.instance());
     }
 
-    public void testForEach()
-    {
+    public void testForEach() {
         ListCollisionSet<Integer> transforms = ListCollisionSet.instance();
         CollisionSet.Node node = transforms.empty();
 
@@ -72,9 +65,7 @@ public class ListCollisionSetTest
         assertEquals("[1]", sb.toString());
 
         sb.delete(0, sb.length());
-        IList<Integer> integers = IntStream.range(1, 500)
-            .boxed()
-            .collect(TreeList.createListCollector());
+        IList<Integer> integers = IntStream.range(1, 500).boxed().collect(TreeList.createListCollector());
         node = integers.reduce(node, (n, i) -> transforms.insert(n, i));
         String expected = integers.reduce("", (s, i) -> s + "[" + i + "]");
         transforms.forEach(node, append);
@@ -110,8 +101,7 @@ public class ListCollisionSetTest
         }
     }
 
-    public void testReduce()
-    {
+    public void testReduce() {
         ListCollisionSet<Integer> transforms = ListCollisionSet.instance();
         CollisionSet.Node node = transforms.empty();
 
@@ -119,9 +109,7 @@ public class ListCollisionSetTest
         assertEquals("", transforms.reduce(node, "", append));
         assertEquals("[1]", transforms.reduce(transforms.insert(node, 1), "", append));
 
-        IList<Integer> integers = IntStream.range(1, 500)
-            .boxed()
-            .collect(TreeList.createListCollector());
+        IList<Integer> integers = IntStream.range(1, 500).boxed().collect(TreeList.createListCollector());
         node = integers.reduce(node, (n, i) -> transforms.insert(n, i));
         String expected = integers.reduce("", (s, i) -> s + "[" + i + "]");
         assertEquals(expected, transforms.reduce(node, "", append));

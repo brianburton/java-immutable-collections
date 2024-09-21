@@ -1,5 +1,3 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
@@ -39,11 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ListCombinations
-{
-    public static List<List<Integer>> listsOfLength(int minLength,
-                                                    int maxLength)
-    {
+public class ListCombinations {
+    public static List<List<Integer>> listsOfLength(int minLength, int maxLength) {
         List<List<Integer>> answer = new ArrayList<>();
         for (int len = minLength; len <= maxLength; ++len) {
             List<Integer> list = new ArrayList<>();
@@ -55,15 +50,11 @@ public class ListCombinations
         return answer;
     }
 
-    public static List<List<List<Integer>>> combosOfListsOfLength(int n,
-                                                                  int minLength,
-                                                                  int maxLength)
-    {
+    public static List<List<List<Integer>>> combosOfListsOfLength(int n, int minLength, int maxLength) {
         return combos(n, () -> listsOfLength(minLength, maxLength));
     }
 
-    public static void renumberCombos(List<List<List<Integer>>> combos)
-    {
+    public static void renumberCombos(List<List<List<Integer>>> combos) {
         for (List<List<Integer>> combo : combos) {
             int value = 1;
             for (List<Integer> integers : combo) {
@@ -82,9 +73,7 @@ public class ListCombinations
         return values;
     }
 
-    public static <T> List<List<T>> combos(int n,
-                                           Supplier<List<T>> things)
-    {
+    public static <T> List<List<T>> combos(int n, Supplier<List<T>> things) {
         List<List<T>> combos = new ArrayList<>();
         if (n == 0) {
             // do nothing;

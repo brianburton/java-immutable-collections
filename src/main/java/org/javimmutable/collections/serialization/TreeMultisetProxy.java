@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,46 +33,35 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.tree.TreeMultiset;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.tree.TreeMultiset;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("unchecked")
-public class TreeMultisetProxy
-    extends AbstractMultisetProxy
-{
+public class TreeMultisetProxy extends AbstractMultisetProxy {
     private static final long serialVersionUID = -121805;
 
-    public TreeMultisetProxy()
-    {
+    public TreeMultisetProxy() {
         super(TreeMultiset.of());
     }
 
-    public TreeMultisetProxy(TreeMultiset set)
-    {
+    public TreeMultisetProxy(TreeMultiset set) {
         super(set);
     }
 
     @Override
-    protected IMultiset readSet(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        Comparator comparator = (Comparator)in.readObject();
+    protected IMultiset readSet(ObjectInput in) throws IOException, ClassNotFoundException {
+        Comparator comparator = (Comparator) in.readObject();
         return TreeMultiset.of(comparator);
     }
 
     @Override
-    protected void writeSet(ObjectOutput out)
-        throws IOException
-    {
-        TreeMultiset treeSet = (TreeMultiset)set;
+    protected void writeSet(ObjectOutput out) throws IOException {
+        TreeMultiset treeSet = (TreeMultiset) set;
         out.writeObject(treeSet.getComparator());
     }
 }

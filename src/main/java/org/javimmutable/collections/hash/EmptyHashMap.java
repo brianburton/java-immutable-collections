@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.hash;
 
+import java.io.Serializable;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapBuilder;
 import org.javimmutable.collections.IMapEntry;
@@ -45,106 +46,82 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 import org.javimmutable.collections.serialization.HashMapProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-
 /**
- * Singleton implementation of {@link IMap} that contains no elements.
- * When a value is assigned to the map a {@link IMap} is created that
- * manages hash collisions using a tree if key is Comparable or a list otherwise.
+ * Singleton implementation of {@link IMap} that contains no elements. When a value is assigned to the map a
+ * {@link IMap} is created that manages hash collisions using a tree if key is Comparable or a list otherwise.
  */
 @Immutable
-public class EmptyHashMap<K, V>
-    extends AbstractMap<K, V>
-    implements Serializable
-{
+public class EmptyHashMap<K, V> extends AbstractMap<K, V> implements Serializable {
     @SuppressWarnings("rawtypes")
     static final EmptyHashMap INSTANCE = new EmptyHashMap();
 
     private static final long serialVersionUID = -121805;
 
-    private EmptyHashMap()
-    {
-    }
+    private EmptyHashMap() {}
 
     @Nonnull
     @Override
-    public IMapBuilder<K, V> mapBuilder()
-    {
+    public IMapBuilder<K, V> mapBuilder() {
         return HashMap.builder();
     }
 
     @Nonnull
     @Override
-    public Maybe<V> find(@Nonnull K key)
-    {
+    public Maybe<V> find(@Nonnull K key) {
         return Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
-    {
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key) {
         return Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> assign(@Nonnull K key,
-                             V value)
-    {
+    public IMap<K, V> assign(@Nonnull K key, V value) {
         return HashMap.<K, V>forKey(key).assign(key, value);
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> delete(@Nonnull K key)
-    {
+    public IMap<K, V> delete(@Nonnull K key) {
         return this;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return 0;
     }
 
     @Nonnull
     @Override
-    public IMap<K, V> deleteAll()
-    {
+    public IMap<K, V> deleteAll() {
         return this;
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<IMapEntry<K, V>> iterator()
-    {
+    public SplitableIterator<IMapEntry<K, V>> iterator() {
         return EmptyIterator.of();
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_UNORDERED;
     }
 
     @Override
-    public V getValueOr(K key,
-                        V defaultValue)
-    {
+    public V getValueOr(K key, V defaultValue) {
         return defaultValue;
     }
 
     @Override
-    public void checkInvariants()
-    {
-        //TODO: fix empty checkInvariants()
+    public void checkInvariants() {
+        // TODO: fix empty checkInvariants()
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new HashMapProxy(this);
     }
 }

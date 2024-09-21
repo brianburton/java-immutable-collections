@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,33 +33,32 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.SplitableIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-
-public class LazyMultiIterator<T>
-    extends AbstractSplitableIterator<T>
-{
+public class LazyMultiIterator<T> extends AbstractSplitableIterator<T> {
     @Nonnull
     private final SplitableIterator<SplitableIterable<T>> source;
+
     @Nullable
     private SplitableIterator<T> iterator;
+
     private boolean advanced;
     private boolean hasNext;
     private T nextValue;
 
-    private LazyMultiIterator(@Nonnull SplitableIterator<SplitableIterable<T>> source,
-                              @Nullable SplitableIterator<T> iterator,
-                              boolean advanced,
-                              boolean hasNext,
-                              T nextValue)
-    {
+    private LazyMultiIterator(
+            @Nonnull SplitableIterator<SplitableIterable<T>> source,
+            @Nullable SplitableIterator<T> iterator,
+            boolean advanced,
+            boolean hasNext,
+            T nextValue) {
         this.source = source;
         this.iterator = iterator;
         this.advanced = advanced;
@@ -70,47 +67,41 @@ public class LazyMultiIterator<T>
     }
 
     @Nonnull
-    public static <T> LazyMultiIterator<T> iterator(@Nonnull Indexed<SplitableIterable<T>> source)
-    {
+    public static <T> LazyMultiIterator<T> iterator(@Nonnull Indexed<SplitableIterable<T>> source) {
         return iterator(IndexedIterator.iterator(source));
     }
 
     @Nonnull
-    public static <T> LazyMultiIterator<T> iterator(@Nonnull SplitableIterator<SplitableIterable<T>> source)
-    {
+    public static <T> LazyMultiIterator<T> iterator(@Nonnull SplitableIterator<SplitableIterable<T>> source) {
         return new LazyMultiIterator<>(source, null, false, false, null);
     }
 
     /**
-     * Constructs an iterator that visits all of the values reachable from all of the
-     * SplitableIterables visited by source.  All values are transformed using the provided method.
+     * Constructs an iterator that visits all of the values reachable from all of the SplitableIterables visited by
+     * source. All values are transformed using the provided method.
      */
-    public static <S, T> LazyMultiIterator<T> transformed(SplitableIterator<S> source,
-                                                          Function<S, SplitableIterable<T>> transforminator)
-    {
+    public static <S, T> LazyMultiIterator<T> transformed(
+            SplitableIterator<S> source, Function<S, SplitableIterable<T>> transforminator) {
         return iterator(TransformIterator.of(source, transforminator));
     }
 
     /**
-     * Constructs an iterator that visits all of the values reachable from all of the
-     * SplitableIterables visited by source.  All values are transformed using the provided method.
+     * Constructs an iterator that visits all of the values reachable from all of the SplitableIterables visited by
+     * source. All values are transformed using the provided method.
      */
-    public static <S, T> LazyMultiIterator<T> transformed(Indexed<S> source,
-                                                          Function<S, SplitableIterable<T>> transforminator)
-    {
+    public static <S, T> LazyMultiIterator<T> transformed(
+            Indexed<S> source, Function<S, SplitableIterable<T>> transforminator) {
         return iterator(TransformIterator.of(IndexedIterator.iterator(source), transforminator));
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         advance();
         return hasNext;
     }
 
     @Override
-    public T next()
-    {
+    public T next() {
         advance();
         if (!hasNext) {
             throw new NoSuchElementException();
@@ -120,30 +111,27 @@ public class LazyMultiIterator<T>
     }
 
     @Override
-    public boolean isSplitAllowed()
-    {
+    public boolean isSplitAllowed() {
         return source.isSplitAllowed();
     }
 
     @Nonnull
     @Override
-    public SplitIterator<T> splitIterator()
-    {
+    public SplitIterator<T> splitIterator() {
         final SplitIterator<SplitableIterable<T>> split = source.splitIterator();
-        return new SplitIterator<>(new LazyMultiIterator<>(split.getLeft(), iterator, advanced, hasNext, nextValue),
-                                   new LazyMultiIterator<>(split.getRight(), null, false, false, null));
+        return new SplitIterator<>(
+                new LazyMultiIterator<>(split.getLeft(), iterator, advanced, hasNext, nextValue),
+                new LazyMultiIterator<>(split.getRight(), null, false, false, null));
     }
 
-    private void advance()
-    {
+    private void advance() {
         if (!advanced) {
             advanceImpl();
             advanced = true;
         }
     }
 
-    private void advanceImpl()
-    {
+    private void advanceImpl() {
         if (iterator != null) {
             if (iterator.hasNext()) {
                 hasNext = true;

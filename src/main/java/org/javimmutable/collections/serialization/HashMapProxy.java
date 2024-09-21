@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,27 +36,20 @@ package org.javimmutable.collections.serialization;
 import org.javimmutable.collections.hash.EmptyHashMap;
 import org.javimmutable.collections.hash.HashMap;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("rawtypes")
-public class HashMapProxy
-    extends AbstractMapProxy
-{
+public class HashMapProxy extends AbstractMapProxy {
     private static final long serialVersionUID = -121805;
 
-    public HashMapProxy()
-    {
+    public HashMapProxy() {
         super(HashMap.of());
     }
 
-    public HashMapProxy(HashMap map)
-    {
+    public HashMapProxy(HashMap map) {
         super(map);
     }
 
-    public HashMapProxy(EmptyHashMap map)
-    {
+    public HashMapProxy(EmptyHashMap map) {
         super(map);
     }
 }

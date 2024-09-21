@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,74 +33,62 @@
 
 package org.javimmutable.collections.deque;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.InvariantCheckable;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.indexed.IndexedHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-import java.util.Arrays;
-import java.util.Iterator;
-
 /**
- * A specialist builder for a specific purpose.  Designed to be used for
- * implementing {@link IDeque#insertAllFirst}.  When constructed it retains
- * the order of an existing {@link Node} and then the add method adds elements
- * to the beginning of the deque.
+ * A specialist builder for a specific purpose. Designed to be used for implementing {@link IDeque#insertAllFirst}. When
+ * constructed it retains the order of an existing {@link Node} and then the add method adds elements to the beginning
+ * of the deque.
  */
 @NotThreadSafe
-class ReverseBuilder<T>
-    implements InvariantCheckable
-{
+class ReverseBuilder<T> implements InvariantCheckable {
     private final Leaf<T> leaf;
 
-    private ReverseBuilder(Leaf<T> leaf)
-    {
+    private ReverseBuilder(Leaf<T> leaf) {
         this.leaf = leaf;
     }
 
-    void add(T value)
-    {
+    void add(T value) {
         leaf.add(value);
     }
 
-    void addAll(Indexed<? extends T> values)
-    {
+    void addAll(Indexed<? extends T> values) {
         for (int i = 0; i < values.size(); ++i) {
             add(values.get(i));
         }
     }
 
-    void addAll(Iterator<? extends T> values)
-    {
+    void addAll(Iterator<? extends T> values) {
         while (values.hasNext()) {
             add(values.next());
         }
     }
 
-    Node<T> build()
-    {
+    Node<T> build() {
         return leaf.toNode().prune();
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         leaf.checkInvariants();
     }
 
     /**
-     * Deconstructs the base node to construct a list of builders that add new elements
-     * to the front of the list.
+     * Deconstructs the base node to construct a list of builders that add new elements to the front of the list.
      *
      * @param root the node the builder will prepend data to
      * @return the builder
      */
-    static <T> ReverseBuilder<T> insertAtBeginning(Node<T> root)
-    {
+    static <T> ReverseBuilder<T> insertAtBeginning(Node<T> root) {
         if (root.getDepth() == 1) {
             if (root.isFull()) {
                 Branch<T> branch = new Branch<>(2, IndexedHelper.indexed(root), EmptyNode.of(), null);
@@ -119,7 +105,8 @@ class ReverseBuilder<T>
         BranchNode<T> branchNode = root.castAsBranch();
         assert branchNode != null;
         if (branchNode.isFull()) {
-            Branch<T> branch = new Branch<>(branchNode.getDepth() + 1, IndexedHelper.indexed(branchNode), EmptyNode.of(), null);
+            Branch<T> branch =
+                    new Branch<>(branchNode.getDepth() + 1, IndexedHelper.indexed(branchNode), EmptyNode.of(), null);
             Leaf<T> leaf = new Leaf<>(IndexedHelper.empty(), addMissingBranches(1, branch));
             return new ReverseBuilder<>(leaf);
         }
@@ -133,10 +120,7 @@ class ReverseBuilder<T>
             if (prefix.isFull()) {
                 next.add(prefix);
             } else {
-                next = new Branch<>(branchNode.getDepth(),
-                                    branchNode.filledNodes(),
-                                    branchNode.suffix(),
-                                    next);
+                next = new Branch<>(branchNode.getDepth(), branchNode.filledNodes(), branchNode.suffix(), next);
             }
             prefix = branchNode.prefix();
         }
@@ -151,9 +135,7 @@ class ReverseBuilder<T>
         return new ReverseBuilder<>(new Leaf<>(values, next));
     }
 
-    private static <T> Branch<T> addMissingBranches(int nodeDepth,
-                                                    Branch<T> next)
-    {
+    private static <T> Branch<T> addMissingBranches(int nodeDepth, Branch<T> next) {
         final int requiredDepth = nodeDepth + 1;
         while (next.depth > requiredDepth) {
             next = new Branch<>(next.depth - 1, next);
@@ -161,25 +143,20 @@ class ReverseBuilder<T>
         return next;
     }
 
-    private static class Leaf<T>
-    {
+    private static class Leaf<T> {
         private final T[] values;
         private Branch<T> next;
         private int length;
         private int index;
         private int capacity;
 
-        private Leaf(Indexed<T> values,
-                     @Nullable Branch<T> next)
-        {
+        private Leaf(Indexed<T> values, @Nullable Branch<T> next) {
             assert next == null || next.depth == 2;
 
             this.values = DequeHelper.allocateValues(32);
             length = values.size();
             index = 32 - length;
-            capacity = (next != null)
-                       ? Math.min(32, next.capacity) - length
-                       : 32 - length;
+            capacity = (next != null) ? Math.min(32, next.capacity) - length : 32 - length;
             for (int i = 0; i < length; ++i) {
                 this.values[index + i] = values.get(i);
             }
@@ -188,8 +165,7 @@ class ReverseBuilder<T>
             assert capacity > 0;
         }
 
-        private void add(T value)
-        {
+        private void add(T value) {
             assert capacity > 0;
             length += 1;
             index -= 1;
@@ -201,8 +177,7 @@ class ReverseBuilder<T>
             assert capacity > 0;
         }
 
-        private int totalSize()
-        {
+        private int totalSize() {
             int answer = length;
             if (next != null) {
                 answer += next.totalSize();
@@ -210,8 +185,7 @@ class ReverseBuilder<T>
             return answer;
         }
 
-        private void push()
-        {
+        private void push() {
             Node<T> newNode = LeafNode.fromList(IndexedArray.retained(values), index, 32);
             if (next == null) {
                 next = new Branch<>(2, null);
@@ -224,14 +198,13 @@ class ReverseBuilder<T>
             Arrays.fill(values, null);
         }
 
-        private Node<T> toNode()
-        {
-            Node<T> leafNode = length == 0 ? EmptyNode.of() : LeafNode.fromList(IndexedArray.retained(values), index, 32);
+        private Node<T> toNode() {
+            Node<T> leafNode =
+                    length == 0 ? EmptyNode.of() : LeafNode.fromList(IndexedArray.retained(values), index, 32);
             return next == null ? leafNode : next.toNode(leafNode);
         }
 
-        private void checkInvariants()
-        {
+        private void checkInvariants() {
             if (next != null) {
                 next.checkInvariants();
                 if (next.depth != 2) {
@@ -251,8 +224,7 @@ class ReverseBuilder<T>
         }
     }
 
-    private static class Branch<T>
-    {
+    private static class Branch<T> {
         private final Node<T>[] nodes;
         private final int depth;
         private Branch<T> next;
@@ -262,9 +234,7 @@ class ReverseBuilder<T>
         private int capacity;
         private int size;
 
-        private Branch(int depth,
-                       @Nullable Branch<T> next)
-        {
+        private Branch(int depth, @Nullable Branch<T> next) {
             assert next == null || next.depth == depth + 1;
 
             this.nodes = DequeHelper.allocateNodes(32);
@@ -272,17 +242,14 @@ class ReverseBuilder<T>
             this.next = next;
             suffix = EmptyNode.of();
             capacity = (next != null)
-                       ? Math.min(next.capacity, DequeHelper.sizeForDepth(depth))
-                       : DequeHelper.sizeForDepth(depth);
+                    ? Math.min(next.capacity, DequeHelper.sizeForDepth(depth))
+                    : DequeHelper.sizeForDepth(depth);
             index = 32;
             assert capacity >= 0;
         }
 
-        private Branch(int depth,
-                       @Nonnull Indexed<Node<T>> startNodes,
-                       @Nonnull Node<T> suffix,
-                       @Nullable Branch<T> next)
-        {
+        private Branch(
+                int depth, @Nonnull Indexed<Node<T>> startNodes, @Nonnull Node<T> suffix, @Nullable Branch<T> next) {
             assert startNodes.size() == 0 || startNodes.get(0).getDepth() < depth;
             assert next == null || next.depth == depth + 1;
 
@@ -291,8 +258,8 @@ class ReverseBuilder<T>
             this.next = next;
             this.suffix = suffix;
             capacity = (next != null)
-                       ? Math.min(next.capacity, DequeHelper.sizeForDepth(depth))
-                       : DequeHelper.sizeForDepth(depth);
+                    ? Math.min(next.capacity, DequeHelper.sizeForDepth(depth))
+                    : DequeHelper.sizeForDepth(depth);
 
             length = startNodes.size();
             index = 32 - length;
@@ -306,8 +273,7 @@ class ReverseBuilder<T>
             assert capacity >= 0;
         }
 
-        private void add(Node<T> node)
-        {
+        private void add(Node<T> node) {
             assert capacity > 0;
             assert length < nodes.length;
             assert node.getDepth() < depth;
@@ -332,15 +298,10 @@ class ReverseBuilder<T>
             assert capacity > 0;
         }
 
-        private void push(Node<T> node,
-                          Node<T> prefix)
-        {
-            Node<T> newNode =
-                size == node.size()
-                ? node
-                : BranchNode.forNodeBuilder(depth, size, prefix,
-                                            IndexedArray.retained(nodes),
-                                            index, 32, suffix);
+        private void push(Node<T> node, Node<T> prefix) {
+            Node<T> newNode = size == node.size()
+                    ? node
+                    : BranchNode.forNodeBuilder(depth, size, prefix, IndexedArray.retained(nodes), index, 32, suffix);
             if (next == null) {
                 next = new Branch<>(depth + 1, null);
             }
@@ -353,8 +314,7 @@ class ReverseBuilder<T>
             Arrays.fill(nodes, null);
         }
 
-        private int totalSize()
-        {
+        private int totalSize() {
             int answer = size;
             if (next != null) {
                 answer += next.totalSize();
@@ -362,19 +322,15 @@ class ReverseBuilder<T>
             return answer;
         }
 
-        private Node<T> toNode(Node<T> prefix)
-        {
+        private Node<T> toNode(Node<T> prefix) {
             assert prefix.size() < capacity;
 
             if (size > 0) {
                 if (prefix.isEmpty() && suffix.isEmpty() && length == 1) {
                     prefix = nodes[index];
                 } else {
-                    prefix = BranchNode.forNodeBuilder(depth,
-                                                       size + prefix.size(),
-                                                       prefix,
-                                                       IndexedArray.retained(nodes), index, 32,
-                                                       suffix);
+                    prefix = BranchNode.forNodeBuilder(
+                            depth, size + prefix.size(), prefix, IndexedArray.retained(nodes), index, 32, suffix);
                 }
             }
             if (next == null) {
@@ -384,9 +340,7 @@ class ReverseBuilder<T>
             }
         }
 
-
-        private void checkInvariants()
-        {
+        private void checkInvariants() {
             if (next != null) {
                 next.checkInvariants();
                 if (next.depth != depth + 1) {

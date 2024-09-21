@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,32 +35,24 @@ package org.javimmutable.collections.common;
 
 import org.javimmutable.collections.Func1;
 
-/**
- * Mutable object for tracking changes from zero.
- */
-public class MutableDelta
-    implements Func1<Integer, Integer>
-{
+/** Mutable object for tracking changes from zero. */
+public class MutableDelta implements Func1<Integer, Integer> {
     private int value;
 
-    public void add(int increment)
-    {
+    public void add(int increment) {
         value += increment;
     }
 
-    public void subtract(int decrement)
-    {
+    public void subtract(int decrement) {
         value -= decrement;
     }
 
-    public int getValue()
-    {
+    public int getValue() {
         return value;
     }
 
     @Override
-    public Integer apply(Integer callerValue)
-    {
+    public Integer apply(Integer callerValue) {
         return value + callerValue;
     }
 }

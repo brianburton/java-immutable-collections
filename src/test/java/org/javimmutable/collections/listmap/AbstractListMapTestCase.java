@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,15 @@
 
 package org.javimmutable.collections.listmap;
 
+import static com.google.common.primitives.Ints.asList;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IList;
@@ -47,29 +54,14 @@ import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 import org.javimmutable.collections.list.TreeList;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static com.google.common.primitives.Ints.asList;
-
-public abstract class AbstractListMapTestCase
-    extends TestCase
-{
-    public enum Ordering
-    {
+public abstract class AbstractListMapTestCase extends TestCase {
+    public enum Ordering {
         HASH,
         INORDER,
         REVERSED
     }
 
-    public IListMap<Integer, Integer> verifyOperations(IListMap<Integer, Integer> map,
-                                                       Ordering ordering)
-    {
+    public IListMap<Integer, Integer> verifyOperations(IListMap<Integer, Integer> map, Ordering ordering) {
         assertTrue(map.isEmpty());
         assertFalse(map.isNonEmpty());
         assertEquals(0, map.size());
@@ -103,7 +95,8 @@ public abstract class AbstractListMapTestCase
         assertSame(map.getList(3), map.get(3));
 
         IListMap<Integer, Integer> preInsertMap = map;
-        map = map.assign(3, TreeList.<Integer>of().insert(300).insert(7).insert(7).insert(14));
+        map = map.assign(
+                3, TreeList.<Integer>of().insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertEquals(3, map.size());
         assertEquals(Arrays.asList(100, 18, 87), map.getList(1).getList());
@@ -135,10 +128,13 @@ public abstract class AbstractListMapTestCase
         assertTrue(map.deleteAll().isEmpty());
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 
-        StandardIteratorTests.listIteratorTest(Arrays.asList(100, 18, 87), map.values(1).iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(100, 18, 87), map.values(1).iterator());
         StandardIteratorTests.listIteratorTest(Arrays.asList(87), map.values(2).iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(300, 7, 7, 14), map.values(3).iterator());
-        StandardIteratorTests.listIteratorTest(Collections.emptyList(), map.values(4).iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(300, 7, 7, 14), map.values(3).iterator());
+        StandardIteratorTests.listIteratorTest(
+                Collections.emptyList(), map.values(4).iterator());
 
         verifyTransform(map);
         verifyCollector(map.insert(-10, -20).insert(-45, 90), ordering);
@@ -146,8 +142,7 @@ public abstract class AbstractListMapTestCase
         return map;
     }
 
-    private void verifyTransform(IListMap<Integer, Integer> map)
-    {
+    private void verifyTransform(IListMap<Integer, Integer> map) {
         final Func1<IList<Integer>, IList<Integer>> removeAll = list -> list.deleteAll();
         final Func1<IList<Integer>, IList<Integer>> removeLarge = list -> list.reject(x -> x >= 10);
         final Func1<IList<Integer>, IList<Integer>> removeEven = list -> list.reject(x -> x % 2 == 0);
@@ -169,30 +164,34 @@ public abstract class AbstractListMapTestCase
         assertSame(start, start.transformIfPresent(badKey, removeAll));
     }
 
-    private static void verifyCollector(IListMap<Integer, Integer> template,
-                                        Ordering ordering)
-    {
-        List<IMapEntry<Integer, Integer>> values1 = IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, -i)).collect(Collectors.toList());
-        List<IMapEntry<Integer, IList<Integer>>> values = IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, ILists.of(-i))).collect(Collectors.toList());
+    private static void verifyCollector(IListMap<Integer, Integer> template, Ordering ordering) {
+        List<IMapEntry<Integer, Integer>> values1 =
+                IntStream.range(1, 2500).boxed().map(i -> IMapEntry.of(i, -i)).collect(Collectors.toList());
+        List<IMapEntry<Integer, IList<Integer>>> values = IntStream.range(1, 2500)
+                .boxed()
+                .map(i -> IMapEntry.of(i, ILists.of(-i)))
+                .collect(Collectors.toList());
         switch (ordering) {
             case HASH: {
-                Set<IMapEntry<Integer, IList<Integer>>> entries = template.deleteAll()
-                    .insertAll(values)
-                    .entries()
-                    .parallelStream()
-                    .map(e -> MapEntry.entry(e.getKey(), e.getValue()))
-                    .collect(Collectors.toSet());
+                Set<IMapEntry<Integer, IList<Integer>>> entries =
+                        template.deleteAll().insertAll(values).entries().parallelStream()
+                                .map(e -> MapEntry.entry(e.getKey(), e.getValue()))
+                                .collect(Collectors.toSet());
                 Set<IMapEntry<Integer, IList<Integer>>> expected = new HashSet<>(values);
                 assertEquals(expected, entries);
                 break;
             }
             case INORDER: {
-                List<IMapEntry<Integer, IList<Integer>>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                List<IMapEntry<Integer, IList<Integer>>> entries =
+                        template.deleteAll().insertAll(values).entries().parallelStream()
+                                .collect(Collectors.toList());
                 assertEquals(values, entries);
                 break;
             }
             case REVERSED: {
-                List<IMapEntry<Integer, IList<Integer>>> entries = template.deleteAll().insertAll(values).entries().parallelStream().collect(Collectors.toList());
+                List<IMapEntry<Integer, IList<Integer>>> entries =
+                        template.deleteAll().insertAll(values).entries().parallelStream()
+                                .collect(Collectors.toList());
                 Collections.reverse(entries);
                 assertEquals(values, entries);
                 break;
@@ -206,8 +205,7 @@ public abstract class AbstractListMapTestCase
         verifyForEach(actual);
     }
 
-    private static void verifyForEach(IListMap<Integer, Integer> jetMap)
-    {
+    private static void verifyForEach(IListMap<Integer, Integer> jetMap) {
         final Temp.Int1 count = Temp.intVar(0);
         jetMap.forEach((key, set) -> {
             count.a += 1;

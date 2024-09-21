@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,8 +35,7 @@ package org.javimmutable.collections.common;
 
 import java.util.Spliterator;
 
-public class StreamConstants
-{
+public class StreamConstants {
     public static final int SPLITERATOR_ORDERED = Spliterator.IMMUTABLE | Spliterator.ORDERED;
     public static final int SPLITERATOR_UNORDERED = Spliterator.IMMUTABLE;
 }

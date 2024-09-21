@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,46 +33,35 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IMap;
-import org.javimmutable.collections.tree.TreeMap;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.IMap;
+import org.javimmutable.collections.tree.TreeMap;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings("unchecked")
-public class TreeMapProxy
-    extends AbstractMapProxy
-{
+public class TreeMapProxy extends AbstractMapProxy {
     private static final long serialVersionUID = -121805;
 
-    public TreeMapProxy()
-    {
+    public TreeMapProxy() {
         super(TreeMap.of());
     }
 
-    public TreeMapProxy(TreeMap map)
-    {
+    public TreeMapProxy(TreeMap map) {
         super(map);
     }
 
     @Override
-    protected IMap readMap(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        Comparator comparator = (Comparator)in.readObject();
+    protected IMap readMap(ObjectInput in) throws IOException, ClassNotFoundException {
+        Comparator comparator = (Comparator) in.readObject();
         return TreeMap.of(comparator);
     }
 
     @Override
-    protected void writeMap(ObjectOutput out)
-        throws IOException
-    {
-        TreeMap treeMap = (TreeMap)map;
+    protected void writeMap(ObjectOutput out) throws IOException {
+        TreeMap treeMap = (TreeMap) map;
         out.writeObject(treeMap.getComparator());
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,9 @@
 
 package org.javimmutable.collections.tree;
 
+import static java.lang.Boolean.TRUE;
+
+import java.io.IOException;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
@@ -44,20 +45,12 @@ import org.javimmutable.collections.Tuple2;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.common.StandardCollisionSetTests;
 
-import java.io.IOException;
-
-import static java.lang.Boolean.TRUE;
-
-public class TreeCollisionSetTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class TreeCollisionSetTest extends TestCase {
+    public void testStandard() {
         StandardCollisionSetTests.randomTests(TreeCollisionSet.instance());
     }
 
-    public void testUpdateDelete()
-    {
+    public void testUpdateDelete() {
         TreeCollisionSet<Integer> collisionMap = TreeCollisionSet.instance();
         CollisionSet.Node node = collisionMap.empty();
 
@@ -113,8 +106,7 @@ public class TreeCollisionSetTest
         assertEquals(true, collisionMap.contains(node, 12));
     }
 
-    public void testForEach()
-    {
+    public void testForEach() {
         TreeCollisionSet<String> transforms = TreeCollisionSet.instance();
         CollisionSet.Node node = transforms.empty();
 
@@ -150,8 +142,7 @@ public class TreeCollisionSetTest
         }
     }
 
-    public void testReduce()
-    {
+    public void testReduce() {
         TreeCollisionSet<String> transforms = TreeCollisionSet.instance();
         CollisionSet.Node node = transforms.empty();
 
@@ -178,9 +169,8 @@ public class TreeCollisionSetTest
         }
     }
 
-    private AbstractNode<Integer, Boolean> branch(Tuple2<Integer, Boolean> a,
-                                                  Tuple2<Integer, Boolean> b)
-    {
-        return ValueNode.instance(a.getFirst(), a.getSecond()).assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
+    private AbstractNode<Integer, Boolean> branch(Tuple2<Integer, Boolean> a, Tuple2<Integer, Boolean> b) {
+        return ValueNode.instance(a.getFirst(), a.getSecond())
+                .assign(ComparableComparator.of(), b.getFirst(), b.getSecond());
     }
 }

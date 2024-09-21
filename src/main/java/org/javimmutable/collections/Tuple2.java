@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,48 +33,37 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 
-/**
- * Immutable container for 2 values.
- */
+/** Immutable container for 2 values. */
 @Immutable
-public class Tuple2<A, B>
-    implements Serializable
-{
+public class Tuple2<A, B> implements Serializable {
     private static final long serialVersionUID = -121805;
 
     private final A first;
     private final B second;
 
-    public Tuple2(A first,
-                  B second)
-    {
+    public Tuple2(A first, B second) {
         this.first = first;
         this.second = second;
     }
 
-    public static <A, B> Tuple2<A, B> of(A first,
-                                         B second)
-    {
+    public static <A, B> Tuple2<A, B> of(A first, B second) {
         return new Tuple2<>(first, second);
     }
 
-    public A getFirst()
-    {
+    public A getFirst() {
         return first;
     }
 
-    public B getSecond()
-    {
+    public B getSecond() {
         return second;
     }
 
     @SuppressWarnings("RedundantIfStatement")
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -84,7 +71,7 @@ public class Tuple2<A, B>
             return false;
         }
 
-        Tuple2 tuple2 = (Tuple2)o;
+        Tuple2 tuple2 = (Tuple2) o;
 
         if (first != null ? !first.equals(tuple2.first) : tuple2.first != null) {
             return false;
@@ -97,8 +84,7 @@ public class Tuple2<A, B>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = first != null ? first.hashCode() : 0;
         result = 31 * result + (second != null ? second.hashCode() : 0);
         return result;

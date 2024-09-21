@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2016-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,58 +35,44 @@ package org.javimmutable.collections.stress_test;
 
 import java.util.Random;
 
-public abstract class ArrayIndexRange
-{
+public abstract class ArrayIndexRange {
     public static final ArrayIndexRange BIT32 = new PositiveIndexRange(31);
     public static final ArrayIndexRange INTEGER = new AllIntIndexRange();
 
-    private ArrayIndexRange()
-    {
-    }
+    private ArrayIndexRange() {}
 
     public abstract int maxSize();
 
     public abstract int randomIndex(Random random);
 
-    private static class PositiveIndexRange
-        extends ArrayIndexRange
-    {
+    private static class PositiveIndexRange extends ArrayIndexRange {
         private final int maxIndex;
 
-        private PositiveIndexRange(int maxIndex)
-        {
+        private PositiveIndexRange(int maxIndex) {
             this.maxIndex = maxIndex;
         }
 
         @Override
-        public int maxSize()
-        {
+        public int maxSize() {
             return maxIndex + 1;
         }
 
         @Override
-        public int randomIndex(Random random)
-        {
+        public int randomIndex(Random random) {
             return random.nextInt(maxIndex + 1);
         }
     }
 
-    private static class AllIntIndexRange
-        extends ArrayIndexRange
-    {
-        private AllIntIndexRange()
-        {
-        }
+    private static class AllIntIndexRange extends ArrayIndexRange {
+        private AllIntIndexRange() {}
 
         @Override
-        public int maxSize()
-        {
+        public int maxSize() {
             return Integer.MAX_VALUE;
         }
 
         @Override
-        public int randomIndex(Random random)
-        {
+        public int randomIndex(Random random) {
             int base = random.nextInt(Integer.MAX_VALUE);
             return random.nextBoolean() ? base : -base;
         }

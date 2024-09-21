@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2016-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,23 +33,18 @@
 
 package org.javimmutable.collections.stress_test;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.ILists;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
-public class RandomKeyManagerTest
-    extends TestCase
-{
+public class RandomKeyManagerTest extends TestCase {
     private IList<String> allPossibleKeys;
     private RandomKeyManager keys;
 
-    public void setUp()
-        throws Exception
-    {
+    public void setUp() throws Exception {
         allPossibleKeys = ILists.of();
         for (int i = 0; i < 100; ++i) {
             allPossibleKeys = allPossibleKeys.insertLast(String.valueOf(i));
@@ -59,8 +52,7 @@ public class RandomKeyManagerTest
         keys = new RandomKeyManager(new Random(1010101010101L), allPossibleKeys);
     }
 
-    public void testNoneAllocated()
-    {
+    public void testNoneAllocated() {
         for (String key : allPossibleKeys) {
             assertEquals(false, keys.allocated(key));
             assertEquals(true, keys.unallocated(key));
@@ -98,8 +90,7 @@ public class RandomKeyManagerTest
         }
     }
 
-    public void testAllocation()
-    {
+    public void testAllocation() {
         for (int i = 1; i <= 250; ++i) {
             keys.clear();
             IList<String> values = keys.randomUnallocatedKeysJList(i);
@@ -133,8 +124,7 @@ public class RandomKeyManagerTest
         }
     }
 
-    public void testRandomIntersectionSetJList()
-    {
+    public void testRandomIntersectionSetJList() {
         for (int i = 1; i <= 100; ++i) {
             keys.clear();
             while (keys.size() < i) {
@@ -169,14 +159,15 @@ public class RandomKeyManagerTest
         }
     }
 
-    public void testRandomIntersectionSetJListAllUnallocated()
-    {
+    public void testRandomIntersectionSetJListAllUnallocated() {
         for (int i = 1; i <= 100; ++i) {
             keys.clear();
             while (keys.size() < i) {
                 keys.allocate(keys.randomUnallocatedKey());
             }
-            for (int unallocatedCount = 0; unallocatedCount <= Math.min(5, allPossibleKeys.size() - keys.size()); ++unallocatedCount) {
+            for (int unallocatedCount = 0;
+                    unallocatedCount <= Math.min(5, allPossibleKeys.size() - keys.size());
+                    ++unallocatedCount) {
                 IList<String> list = keys.randomIntersectionKeysJList(0, 0, unallocatedCount);
                 for (String value : list) {
                     assertEquals(false, keys.allocated(value));
@@ -186,13 +177,11 @@ public class RandomKeyManagerTest
         }
     }
 
-    private int countUniques(Iterable<String> values)
-    {
+    private int countUniques(Iterable<String> values) {
         return uniques(values).size();
     }
 
-    private Set<String> uniques(Iterable<String> values)
-    {
+    private Set<String> uniques(Iterable<String> values) {
         Set<String> uniques = new HashSet<String>();
         for (String value : values) {
             uniques.add(value);

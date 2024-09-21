@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2015-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,15 @@
 
 package org.javimmutable.collections.stress_test;
 
+import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
+import static org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
+import static org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
+import static org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListBuilder;
 import org.javimmutable.collections.ILists;
@@ -45,45 +52,29 @@ import org.javimmutable.collections.MapEntry;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.ExpectedOrderSorter;
 import org.javimmutable.collections.common.StandardMapTests;
-import static org.javimmutable.collections.common.StandardSerializableTests.verifySerializable;
 import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
-import static org.javimmutable.collections.stress_test.KeyFactory.BadHashKeyFactory;
-import static org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyFactory;
-import static org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
 import org.javimmutable.collections.tree.TreeMap;
 import org.javimmutable.collections.tree.TreeMapTest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 /**
- * Test program for all implementations of JImmutableMap. Divided into five sections:
- * growing (adds new key-value pairs), updating (changes the value in existing pairs),
- * shrinking (removes pairs), contains (tests methods that search for values in the map),
- * and cleanup (empties the map of all key-value pairs).
- * <p>
- * This tester is used to verify six different versions of JImmutableMap in the StressTestLoop:
- * JImmutableTreeMap, JImmutableInsertOrderMap, a hashmap made from keys that are not Comparable
- * and have a good hash function (JImmutableHashMap), keys that are Comparable with a good hash
- * function (JImmutableComparableHashMap), keys that  not Comparable and have a bad hash function
- * (JImmutableBadHashMap), and keys that are Comparable and have a bad hash function
- * (JImmutableComparableBadHashMap).
+ * Test program for all implementations of JImmutableMap. Divided into five sections: growing (adds new key-value
+ * pairs), updating (changes the value in existing pairs), shrinking (removes pairs), contains (tests methods that
+ * search for values in the map), and cleanup (empties the map of all key-value pairs).
+ *
+ * <p>This tester is used to verify six different versions of JImmutableMap in the StressTestLoop: JImmutableTreeMap,
+ * JImmutableInsertOrderMap, a hashmap made from keys that are not Comparable and have a good hash function
+ * (JImmutableHashMap), keys that are Comparable with a good hash function (JImmutableComparableHashMap), keys that not
+ * Comparable and have a bad hash function (JImmutableBadHashMap), and keys that are Comparable and have a bad hash
+ * function (JImmutableComparableBadHashMap).
  */
 @SuppressWarnings("Duplicates")
-public class MapStressTester<K extends KeyWrapper<String>>
-    extends StressTester
-{
+public class MapStressTester<K extends KeyWrapper<String>> extends StressTester {
     private final IMap<K, String> map;
     private final Class<? extends Map> expectedClass;
     private final KeyFactory<K> factory;
 
-    public MapStressTester(IMap<K, String> map,
-                           Class<? extends Map> expectedClass,
-                           KeyFactory<K> factory)
-    {
+    public MapStressTester(IMap<K, String> map, Class<? extends Map> expectedClass, KeyFactory<K> factory) {
         super(getName(map));
         this.map = map;
         this.expectedClass = expectedClass;
@@ -91,8 +82,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
     }
 
     @Override
-    public IList<String> getOptions()
-    {
+    public IList<String> getOptions() {
         final String option = getNameOption(map);
         final IListBuilder<String> options = ILists.builder();
         options.add("map");
@@ -110,9 +100,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
         return options.build();
     }
 
-    private String getName(IMap<K, String> map,
-                           KeyFactory factory)
-    {
+    private String getName(IMap<K, String> map, KeyFactory factory) {
         if (map instanceof HashMap) {
             String name = map.getClass().getSimpleName().replace("Empty", "").replaceFirst("I", "");
             if (factory instanceof BadHashKeyFactory || factory instanceof ComparableBadHashKeyFactory) {
@@ -127,11 +115,9 @@ public class MapStressTester<K extends KeyWrapper<String>>
         }
     }
 
-    public void execute(Random random,
-                        IList<String> tokens)
-        throws IllegalAccessException, InstantiationException
-    {
-        @SuppressWarnings("unchecked") Map<K, String> expected = expectedClass.newInstance();
+    public void execute(Random random, IList<String> tokens) throws IllegalAccessException, InstantiationException {
+        @SuppressWarnings("unchecked")
+        Map<K, String> expected = expectedClass.newInstance();
         List<K> keysList = new ArrayList<>();
         IMap<K, String> map = this.map;
         final int size = 1 + random.nextInt(100000);
@@ -140,21 +126,21 @@ public class MapStressTester<K extends KeyWrapper<String>>
             System.out.printf("growing %d%n", map.size());
             while (expected.size() < step.growthSize()) {
                 switch (random.nextInt(5)) {
-                    case 0: { //assign(K, V)
+                    case 0: { // assign(K, V)
                         K key = unusedKey(tokens, random, expected);
                         keysList.add(key);
                         map = map.assign(key, key.getValue());
                         expected.put(key, key.getValue());
                         break;
                     }
-                    case 1: { //update(K, V)
+                    case 1: { // update(K, V)
                         K key = unusedKey(tokens, random, expected);
                         keysList.add(key);
                         map = map.update(key, h -> h.isEmpty() ? key.getValue() : h.unsafeGet() + "," + key.getValue());
                         expected.put(key, key.getValue());
                         break;
                     }
-                    case 2: { //insert(Entry<K, V>)
+                    case 2: { // insert(Entry<K, V>)
                         K key = unusedKey(tokens, random, expected);
                         IMapEntry<K, String> entry = new MapEntry<>(key, key.getValue());
                         keysList.add(key);
@@ -162,14 +148,14 @@ public class MapStressTester<K extends KeyWrapper<String>>
                         expected.put(key, key.getValue());
                         break;
                     }
-                    case 3: { //assignAll(JImmutableMap)
+                    case 3: { // assignAll(JImmutableMap)
                         IMap<K, String> values = makeInsertValues(tokens, random, expected);
                         keysList.addAll(values.getMap().keySet());
                         map = map.assignAll(values);
                         expected.putAll(values.getMap());
                         break;
                     }
-                    case 4: { //assignAll(Map)
+                    case 4: { // assignAll(Map)
                         IMap<K, String> values = makeInsertValues(tokens, random, expected);
                         keysList.addAll(values.getMap().keySet());
                         map = map.assignAll(values.getMap());
@@ -186,21 +172,21 @@ public class MapStressTester<K extends KeyWrapper<String>>
             System.out.printf("updating %d%n", map.size());
             for (int i = 0; i < map.size(); ++i) {
                 switch (random.nextInt(5)) {
-                    case 0: { //assign(K, V)
+                    case 0: { // assign(K, V)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
                         map = map.assign(key, value);
                         expected.put(key, value);
                         break;
                     }
-                    case 1: { //update(K, V)
+                    case 1: { // update(K, V)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
                         map = map.update(key, h -> h.isEmpty() ? value : h.unsafeGet() + "," + value);
                         expected.put(key, expected.get(key) + "," + value);
                         break;
                     }
-                    case 2: { //insert(Entry<K, V>)
+                    case 2: { // insert(Entry<K, V>)
                         K key = keysList.get(random.nextInt(keysList.size()));
                         String value = RandomKeyManager.makeValue(tokens, random);
                         IMapEntry<K, String> entry = new MapEntry<>(key, value);
@@ -208,13 +194,13 @@ public class MapStressTester<K extends KeyWrapper<String>>
                         expected.put(key, value);
                         break;
                     }
-                    case 3: { //assignAll(JImmutableMap)
+                    case 3: { // assignAll(JImmutableMap)
                         IMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                         map = map.assignAll(values);
                         expected.putAll(values.getMap());
                         break;
                     }
-                    case 4: { //assignAll(Map)
+                    case 4: { // assignAll(Map)
                         IMap<K, String> values = makeUpdateValues(tokens, random, keysList);
                         map = map.assignAll(values.getMap());
                         expected.putAll(values.getMap());
@@ -239,25 +225,32 @@ public class MapStressTester<K extends KeyWrapper<String>>
 
             System.out.printf("contains %d%n", map.size());
             for (int i = 0; i < size / 12; ++i) {
-                K key = (random.nextBoolean()) ? keysList.get(random.nextInt(keysList.size())) : unusedKey(tokens, random, expected);
+                K key = (random.nextBoolean())
+                        ? keysList.get(random.nextInt(keysList.size()))
+                        : unusedKey(tokens, random, expected);
                 switch (random.nextInt(4)) {
-                    case 0: { //get(K)
+                    case 0: { // get(K)
                         String value = map.get(key);
                         String expectedValue = expected.getOrDefault(key, null);
-                        if (!((value == null && expectedValue == null) || (expectedValue != null && expectedValue.equals(value)))) {
-                            throw new RuntimeException(String.format("get(key) method call failed for %s - expected %s found %s%n", key, expectedValue, value));
+                        if (!((value == null && expectedValue == null)
+                                || (expectedValue != null && expectedValue.equals(value)))) {
+                            throw new RuntimeException(String.format(
+                                    "get(key) method call failed for %s - expected %s found %s%n",
+                                    key, expectedValue, value));
                         }
                         break;
                     }
-                    case 1: { //getValueOr(K, V)
+                    case 1: { // getValueOr(K, V)
                         String value = map.getValueOr(key, "");
                         String expectedValue = expected.getOrDefault(key, "");
                         if (!value.equals(expectedValue)) {
-                            throw new RuntimeException(String.format("getValueOr(key, default) method call failed for %s - found %s expected %s%n", key, expectedValue, value));
+                            throw new RuntimeException(String.format(
+                                    "getValueOr(key, default) method call failed for %s - found %s expected %s%n",
+                                    key, expectedValue, value));
                         }
                         break;
                     }
-                    case 2: { //find(K)
+                    case 2: { // find(K)
                         Maybe<String> maybe = map.find(key);
                         Maybe<String> expectedMaybe;
                         if (expected.containsKey(key)) {
@@ -267,11 +260,13 @@ public class MapStressTester<K extends KeyWrapper<String>>
                             expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentHolder(maybe, expectedMaybe)) {
-                            throw new RuntimeException(String.format("find(key) method call failed for %s - expected %s found %s%n", key, expectedMaybe, maybe));
+                            throw new RuntimeException(String.format(
+                                    "find(key) method call failed for %s - expected %s found %s%n",
+                                    key, expectedMaybe, maybe));
                         }
                         break;
                     }
-                    case 3: { //findEntry(K)
+                    case 3: { // findEntry(K)
                         Maybe<IMapEntry<K, String>> maybe = map.findEntry(key);
                         Maybe<IMapEntry<K, String>> expectedMaybe;
                         if (expected.containsKey(key)) {
@@ -281,7 +276,9 @@ public class MapStressTester<K extends KeyWrapper<String>>
                             expectedMaybe = Maybe.empty();
                         }
                         if (!equivalentEntryHolder(maybe, expectedMaybe)) {
-                            throw new RuntimeException(String.format("findEntry(key) method call failed for %s - expected %s found %s%n", key, maybe, maybe));
+                            throw new RuntimeException(String.format(
+                                    "findEntry(key) method call failed for %s - expected %s found %s%n",
+                                    key, maybe, maybe));
                         }
                         break;
                     }
@@ -308,21 +305,22 @@ public class MapStressTester<K extends KeyWrapper<String>>
             expected.clear();
         }
         if (map.size() != 0) {
-            throw new RuntimeException(String.format("expected map to be empty but it contained %d keys%n", map.size()));
+            throw new RuntimeException(
+                    String.format("expected map to be empty but it contained %d keys%n", map.size()));
         }
         verifyContents(map, expected);
         System.out.printf("MapStressTest on %s completed without errors%n", getName(map, factory));
     }
 
-    private void verifyContents(final IMap<K, String> map,
-                                final Map<K, String> expected)
-    {
+    private void verifyContents(final IMap<K, String> map, final Map<K, String> expected) {
         System.out.printf("checking contents with size %d%n", map.size());
         if (map.isEmpty() != expected.isEmpty()) {
-            throw new RuntimeException(String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), map.isEmpty()));
+            throw new RuntimeException(
+                    String.format("isEmpty mismatch - expected %b found %b%n", expected.isEmpty(), map.isEmpty()));
         }
         if (map.size() != expected.size()) {
-            throw new RuntimeException(String.format("size mismatch - expected %d found %d%n", expected.size(), map.size()));
+            throw new RuntimeException(
+                    String.format("size mismatch - expected %d found %d%n", expected.size(), map.size()));
         }
         for (Map.Entry<K, String> entry : expected.entrySet()) {
             K key = entry.getKey();
@@ -333,7 +331,8 @@ public class MapStressTester<K extends KeyWrapper<String>>
             }
             String mapValue = maybe.unsafeGet();
             if (!mapValue.equals(expectedValue)) {
-                throw new RuntimeException(String.format("value mismatch for %s - expected %s found %s%n", key, expectedValue, mapValue));
+                throw new RuntimeException(
+                        String.format("value mismatch for %s - expected %s found %s%n", key, expectedValue, mapValue));
             }
         }
         if (!expected.equals(map.getMap())) {
@@ -347,14 +346,13 @@ public class MapStressTester<K extends KeyWrapper<String>>
         System.out.printf("done checking contents with size %d%n", map.size());
     }
 
-    private void verifyIteration(IMap<K, String> map,
-                                 Map<K, String> expected)
-    {
+    private void verifyIteration(IMap<K, String> map, Map<K, String> expected) {
         System.out.printf("checking cursor with size %d%n", map.size());
 
         List<IMapEntry<K, String>> entries = makeEntriesList(expected);
         if (map instanceof HashMap) {
-            final ExpectedOrderSorter<K> ordering = new ExpectedOrderSorter<>(map.keys().iterator());
+            final ExpectedOrderSorter<K> ordering =
+                    new ExpectedOrderSorter<>(map.keys().iterator());
             entries = ordering.sort(entries, e -> e.getKey());
         }
         List<K> keys = extractKeys(entries);
@@ -375,10 +373,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
         StandardMapTests.verifyEnumeration(entries, map);
     }
 
-    private IMap<K, String> makeUpdateValues(IList<String> tokens,
-                                             Random random,
-                                             List<K> keys)
-    {
+    private IMap<K, String> makeUpdateValues(IList<String> tokens, Random random, List<K> keys) {
         IMap<K, String> values = IMaps.hashed();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = containedKey(keys, random);
@@ -388,10 +383,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
         return values;
     }
 
-    private IMap<K, String> makeInsertValues(IList<String> tokens,
-                                             Random random,
-                                             Map<K, String> expected)
-    {
+    private IMap<K, String> makeInsertValues(IList<String> tokens, Random random, Map<K, String> expected) {
         IMap<K, String> values = IMaps.hashed();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             K key = unusedKey(tokens, random, expected);
@@ -400,10 +392,7 @@ public class MapStressTester<K extends KeyWrapper<String>>
         return values;
     }
 
-    protected K unusedKey(IList<String> tokens,
-                          Random random,
-                          Map<K, String> expected)
-    {
+    protected K unusedKey(IList<String> tokens, Random random, Map<K, String> expected) {
         K key = factory.newKey(tokens, random);
         while (expected.containsKey(key)) {
             key = factory.newKey(tokens, random);
@@ -411,17 +400,11 @@ public class MapStressTester<K extends KeyWrapper<String>>
         return key;
     }
 
-    protected K containedKey(List<K> keysList,
-                             Random random)
-    {
+    protected K containedKey(List<K> keysList, Random random) {
         return (keysList.isEmpty()) ? factory.makeKey("") : keysList.get(random.nextInt(keysList.size()));
     }
 
-    protected K makeDeleteKey(IList<String> tokens,
-                              Random random,
-                              List<K> keysList,
-                              Map<K, String> expected)
-    {
+    protected K makeDeleteKey(IList<String> tokens, Random random, List<K> keysList, Map<K, String> expected) {
         K key;
         if (random.nextBoolean() || keysList.size() == 0) {
             key = unusedKey(tokens, random, expected);
@@ -433,17 +416,14 @@ public class MapStressTester<K extends KeyWrapper<String>>
         return key;
     }
 
-    protected void verifyKeysList(List<K> keysList,
-                                  Map<K, String> expected)
-    {
+    protected void verifyKeysList(List<K> keysList, Map<K, String> expected) {
         if (keysList.size() != expected.size()) {
-            throw new RuntimeException(String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), keysList.size()));
+            throw new RuntimeException(
+                    String.format("keys size mismatch - map: %d, keyList: %d%n", expected.size(), keysList.size()));
         }
     }
 
-    private void extraSerializationChecks(Object a,
-                                          Object b)
-    {
+    private void extraSerializationChecks(Object a, Object b) {
         if (a instanceof TreeMap) {
             TreeMapTest.extraSerializationChecks(a, b);
         }

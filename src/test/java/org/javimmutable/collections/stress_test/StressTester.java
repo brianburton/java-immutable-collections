@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,79 +33,66 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
-
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
 
 /**
- * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method.
- * Each version of the method will first generate a goal size. Then it will grow the collection by a third of
- * that size and shrink it by a sixth. This growing/shrinking repeats six times, until the collection is the
- * generated size. All the values are then deleted.
+ * Superclass for test programs for JImmutables. The main purpose of the Testable is to run its execute method. Each
+ * version of the method will first generate a goal size. Then it will grow the collection by a third of that size and
+ * shrink it by a sixth. This growing/shrinking repeats six times, until the collection is the generated size. All the
+ * values are then deleted.
  */
-abstract class StressTester
-{
+abstract class StressTester {
     private final String testName;
 
-    StressTester(String testName)
-    {
+    StressTester(String testName) {
         this.testName = testName;
     }
 
-    public String getTestName()
-    {
+    public String getTestName() {
         return testName;
     }
 
-    abstract void execute(Random random,
-                          IList<String> tokens)
-        throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
+    abstract void execute(Random random, IList<String> tokens)
+            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException;
 
     abstract IList<String> getOptions();
 
-    protected String getNameOption(Object obj)
-    {
-        return obj.getClass().getSimpleName().replaceFirst("I", "").replace("Empty", "").toLowerCase();
+    protected String getNameOption(Object obj) {
+        return obj.getClass()
+                .getSimpleName()
+                .replaceFirst("I", "")
+                .replace("Empty", "")
+                .toLowerCase();
     }
 
-    protected static String getName(Object obj)
-    {
+    protected static String getName(Object obj) {
         return obj.getClass().getSimpleName().replace("Empty", "");
     }
 
-    protected IList<String> makeInsertJList(IList<String> tokens,
-                                            Random random)
-    {
+    protected IList<String> makeInsertJList(IList<String> tokens, Random random) {
         return makeInsertJList(tokens, random, 3);
     }
 
-    protected IList<String> makeInsertJList(IList<String> tokens,
-                                            Random random,
-                                            int maxToAdd)
-    {
+    protected IList<String> makeInsertJList(IList<String> tokens, Random random, int maxToAdd) {
         return ILists.allOf(makeInsertList(tokens, random, maxToAdd));
     }
 
-    protected List<String> makeInsertList(IList<String> tokens,
-                                          Random random)
-    {
+    protected List<String> makeInsertList(IList<String> tokens, Random random) {
         return makeInsertList(tokens, random, 3);
     }
 
-    protected List<String> makeInsertList(IList<String> tokens,
-                                          Random random,
-                                          int maxToAdd)
-    {
+    protected List<String> makeInsertList(IList<String> tokens, Random random, int maxToAdd) {
         List<String> list = new ArrayList<>();
         for (int i = 0, limit = random.nextInt(maxToAdd); i < limit; ++i) {
             list.add(RandomKeyManager.makeValue(tokens, random));
@@ -115,8 +100,7 @@ abstract class StressTester
         return list;
     }
 
-    protected <T> List<T> asList(Iterable<T> values)
-    {
+    protected <T> List<T> asList(Iterable<T> values) {
         List<T> list = new ArrayList<T>();
         for (T value : values) {
             list.add(value);
@@ -124,18 +108,14 @@ abstract class StressTester
         return list;
     }
 
-    protected <T> boolean equivalentHolder(Maybe<T> maybe,
-                                           Maybe<T> expectedMaybe)
-    {
+    protected <T> boolean equivalentHolder(Maybe<T> maybe, Maybe<T> expectedMaybe) {
         if ((maybe.isFull() != expectedMaybe.isFull())) {
             return false;
         }
         return !maybe.isFull() || maybe.unsafeGet().equals(expectedMaybe.unsafeGet());
     }
 
-    protected <K, V> boolean equivalentEntryHolder(Maybe<IMapEntry<K, V>> maybe,
-                                                   Maybe<IMapEntry<K, V>> expectedMaybe)
-    {
+    protected <K, V> boolean equivalentEntryHolder(Maybe<IMapEntry<K, V>> maybe, Maybe<IMapEntry<K, V>> expectedMaybe) {
         if (maybe.isFull() != expectedMaybe.isFull()) {
             return false;
         }
@@ -144,13 +124,12 @@ abstract class StressTester
         }
         IMapEntry<K, V> entry = maybe.unsafeGet();
         IMapEntry<K, V> expectedEntry = expectedMaybe.unsafeGet();
-        return (entry.getKey().equals(expectedEntry.getKey())) && (entry.getValue().equals(expectedEntry.getValue()));
+        return (entry.getKey().equals(expectedEntry.getKey()))
+                && (entry.getValue().equals(expectedEntry.getValue()));
     }
 
     // some tests delete more than one in a step so we allow some variance
-    protected void verifyFinalSize(int expected,
-                                   int actual)
-    {
+    protected void verifyFinalSize(int expected, int actual) {
         if (actual > expected) {
             throw new RuntimeException(String.format("final size is %d but expected at most %d%n", actual, expected));
         }
@@ -159,9 +138,7 @@ abstract class StressTester
         }
     }
 
-    protected <T> Iterable<T> listIterable(IList<T> template,
-                                           Iterable<T> values)
-    {
+    protected <T> Iterable<T> listIterable(IList<T> template, Iterable<T> values) {
         IList<T> answer = template.deleteAll();
         for (T value : values) {
             answer = answer.insert(value);
@@ -170,8 +147,7 @@ abstract class StressTester
     }
 
     @Nonnull
-    protected <K, V> List<IMapEntry<K, V>> makeEntriesList(Map<K, V> expected)
-    {
+    protected <K, V> List<IMapEntry<K, V>> makeEntriesList(Map<K, V> expected) {
         final List<IMapEntry<K, V>> entries = new ArrayList<>();
 
         for (Map.Entry<K, V> entry : expected.entrySet()) {
@@ -180,13 +156,11 @@ abstract class StressTester
         return entries;
     }
 
-    protected <K, V> List<K> extractKeys(List<IMapEntry<K, V>> entries)
-    {
+    protected <K, V> List<K> extractKeys(List<IMapEntry<K, V>> entries) {
         return entries.stream().map(e -> e.getKey()).collect(Collectors.toList());
     }
 
-    protected <K, V> List<V> extractValues(List<IMapEntry<K, V>> entries)
-    {
+    protected <K, V> List<V> extractValues(List<IMapEntry<K, V>> entries) {
         return entries.stream().map(e -> e.getValue()).collect(Collectors.toList());
     }
 }

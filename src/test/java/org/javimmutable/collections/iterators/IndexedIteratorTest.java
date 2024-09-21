@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,19 +33,16 @@
 
 package org.javimmutable.collections.iterators;
 
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
+
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func2;
 import org.javimmutable.collections.SplitableIterable;
 import org.javimmutable.collections.indexed.IndexedHelper;
 
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
-
-public class IndexedIteratorTest
-    extends TestCase
-{
-    public void testForward()
-    {
+public class IndexedIteratorTest extends TestCase {
+    public void testForward() {
         verifyOrderedIterable(asList(), IndexedIterator.fwd(IndexedHelper.empty()));
         verifyOrderedIterable(asList(1), IndexedIterator.fwd(IndexedHelper.indexed(1)));
         verifyOrderedIterable(asList(1, 2), IndexedIterator.fwd(IndexedHelper.indexed(1, 2)));
@@ -58,8 +53,7 @@ public class IndexedIteratorTest
         verifyOrderedSplit(true, asList(1, 2), asList(3, 4, 5), IndexedIterator.forRange(1, 5));
     }
 
-    public void testReverse()
-    {
+    public void testReverse() {
         verifyOrderedIterable(asList(), IndexedIterator.rev(IndexedHelper.empty()));
         verifyOrderedIterable(asList(1), IndexedIterator.rev(IndexedHelper.indexed(1)));
         verifyOrderedIterable(asList(2, 1), IndexedIterator.rev(IndexedHelper.indexed(1, 2)));
@@ -67,13 +61,13 @@ public class IndexedIteratorTest
         verifyOrderedSplit(false, asList(), asList(), IndexedIterator.reverse(IndexedHelper.indexed(1)));
         verifyOrderedSplit(true, asList(2), asList(1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2)));
         verifyOrderedSplit(true, asList(3), asList(2, 1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2, 3)));
-        verifyOrderedSplit(true, asList(5, 4), asList(3, 2, 1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2, 3, 4, 5)));
+        verifyOrderedSplit(
+                true, asList(5, 4), asList(3, 2, 1), IndexedIterator.reverse(IndexedHelper.indexed(1, 2, 3, 4, 5)));
     }
 
-    public void testReduce()
-    {
+    public void testReduce() {
         final Double zero = 0.0;
-        final Func2<Double, Integer, Double> operator = (s, v) -> s + ((double)v) / 2.0;
+        final Func2<Double, Integer, Double> operator = (s, v) -> s + ((double) v) / 2.0;
         assertSame(zero, emptyIterable().reduce(zero, operator));
         assertEquals(0.0, rangeIterable(0).reduce(zero, operator));
         assertEquals(0.5, rangeIterable(1).reduce(zero, operator));
@@ -81,13 +75,11 @@ public class IndexedIteratorTest
         assertEquals(3.0, rangeIterable(3).reduce(zero, operator));
     }
 
-    private SplitableIterable<Integer> emptyIterable()
-    {
+    private SplitableIterable<Integer> emptyIterable() {
         return () -> EmptyIterator.of();
     }
 
-    private SplitableIterable<Integer> rangeIterable(int high)
-    {
+    private SplitableIterable<Integer> rangeIterable(int high) {
         return () -> IndexedIterator.forRange(0, high);
     }
 }

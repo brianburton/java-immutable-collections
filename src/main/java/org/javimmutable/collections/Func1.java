@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,12 +35,8 @@ package org.javimmutable.collections;
 
 import java.util.function.Function;
 
-/**
- * Interface for functions that take a single parameter.
- */
+/** Interface for functions that take a single parameter. */
 @FunctionalInterface
-public interface Func1<P, R>
-    extends Function<P, R>
-{
+public interface Func1<P, R> extends Function<P, R> {
     R apply(P value);
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,64 +33,53 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.StreamConstants;
 
-import javax.annotation.Nonnull;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
-
-public class EmptyIterator<T>
-    implements SplitableIterator<T>
-{
+public class EmptyIterator<T> implements SplitableIterator<T> {
     @SuppressWarnings("rawtypes")
     private static final SplitableIterator INSTANCE = new EmptyIterator();
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> SplitableIterator<T> of()
-    {
+    public static <T> SplitableIterator<T> of() {
         return INSTANCE;
     }
 
     @Nonnull
-    public static <T> IStreamable<T> streamable()
-    {
-        return new IStreamable<T>()
-        {
+    public static <T> IStreamable<T> streamable() {
+        return new IStreamable<T>() {
             @Nonnull
             @Override
-            public SplitableIterator<T> iterator()
-            {
+            public SplitableIterator<T> iterator() {
                 return of();
             }
 
             @Override
-            public int getSpliteratorCharacteristics()
-            {
+            public int getSpliteratorCharacteristics() {
                 return StreamConstants.SPLITERATOR_UNORDERED;
             }
         };
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return false;
     }
 
     @Override
-    public T next()
-    {
+    public T next() {
         throw new NoSuchElementException();
     }
 
     @Nonnull
     @Override
-    public Spliterator<T> spliterator(int characteristics)
-    {
+    public Spliterator<T> spliterator(int characteristics) {
         return Spliterators.emptySpliterator();
     }
 }

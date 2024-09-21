@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,16 @@
 
 package org.javimmutable.collections.inorder;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
@@ -49,27 +57,12 @@ import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-
-public class OrderedMapTest
-    extends TestCase
-{
-    public void test()
-    {
+public class OrderedMapTest extends TestCase {
+    public void test() {
         StandardMapTests.verifyMiscellaneous(OrderedMap.of());
     }
 
-    public void testIterators()
-    {
+    public void testIterators() {
         List<IMapEntry<String, String>> expectedEntries = new ArrayList<>();
         List<String> expectedKeys = new ArrayList<>();
         List<String> expectedValues = new ArrayList<>();
@@ -116,7 +109,7 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedKeys, map.keys().iterator());
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
 
-        map = (OrderedMap<String, String>)map.insert(IMapEntry.of("d", "D"));
+        map = (OrderedMap<String, String>) map.insert(IMapEntry.of("d", "D"));
         expectedEntries.add(IMapEntry.of("d", "D"));
         expectedKeys.add("d");
         expectedValues.add("D");
@@ -134,8 +127,7 @@ public class OrderedMapTest
         StandardIteratorTests.listIteratorTest(expectedValues, map.values().iterator());
     }
 
-    public void testRandomAdds()
-    {
+    public void testRandomAdds() {
         Random r = new Random(0L);
         for (int loop = 1; loop <= 20; ++loop) {
             IMap<Integer, Integer> map = OrderedMap.of();
@@ -153,10 +145,10 @@ public class OrderedMapTest
                         }
                         expected.put(key, merged);
                         //noinspection ConstantConditions
-                        assertEquals(merged, (int)map.get(key));
-                        assertEquals(merged, (int)map.getValueOr(key, value - 1000));
+                        assertEquals(merged, (int) map.get(key));
+                        assertEquals(merged, (int) map.getValueOr(key, value - 1000));
                         Maybe<Integer> integers = map.find(key);
-                        assertEquals(merged, (int)integers.getOrNull());
+                        assertEquals(merged, (int) integers.getOrNull());
                         assertEquals(Maybe.of(merged), map.find(key));
                         Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(IMapEntry.of(key, merged), iMapEntries.unsafeGet());
@@ -168,10 +160,10 @@ public class OrderedMapTest
                         map = map.assign(key, value);
                         expected.put(key, value);
                         //noinspection ConstantConditions
-                        assertEquals(value, (int)map.get(key));
-                        assertEquals(value, (int)map.getValueOr(key, value - 1000));
+                        assertEquals(value, (int) map.get(key));
+                        assertEquals(value, (int) map.getValueOr(key, value - 1000));
                         Maybe<Integer> integers = map.find(key);
-                        assertEquals(value, (int)integers.getOrNull());
+                        assertEquals(value, (int) integers.getOrNull());
                         assertEquals(Maybe.of(value), map.find(key));
                         Maybe<IMapEntry<Integer, Integer>> iMapEntries = map.findEntry(key);
                         assertEquals(IMapEntry.of(key, value), iMapEntries.unsafeGet());
@@ -212,7 +204,7 @@ public class OrderedMapTest
                 Integer key = keys.remove(0);
                 assertNotNull(map.get(key));
                 map = map.delete(key);
-                assertEquals(key - 99, (int)map.getValueOr(key, key - 99));
+                assertEquals(key - 99, (int) map.getValueOr(key, key - 99));
                 assertEquals(null, map.getValueOr(key, null));
                 Maybe<Integer> integers = map.find(key);
                 assertEquals(null, integers.getOrNull());
@@ -222,9 +214,8 @@ public class OrderedMapTest
         }
     }
 
-    public void testAssignAll()
-    {
-        //assignAll(JImmutableMap)
+    public void testAssignAll() {
+        // assignAll(JImmutableMap)
         IMap<String, Number> empty = OrderedMap.of();
         IMap<String, Number> map = empty;
         IMap<String, Integer> expected = OrderedMap.of();
@@ -247,7 +238,7 @@ public class OrderedMapTest
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
 
-        //assignAll(Map)
+        // assignAll(Map)
         map = empty;
         Map<String, Integer> expectedMutable = new LinkedHashMap<>();
         map = map.assignAll(expectedMutable);
@@ -269,23 +260,28 @@ public class OrderedMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-
     }
 
-    public void testStreams()
-    {
+    public void testStreams() {
         final IMap<Integer, Integer> inOrderMap = OrderedMap.of();
         assertEquals(asList(), inOrderMap.stream().collect(Collectors.toList()));
-        assertEquals(asList(IMapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(asList(IMapEntry.of(4, 40), IMapEntry.of(1, 10)), inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(IMapEntry.of(1, 10)), inOrderMap.assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(IMapEntry.of(4, 40), IMapEntry.of(1, 10)),
+                inOrderMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), inOrderMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(1), inOrderMap.assign(1, 10).keys().stream().collect(Collectors.toList()));
-        assertEquals(asList(4, 1), inOrderMap.assign(4, 40).assign(1, 10).keys().stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(4, 1),
+                inOrderMap.assign(4, 40).assign(1, 10).keys().stream().collect(Collectors.toList()));
 
         assertEquals(asList(), inOrderMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), inOrderMap.assign(1, 10).values().stream().collect(Collectors.toList()));
-        assertEquals(asList(40, 10), inOrderMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(40, 10),
+                inOrderMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
 
         List<Integer> keys = new ArrayList<>();
         List<Integer> values = new ArrayList<>();
@@ -309,21 +305,30 @@ public class OrderedMapTest
         assertEquals(map, map.parallelStream().collect(OrderedMap.createMapCollector()));
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap) a).iterator();
         final IMap<Integer, String> empty = OrderedMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8U0sCCjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgKACAAKul++kAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8U0sCCjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZGBgYgc4TBJqYqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQNsFEOr8SnOTUova1kyV5Z7yoJsJZCTIsBIGxsQKAO/g/631AAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8U0sCCjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgATQeYJAExP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBVouwBCnV9pblJqUduaqbLcUx50M4GMbACaVsLAmFhcyFDHwAzkMAJ5SRBePdBqIC+5AgCn2q3cEQEAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8U0sCCjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgKACAAKul++kAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert(IMapEntry.of(1, "a")),
+                "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8U0sCCjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZGBgYgc4TBJqYqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQNsFEOr8SnOTUova1kyV5Z7yoJsJZCTIsBIGxsQKAO/g/631AAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList(
+                        IMapEntry.of(Integer.MIN_VALUE, "a"),
+                        IMapEntry.of(1, "b"),
+                        IMapEntry.of(Integer.MAX_VALUE, "c"))),
+                "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpN8U0sCCjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgATQeYJAExP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBVouwBCnV9pblJqUduaqbLcUx50M4GMbACaVsLAmFhcyFDHwAzkMAJ5SRBePdBqIC+5AgCn2q3cEQEAAA==");
     }
 
-    public void testBuilder()
-    {
+    public void testBuilder() {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 100; ++i) {
             IMapBuilder<Integer, Integer> builder = OrderedMap.builder();
@@ -339,38 +344,34 @@ public class OrderedMapTest
             actual.checkInvariants();
             assertEquals(expected, actual);
 
-            assertEquals(expected.deleteAll().assign(8, 3), builder.clear().add(8, 3).build());
+            assertEquals(
+                    expected.deleteAll().assign(8, 3), builder.clear().add(8, 3).build());
         }
     }
 
-    public void testStandardBuilderTests()
-        throws InterruptedException
-    {
+    public void testStandardBuilderTests() throws InterruptedException {
         final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
             values.add(IMapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
-        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdapter, this::stdBuilderTestComparator, new IMapEntry[0]);
+        StandardBuilderTests.verifyBuilder(
+                values, this::stdBuilderTestAdapter, this::stdBuilderTestComparator, new IMapEntry[0]);
         values.sort(MapEntry::compareKeys);
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdapter, a -> a);
     }
 
-    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdapter()
-    {
+    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdapter() {
         return new MapBuilderTestAdapter<>(OrderedMap.builder());
     }
 
-    private Boolean stdBuilderTestComparator(List<IMapEntry<Integer, Integer>> expected,
-                                             IMap<Integer, Integer> actual)
-    {
+    private Boolean stdBuilderTestComparator(
+            List<IMapEntry<Integer, Integer>> expected, IMap<Integer, Integer> actual) {
         assertEquals(expected, actual.stream().collect(Collectors.toList()));
         return true;
     }
 
-    private IMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
-                                          IMap<Integer, Integer> extra)
-    {
+    private IMap<Integer, Integer> addAll(IMap<Integer, Integer> map, IMap<Integer, Integer> extra) {
         map = map.assignAll(extra);
         for (IMapEntry<Integer, Integer> entry : extra) {
             assertEquals(entry.getValue(), map.get(entry.getKey()));
@@ -385,9 +386,7 @@ public class OrderedMapTest
         return map;
     }
 
-    private IMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
-                                          Map<Integer, Integer> extra)
-    {
+    private IMap<Integer, Integer> addAll(IMap<Integer, Integer> map, Map<Integer, Integer> extra) {
         map = map.assignAll(extra);
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
             assertEquals(entry.getValue(), map.get(entry.getKey()));

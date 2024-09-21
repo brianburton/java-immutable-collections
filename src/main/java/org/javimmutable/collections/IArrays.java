@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,108 +33,87 @@
 
 package org.javimmutable.collections;
 
-import org.javimmutable.collections.array.TrieArray;
-
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.array.TrieArray;
 
-public final class IArrays
-{
-    private IArrays()
-    {
-    }
+public final class IArrays {
+    private IArrays() {}
 
     /**
-     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
-     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index. Indexes do not need
+     * to be consecutive there can be gaps of any size between indexes.
      */
     @Nonnull
-    public static <T> IArray<T> of()
-    {
+    public static <T> IArray<T> of() {
         return TrieArray.of();
     }
 
     /**
-     * Creates an empty sparse array that supports any integer (positive or negative) as an index.
-     * Indexes do not need to be consecutive there can be gaps of any size between indexes.
-     * Copies all values into the array starting at index zero.
+     * Creates an empty sparse array that supports any integer (positive or negative) as an index. Indexes do not need
+     * to be consecutive there can be gaps of any size between indexes. Copies all values into the array starting at
+     * index zero.
      */
     @Nonnull
     @SafeVarargs
-    public static <T> IArray<T> of(T... source)
-    {
+    public static <T> IArray<T> of(T... source) {
         return TrieArray.<T>builder().add(source).build();
     }
 
     /**
-     * Creates a sparse array containing all of the values from source that supports any integer
-     * (positive or negative) as an index.  Indexes do not need to be consecutive there can be gaps
-     * of any size between indexes. Copies all entries into the array using each key as an index
-     * for storing the corresponding value.
+     * Creates a sparse array containing all of the values from source that supports any integer (positive or negative)
+     * as an index. Indexes do not need to be consecutive there can be gaps of any size between indexes. Copies all
+     * entries into the array using each key as an index for storing the corresponding value.
      */
     @Nonnull
-    public static <T> IArray<T> allOf(@Nonnull Iterator<IMapEntry<Integer, T>> source)
-    {
+    public static <T> IArray<T> allOf(@Nonnull Iterator<IMapEntry<Integer, T>> source) {
         return TrieArray.<T>of().insertAll(source);
     }
 
     /**
-     * Creates a sparse array containing all of the values from source that supports any integer
-     * (positive or negative) as an index.  Indexes do not need to be consecutive there can be gaps
-     * of any size between indexes. Copies all entries into the array using each key as an index
-     * for storing the corresponding value.
+     * Creates a sparse array containing all of the values from source that supports any integer (positive or negative)
+     * as an index. Indexes do not need to be consecutive there can be gaps of any size between indexes. Copies all
+     * entries into the array using each key as an index for storing the corresponding value.
      */
     @Nonnull
-    public static <T> IArray<T> allOf(@Nonnull Indexed<? extends T> source)
-    {
+    public static <T> IArray<T> allOf(@Nonnull Indexed<? extends T> source) {
         return TrieArray.<T>builder().add(source).build();
     }
 
     /**
-     * Creates a sparse array containing all of the values in the specified range from source that
-     * supports any integer (positive or negative) as an index.  Indexes do not need to be
-     * consecutive there can be gaps of any size between indexes. Copies all entries into the
-     * array using each key as an index for storing the corresponding value.  The values copied
-     * from source are those whose index are in the range offset to (limit - 1).
+     * Creates a sparse array containing all of the values in the specified range from source that supports any integer
+     * (positive or negative) as an index. Indexes do not need to be consecutive there can be gaps of any size between
+     * indexes. Copies all entries into the array using each key as an index for storing the corresponding value. The
+     * values copied from source are those whose index are in the range offset to (limit - 1).
      */
     @Nonnull
-    public static <T> IArray<T> allOf(@Nonnull Indexed<? extends T> source,
-                                      int offset,
-                                      int limit)
-    {
+    public static <T> IArray<T> allOf(@Nonnull Indexed<? extends T> source, int offset, int limit) {
         return TrieArray.<T>builder().add(source, offset, limit).build();
     }
 
     /**
-     * Creates a sparse array containing all of the values from source that supports any integer
-     * (positive or negative) as an index.  Indexes do not need to be consecutive there can be gaps
-     * of any size between indexes. Copies all entries into the array using each key as an index
-     * for storing the corresponding value.
+     * Creates a sparse array containing all of the values from source that supports any integer (positive or negative)
+     * as an index. Indexes do not need to be consecutive there can be gaps of any size between indexes. Copies all
+     * entries into the array using each key as an index for storing the corresponding value.
      */
     @Nonnull
-    public static <T> IArray<T> allOf(@Nonnull Iterable<? extends T> source)
-    {
+    public static <T> IArray<T> allOf(@Nonnull Iterable<? extends T> source) {
         return TrieArray.<T>builder().add(source).build();
     }
 
     /**
-     * Produces a Builder for efficiently constructing a IArray
-     * built atop a 32-way integer trie.  All values added by the builder are
-     * assigned consecutive indices starting with zero.
+     * Produces a Builder for efficiently constructing a IArray built atop a 32-way integer trie. All values added by
+     * the builder are assigned consecutive indices starting with zero.
      */
     @Nonnull
-    public static <T> IArrayBuilder<T> builder()
-    {
+    public static <T> IArrayBuilder<T> builder() {
         return TrieArray.builder();
     }
 
-    /**
-     * Collects values into a {@link IArray}.
-     */
+    /** Collects values into a {@link IArray}. */
     @Nonnull
-    public static <T> Collector<T, ?, IArray<T>> collector()
-    {
+    public static <T> Collector<T, ?, IArray<T>> collector() {
         return TrieArray.collector();
     }
 }

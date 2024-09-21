@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,140 +33,117 @@
 
 package org.javimmutable.collections.hash;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.SplitableIterator;
 import org.javimmutable.collections.common.AbstractSet;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.iterators.EmptyIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Set;
-
-public class EmptyHashSet<T>
-    extends AbstractSet<T>
-    implements Serializable
-{
+public class EmptyHashSet<T> extends AbstractSet<T> implements Serializable {
     @SuppressWarnings("rawtypes")
     private static final EmptyHashSet INSTANCE = new EmptyHashSet();
 
     @SuppressWarnings("unchecked")
-    public static <T> EmptyHashSet<T> instance()
-    {
-        return (EmptyHashSet<T>)INSTANCE;
+    public static <T> EmptyHashSet<T> instance() {
+        return (EmptyHashSet<T>) INSTANCE;
     }
 
     @Override
-    protected Set<T> emptyMutableSet()
-    {
+    protected Set<T> emptyMutableSet() {
         return new java.util.HashSet<>();
     }
 
     @Nonnull
     @Override
-    public ISet<T> insert(@Nonnull T value)
-    {
+    public ISet<T> insert(@Nonnull T value) {
         return new HashSet<>(value);
     }
 
     @Override
-    public boolean contains(@Nullable T value)
-    {
+    public boolean contains(@Nullable T value) {
         return false;
     }
 
     @Nonnull
     @Override
-    public ISet<T> delete(T value)
-    {
+    public ISet<T> delete(T value) {
         return this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll(@Nonnull Iterable<? extends T> other)
-    {
+    public ISet<T> deleteAll(@Nonnull Iterable<? extends T> other) {
         return this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> other)
-    {
+    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> other) {
         return this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> union(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> union(@Nonnull Iterator<? extends T> values) {
         return new HashSetBuilder<T>().add(values).build();
     }
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Iterable<? extends T> other)
-    {
+    public ISet<T> intersection(@Nonnull Iterable<? extends T> other) {
         return this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull ISet<? extends T> other)
-    {
+    public ISet<T> intersection(@Nonnull ISet<? extends T> other) {
         return this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> intersection(@Nonnull Iterator<? extends T> values) {
         return this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Set<? extends T> other)
-    {
+    public ISet<T> intersection(@Nonnull Set<? extends T> other) {
         return this;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return 0;
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll()
-    {
+    public ISet<T> deleteAll() {
         return this;
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
+    public void checkInvariants() {}
 
     @Nonnull
     @Override
-    public SplitableIterator<T> iterator()
-    {
+    public SplitableIterator<T> iterator() {
         return EmptyIterator.of();
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_UNORDERED;
     }
 }

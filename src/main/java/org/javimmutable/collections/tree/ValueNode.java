@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,10 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -45,22 +47,14 @@ import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
-
 /**
- * A Node containing one value and two (possibly empty) children.  Class invariant
- * is that the difference in depth of the two children is no more than one.  Rotations
- * are used when necessary to maintain that invariant whenever ValueNodes are constructed.
- * Additionally values in left subtree are always less than this nodes value and values
- * in right subtree are always greater than this nodes value.
+ * A Node containing one value and two (possibly empty) children. Class invariant is that the difference in depth of the
+ * two children is no more than one. Rotations are used when necessary to maintain that invariant whenever ValueNodes
+ * are constructed. Additionally values in left subtree are always less than this nodes value and values in right
+ * subtree are always greater than this nodes value.
  */
 @Immutable
-class ValueNode<K, V>
-    extends AbstractNode<K, V>
-{
+class ValueNode<K, V> extends AbstractNode<K, V> {
     private final K key;
     private final V value;
     private final AbstractNode<K, V> left;
@@ -68,11 +62,7 @@ class ValueNode<K, V>
     private final int depth;
     private final int size;
 
-    ValueNode(@Nonnull K key,
-              @Nullable V value,
-              @Nonnull AbstractNode<K, V> left,
-              @Nonnull AbstractNode<K, V> right)
-    {
+    ValueNode(@Nonnull K key, @Nullable V value, @Nonnull AbstractNode<K, V> left, @Nonnull AbstractNode<K, V> right) {
         this.key = key;
         this.value = value;
         this.left = left;
@@ -81,20 +71,12 @@ class ValueNode<K, V>
         size = 1 + left.size() + right.size();
     }
 
-    /**
-     * Convenience method to create a node with two empty children.
-     */
-    static <K, V> AbstractNode<K, V> instance(K key,
-                                              V value)
-    {
+    /** Convenience method to create a node with two empty children. */
+    static <K, V> AbstractNode<K, V> instance(K key, V value) {
         return new LeafNode<>(key, value);
     }
 
-    static <K, V> AbstractNode<K, V> instance(K key,
-                                              V value,
-                                              AbstractNode<K, V> left,
-                                              AbstractNode<K, V> right)
-    {
+    static <K, V> AbstractNode<K, V> instance(K key, V value, AbstractNode<K, V> left, AbstractNode<K, V> right) {
         if (left.isEmpty() && right.isEmpty()) {
             return new LeafNode<>(key, value);
         } else {
@@ -102,12 +84,8 @@ class ValueNode<K, V>
         }
     }
 
-    static <K, V> AbstractNode<K, V> instance(@Nonnull Comparator<K> comp,
-                                              @Nonnull K key1,
-                                              @Nullable V value1,
-                                              @Nonnull K key2,
-                                              @Nullable V value2)
-    {
+    static <K, V> AbstractNode<K, V> instance(
+            @Nonnull Comparator<K> comp, @Nonnull K key1, @Nullable V value1, @Nonnull K key2, @Nullable V value2) {
         final int diff = comp.compare(key1, key2);
         if (diff == 0) {
             return instance(key1, value2);
@@ -119,16 +97,12 @@ class ValueNode<K, V>
     }
 
     /**
-     * Creates a new node with one value while enforcing the class invariant by ensuring
-     * depth of the two children are within one of each other.  Rotation is performed
-     * when invariant would be violated to bring the depth of the two children
-     * back into range.
+     * Creates a new node with one value while enforcing the class invariant by ensuring depth of the two children are
+     * within one of each other. Rotation is performed when invariant would be violated to bring the depth of the two
+     * children back into range.
      */
-    static <K, V> AbstractNode<K, V> balance(@Nonnull K key,
-                                             @Nullable V value,
-                                             @Nonnull AbstractNode<K, V> left,
-                                             @Nonnull AbstractNode<K, V> right)
-    {
+    static <K, V> AbstractNode<K, V> balance(
+            @Nonnull K key, @Nullable V value, @Nonnull AbstractNode<K, V> left, @Nonnull AbstractNode<K, V> right) {
         final int diff = left.depth() - right.depth();
         if (diff < -1) {
             return rotateLeft(key, value, left, right);
@@ -140,30 +114,23 @@ class ValueNode<K, V>
     }
 
     @Nonnull
-    private static <K, V> AbstractNode<K, V> rotateRight(@Nonnull K key,
-                                                         @Nullable V value,
-                                                         @Nonnull AbstractNode<K, V> left,
-                                                         @Nonnull AbstractNode<K, V> right)
-    {
+    private static <K, V> AbstractNode<K, V> rotateRight(
+            @Nonnull K key, @Nullable V value, @Nonnull AbstractNode<K, V> left, @Nonnull AbstractNode<K, V> right) {
         left = ensureLeftBranchTaller(left);
         final AbstractNode<K, V> newRight = new ValueNode<>(key, value, left.right(), right);
         return instance(left.key(), left.value(), left.left(), newRight);
     }
 
     @Nonnull
-    private static <K, V> AbstractNode<K, V> rotateLeft(@Nonnull K key,
-                                                        @Nullable V value,
-                                                        @Nonnull AbstractNode<K, V> left,
-                                                        @Nonnull AbstractNode<K, V> right)
-    {
+    private static <K, V> AbstractNode<K, V> rotateLeft(
+            @Nonnull K key, @Nullable V value, @Nonnull AbstractNode<K, V> left, @Nonnull AbstractNode<K, V> right) {
         right = ensureRightBranchTaller(right);
         final AbstractNode<K, V> newLeft = new ValueNode<>(key, value, left, right.left());
         return instance(right.key(), right.value(), newLeft, right.right());
     }
 
     @Nonnull
-    private static <K, V> AbstractNode<K, V> ensureLeftBranchTaller(@Nonnull AbstractNode<K, V> node)
-    {
+    private static <K, V> AbstractNode<K, V> ensureLeftBranchTaller(@Nonnull AbstractNode<K, V> node) {
         final AbstractNode<K, V> left = node.left();
         final AbstractNode<K, V> right = node.right();
         if (right.depth() > left.depth()) {
@@ -174,8 +141,7 @@ class ValueNode<K, V>
     }
 
     @Nonnull
-    private static <K, V> AbstractNode<K, V> ensureRightBranchTaller(@Nonnull AbstractNode<K, V> node)
-    {
+    private static <K, V> AbstractNode<K, V> ensureRightBranchTaller(@Nonnull AbstractNode<K, V> node) {
         final AbstractNode<K, V> left = node.left();
         final AbstractNode<K, V> right = node.right();
         if (left.depth() > right.depth()) {
@@ -187,10 +153,7 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key,
-                                     @Nullable V value)
-    {
+    public AbstractNode<K, V> assign(@Nonnull Comparator<K> comp, @Nonnull K key, @Nullable V value) {
         final K thisKey = this.key;
         final V thisValue = this.value;
         final AbstractNode<K, V> left = this.left;
@@ -216,10 +179,8 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key,
-                                     @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    public AbstractNode<K, V> update(
+            @Nonnull Comparator<K> comp, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator) {
         final K thisKey = this.key;
         final V thisValue = this.value;
         final AbstractNode<K, V> left = this.left;
@@ -246,9 +207,7 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key)
-    {
+    public AbstractNode<K, V> delete(@Nonnull Comparator<K> comp, @Nonnull K key) {
         final K thisKey = this.key;
         final V thisValue = this.value;
         final AbstractNode<K, V> left = this.left;
@@ -282,8 +241,7 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteLeftmost()
-    {
+    DeleteResult<K, V> deleteLeftmost() {
         if (left.isEmpty()) {
             return new DeleteResult<>(key, value, right);
         } else {
@@ -294,8 +252,7 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteRightmost()
-    {
+    DeleteResult<K, V> deleteRightmost() {
         if (right.isEmpty()) {
             return new DeleteResult<>(key, value, left);
         } else {
@@ -305,9 +262,7 @@ class ValueNode<K, V>
     }
 
     @Override
-    boolean containsKey(@Nonnull Comparator<K> comp,
-                        @Nonnull K key)
-    {
+    boolean containsKey(@Nonnull Comparator<K> comp, @Nonnull K key) {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
             return true;
@@ -320,10 +275,7 @@ class ValueNode<K, V>
 
     @Nullable
     @Override
-    public V get(@Nonnull Comparator<K> comp,
-                 @Nonnull K key,
-                 V defaultValue)
-    {
+    public V get(@Nonnull Comparator<K> comp, @Nonnull K key, V defaultValue) {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
             return value;
@@ -336,9 +288,7 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Maybe<V> find(@Nonnull Comparator<K> comp,
-                         @Nonnull K key)
-    {
+    public Maybe<V> find(@Nonnull Comparator<K> comp, @Nonnull K key) {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
             return Maybe.of(value);
@@ -351,9 +301,7 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                            @Nonnull K key)
-    {
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp, @Nonnull K key) {
         final int diff = comp.compare(key, this.key);
         if (diff == 0) {
             return Maybe.of(entry());
@@ -364,47 +312,40 @@ class ValueNode<K, V>
         }
     }
 
-    private IMapEntry<K, V> entry()
-    {
+    private IMapEntry<K, V> entry() {
         return IMapEntry.of(key, value);
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return false;
     }
 
     @Override
-    int depth()
-    {
+    int depth() {
         return depth;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return size;
     }
 
     @Nonnull
     @Override
-    K key()
-    {
+    K key() {
         return key;
     }
 
     @Nullable
     @Override
-    V value()
-    {
+    V value() {
         return value;
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> leftMost()
-    {
+    AbstractNode<K, V> leftMost() {
         if (left.isEmpty()) {
             if (right.isEmpty()) {
                 return this;
@@ -418,21 +359,18 @@ class ValueNode<K, V>
 
     @Nonnull
     @Override
-    AbstractNode<K, V> left()
-    {
+    AbstractNode<K, V> left() {
         return left;
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> right()
-    {
+    AbstractNode<K, V> right() {
         return right;
     }
 
     @Override
-    public void checkInvariants(@Nonnull Comparator<K> comp)
-    {
+    public void checkInvariants(@Nonnull Comparator<K> comp) {
         if (key == null) {
             throw new IllegalStateException();
         }
@@ -457,41 +395,37 @@ class ValueNode<K, V>
 
     @Nullable
     @Override
-    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
-                                                                   int offset,
-                                                                   int limit)
-    {
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(
+            @Nullable GenericIterator.State<IMapEntry<K, V>> parent, int offset, int limit) {
         assert offset >= 0 && limit <= size && offset <= limit;
-        return GenericIterator.multiIterableState(parent, IndexedHelper.indexed(left, GenericIterator.singleValueIterable(IMapEntry.of(key, value)), right), offset, limit);
+        return GenericIterator.multiIterableState(
+                parent,
+                IndexedHelper.indexed(left, GenericIterator.singleValueIterable(IMapEntry.of(key, value)), right),
+                offset,
+                limit);
     }
 
     @Override
-    public int iterableSize()
-    {
+    public int iterableSize() {
         return size;
     }
 
     @Override
-    void forEach(@Nonnull Proc2<K, V> proc)
-    {
+    void forEach(@Nonnull Proc2<K, V> proc) {
         left.forEach(proc);
         proc.apply(key, value);
         right.forEach(proc);
     }
 
     @Override
-    <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-        throws E
-    {
+    <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc) throws E {
         left.forEachThrows(proc);
         proc.apply(key, value);
         right.forEachThrows(proc);
     }
 
     @Override
-    <R> R reduce(R sum,
-                 @Nonnull Sum2<K, V, R> proc)
-    {
+    <R> R reduce(R sum, @Nonnull Sum2<K, V, R> proc) {
         sum = left.reduce(sum, proc);
         sum = proc.apply(sum, key, value);
         sum = right.reduce(sum, proc);
@@ -499,10 +433,7 @@ class ValueNode<K, V>
     }
 
     @Override
-    <R, E extends Exception> R reduceThrows(R sum,
-                                            @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E
-    {
+    <R, E extends Exception> R reduceThrows(R sum, @Nonnull Sum2Throws<K, V, R, E> proc) throws E {
         sum = left.reduceThrows(sum, proc);
         sum = proc.apply(sum, key, value);
         sum = right.reduceThrows(sum, proc);

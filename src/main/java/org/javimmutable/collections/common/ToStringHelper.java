@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,13 +33,8 @@
 
 package org.javimmutable.collections.common;
 
-public class ToStringHelper
-{
-    public static <K, V> void addToString(StringBuilder sb,
-                                          int prefixLength,
-                                          K key,
-                                          V value)
-    {
+public class ToStringHelper {
+    public static <K, V> void addToString(StringBuilder sb, int prefixLength, K key, V value) {
         if (sb.length() > prefixLength) {
             sb.append(",");
         }
@@ -52,18 +45,14 @@ public class ToStringHelper
         sb.append(")");
     }
 
-    public static <V> void addToString(StringBuilder sb,
-                                       int prefixLength,
-                                       V value)
-    {
+    public static <V> void addToString(StringBuilder sb, int prefixLength, V value) {
         if (sb.length() > prefixLength) {
             sb.append(",");
         }
         sb.append(value);
     }
 
-    public static <V> String arrayToString(V[] values)
-    {
+    public static <V> String arrayToString(V[] values) {
         StringBuilder sb = new StringBuilder("[");
         for (V value : values) {
             addToString(sb, 1, value);

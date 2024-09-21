@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,37 +33,30 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.NotNull;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.NotNull;
 
-public class NotNullProxy
-    implements Externalizable
-{
+public class NotNullProxy implements Externalizable {
     private static final long serialVersionUID = -210221;
     private static final int NOT_NULL_VERSION = 1001;
-    private static final short NONE_CODE = (short)0xaaaa;
-    private static final short SOME_CODE = (short)0xbbbb;
+    private static final short NONE_CODE = (short) 0xaaaa;
+    private static final short SOME_CODE = (short) 0xbbbb;
 
     private NotNull value;
 
-    public NotNullProxy()
-    {
+    public NotNullProxy() {
         this(NotNull.empty());
     }
 
-    public NotNullProxy(NotNull value)
-    {
+    public NotNullProxy(NotNull value) {
         this.value = value;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(NOT_NULL_VERSION);
         if (value.isEmpty()) {
             out.writeShort(NONE_CODE);
@@ -76,9 +67,7 @@ public class NotNullProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != NOT_NULL_VERSION) {
             throw new IOException("unexpected version number: expected " + NOT_NULL_VERSION + " found " + version);
@@ -92,12 +81,12 @@ public class NotNullProxy
                 value = NotNull.of(in.readObject());
                 break;
             default:
-                throw new IOException("unexpected NotNull type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);
+                throw new IOException("unexpected NotNull type code: expected " + NONE_CODE + " or " + SOME_CODE
+                        + " found " + valueCode);
         }
     }
 
-    private Object readResolve()
-    {
+    private Object readResolve() {
         return value;
     }
 }

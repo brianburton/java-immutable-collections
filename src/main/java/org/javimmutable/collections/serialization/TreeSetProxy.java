@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,43 +33,34 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.tree.TreeSet;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Comparator;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.tree.TreeSet;
 
 @SuppressWarnings("unchecked")
-public class TreeSetProxy
-    extends AbstractSetProxy
-{
+public class TreeSetProxy extends AbstractSetProxy {
     private static final long serialVersionUID = -121805;
 
-    public TreeSetProxy()
-    {
+    public TreeSetProxy() {
         super(TreeSet.of());
     }
 
-    public TreeSetProxy(TreeSet set)
-    {
+    public TreeSetProxy(TreeSet set) {
         super(set);
     }
 
     @Override
-    protected ISet readSet(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        Comparator comparator = (Comparator)in.readObject();
+    protected ISet readSet(ObjectInput in) throws IOException, ClassNotFoundException {
+        Comparator comparator = (Comparator) in.readObject();
         return TreeSet.of(comparator);
     }
 
     @Override
-    protected void writeSet(ObjectOutput out)
-        throws IOException
-    {
-        TreeSet treeSet = (TreeSet)set;
+    protected void writeSet(ObjectOutput out) throws IOException {
+        TreeSet treeSet = (TreeSet) set;
         out.writeObject(treeSet.getComparator());
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,17 +33,14 @@
 
 package org.javimmutable.collections;
 
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static org.junit.Assert.*;
 
-public class ResultTest
-{
+import java.io.IOException;
+import org.junit.Test;
+
+public class ResultTest {
     @Test
-    public void testConstruction()
-    {
+    public void testConstruction() {
         final Exception error = new IOException();
         assertEquals(Result.success(10), Result.attempt(() -> 10));
         assertEquals(Result.failure(error), Result.attempt(() -> {
@@ -55,9 +50,7 @@ public class ResultTest
     }
 
     @Test
-    public void testSuccess()
-        throws Exception
-    {
+    public void testSuccess() throws Exception {
         final Result<String> success = Result.success("10");
         assertEquals("10", success.get());
         assertEquals("10", success.orElse("5"));
@@ -101,9 +94,7 @@ public class ResultTest
     }
 
     @Test
-    public void testFailure()
-        throws Exception
-    {
+    public void testFailure() throws Exception {
         final Exception error1 = new IOException();
         final Result<String> failure = Result.failure(error1);
         assertSame(error1, assertThrows(IOException.class, () -> failure.get()));

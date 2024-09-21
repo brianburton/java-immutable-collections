@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,29 +33,21 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.Maybe;
+import static org.javimmutable.collections.Maybe.empty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.Maybe;
 
-import static org.javimmutable.collections.Maybe.empty;
-
-/**
- * Wrapper for an Indexed that only provides access to a portion of the full Indexed's values.
- */
+/** Wrapper for an Indexed that only provides access to a portion of the full Indexed's values. */
 @Immutable
-public class Subindexed<T>
-    implements Indexed<T>
-{
+public class Subindexed<T> implements Indexed<T> {
     private final Indexed<? extends T> source;
     private final int offset;
     private final int size;
 
-    public Subindexed(@Nonnull Indexed<? extends T> source,
-                      int offset,
-                      int limit)
-    {
+    public Subindexed(@Nonnull Indexed<? extends T> source, int offset, int limit) {
         if ((offset < 0) || (offset > source.size()) || (limit < offset) || (limit > source.size())) {
             throw new IndexOutOfBoundsException();
         }
@@ -66,22 +56,16 @@ public class Subindexed<T>
         this.size = limit - offset;
     }
 
-    public static <T> Subindexed<T> of(@Nonnull Indexed<? extends T> source,
-                                       int offset)
-    {
+    public static <T> Subindexed<T> of(@Nonnull Indexed<? extends T> source, int offset) {
         return new Subindexed<T>(source, offset, source.size());
     }
 
-    public static <T> Subindexed<T> of(@Nonnull Indexed<? extends T> source,
-                                       int offset,
-                                       int limit)
-    {
+    public static <T> Subindexed<T> of(@Nonnull Indexed<? extends T> source, int offset, int limit) {
         return new Subindexed<T>(source, offset, limit);
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         if ((index < 0) || (index >= size)) {
             throw new IndexOutOfBoundsException();
         }
@@ -90,8 +74,7 @@ public class Subindexed<T>
 
     @Nonnull
     @Override
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         if ((index < 0) || (index >= size)) {
             return empty();
         }
@@ -100,8 +83,7 @@ public class Subindexed<T>
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return size;
     }
 }

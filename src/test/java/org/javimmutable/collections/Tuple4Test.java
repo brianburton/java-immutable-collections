@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,11 +35,8 @@ package org.javimmutable.collections;
 
 import junit.framework.TestCase;
 
-public class Tuple4Test
-    extends TestCase
-{
-    public void test()
-    {
+public class Tuple4Test extends TestCase {
+    public void test() {
         Tuple4<String, Integer, String, Integer> a10b900 = new Tuple4<>("a", 10, "b", 900);
         Tuple4<String, Integer, String, Integer> a12b900 = new Tuple4<>("a", 12, "b", 900);
         Tuple4<String, Integer, String, Integer> a10c900 = new Tuple4<>("a", 10, "c", 900);

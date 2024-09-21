@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,18 @@
 
 package org.javimmutable.collections.array;
 
+import static java.lang.Integer.*;
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
@@ -51,28 +61,12 @@ import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.common.StandardStreamableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import static java.lang.Integer.*;
-import static java.util.Arrays.asList;
-
-public class TrieArrayTest
-    extends TestCase
-{
+public class TrieArrayTest extends TestCase {
     // this method is intended for use in debugger to watch the structural changes
-    public void testTrimming()
-    {
+    public void testTrimming() {
         IArray<Integer> array = TrieArray.of();
         array = array.assign(0, 2);
-//        array = array.assign(-1, -1);
+        //        array = array.assign(-1, -1);
         array = array.assign(33, 3);
         array = array.assign(97, 5);
         array = array.assign(-1234567, 1);
@@ -94,8 +88,7 @@ public class TrieArrayTest
         assertEquals(0, array.hashCode());
     }
 
-    public void testOrder()
-    {
+    public void testOrder() {
         final int hash10 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 0, 0);
         final int hash11 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 0, 1);
         final int hash12 = IntArrayMappedTrieMath.hash(0, 1, 0, 0, 1, 1);
@@ -106,20 +99,19 @@ public class TrieArrayTest
         final int hash23 = IntArrayMappedTrieMath.hash(0, 2, 0, 0, 2, 1);
 
         IArray<Integer> a = TrieArray.<Integer>of()
-            .assign(hash10, 10)
-            .assign(hash11, 11)
-            .assign(hash12, 12)
-            .assign(hash13, 13)
-            .assign(hash20, 20)
-            .assign(hash21, 21)
-            .assign(hash22, 22)
-            .assign(hash23, 23);
+                .assign(hash10, 10)
+                .assign(hash11, 11)
+                .assign(hash12, 12)
+                .assign(hash13, 13)
+                .assign(hash20, 20)
+                .assign(hash21, 21)
+                .assign(hash22, 22)
+                .assign(hash23, 23);
         List<Integer> keys = a.keys().stream().collect(Collectors.toList());
         assertEquals(Arrays.asList(hash10, hash11, hash12, hash13, hash20, hash21, hash22, hash23), keys);
     }
 
-    public void testRandom()
-    {
+    public void testRandom() {
         Random r = new Random(20L);
         for (int outerLoop = 1; outerLoop <= 10; ++outerLoop) {
             Map<Integer, Integer> expected = new TreeMap<>();
@@ -182,8 +174,7 @@ public class TrieArrayTest
         }
     }
 
-    public void testCollector()
-    {
+    public void testCollector() {
         Random r = new Random(20L);
         IArray<Integer> array = TrieArray.of();
         int size = 0;
@@ -197,8 +188,7 @@ public class TrieArrayTest
         }
     }
 
-    public void testSequential()
-    {
+    public void testSequential() {
         Map<Integer, Integer> expected = new TreeMap<>();
         IArray<Integer> array = TrieArray.of();
         for (int i = 0; i <= 20000; ++i) {
@@ -211,17 +201,16 @@ public class TrieArrayTest
         }
     }
 
-    public void testDepthTrimDoesNotBreakIndexing()
-    {
+    public void testDepthTrimDoesNotBreakIndexing() {
         IArray<Integer> array = TrieArray.of();
         for (int i = 0; i < 10000; ++i) {
             array = array.assign(i, i);
         }
 
         for (int i = 9999; i >= 0; --i) {
-            assertEquals((Integer)i, array.get(i));
+            assertEquals((Integer) i, array.get(i));
             assertEquals(Maybe.of(i), array.find(i));
-            assertEquals((Integer)i, array.get(i));
+            assertEquals((Integer) i, array.get(i));
             assertEquals(Maybe.of(i), array.find(i));
             for (int shift = 31; shift > 20; --shift) {
                 int shiftedIndex = i | (1 << shift);
@@ -235,17 +224,16 @@ public class TrieArrayTest
         }
     }
 
-    public void testDeleteToEmpty()
-    {
+    public void testDeleteToEmpty() {
         IArray<Integer> array = TrieArray.of();
         for (int i = 0; i < 10000; ++i) {
             array = array.assign(i, i);
         }
 
         for (int i = 9999; i >= 0; --i) {
-            assertEquals((Integer)i, array.get(i));
+            assertEquals((Integer) i, array.get(i));
             assertEquals(Maybe.of(i), array.find(i));
-            assertEquals((Integer)i, array.get(i));
+            assertEquals((Integer) i, array.get(i));
             assertEquals(Maybe.of(i), array.find(i));
             IArray<Integer> deleted = array.delete(i);
             assertEquals(array.size() - 1, deleted.size());
@@ -256,18 +244,22 @@ public class TrieArrayTest
         assertEquals(0, array.size());
     }
 
-    public void testShift()
-    {
+    public void testShift() {
         int shift = 0;
         assertEquals(0xff00, (0xff00 >>> shift));
         shift = 4;
         assertEquals(0x0ff0, (0xff00 >>> shift));
     }
 
-    public void testIterator()
-    {
+    public void testIterator() {
         IArray<Integer> array = TrieArray.of();
-        array = array.assign(-500, -5001).assign(-10, -101).assign(-1, -11).assign(0, 0).assign(1, 11).assign(10, 101).assign(500, 5001);
+        array = array.assign(-500, -5001)
+                .assign(-10, -101)
+                .assign(-1, -11)
+                .assign(0, 0)
+                .assign(1, 11)
+                .assign(10, 101)
+                .assign(500, 5001);
 
         List<Integer> indexes = asList(-500, -10, -1, 0, 1, 10, 500);
         StandardIteratorTests.listIteratorTest(indexes, array.keys().iterator());
@@ -294,8 +286,7 @@ public class TrieArrayTest
         StandardIteratorTests.verifyOrderedIterable(entries, array);
     }
 
-    public void testSignedOrderIteration()
-    {
+    public void testSignedOrderIteration() {
         final int numLoops = 100000;
         final int increment = (MAX_VALUE / numLoops) * 2;
         IArray<Integer> array = TrieArray.of();
@@ -318,8 +309,7 @@ public class TrieArrayTest
         StandardStreamableTests.verifyOrderedUsingCollection(entries, array);
     }
 
-    public void testVarious()
-    {
+    public void testVarious() {
         List<Integer> indexes = createBranchIndexes();
         for (int length = indexes.size(); length > 0; --length) {
             Map<Integer, Integer> map = new TreeMap<>();
@@ -368,22 +358,30 @@ public class TrieArrayTest
         }
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IArray)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IArray) a).iterator();
         final IArray<String> empty = TrieArray.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrAwoyq+o/A8C/1SMeRgYKgrKORgYmF8yAEEFAMRR2YlVAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrAwoyq+o/A8C/1SMeRgYKgrKgSTzSwYGBkYQLmFgTKwAACNqTtxdAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrAwoyq+o/A8C/1SMeRgYKgrKgSTzSwYg0QAkShgYE8tZgAxGICupnKUeqBLISq4AAImnBJ1xAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrAwoyq+o/A8C/1SMeRgYKgrKORgYmF8yAEEFAMRR2YlVAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert(IMapEntry.of(1, "a")),
+                "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrAwoyq+o/A8C/1SMeRgYKgrKgSTzSwYGBkYQLmFgTKwAACNqTtxdAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList(
+                        IMapEntry.of(Integer.MIN_VALUE, "a"),
+                        IMapEntry.of(1, "b"),
+                        IMapEntry.of(Integer.MAX_VALUE, "c"))),
+                "H4sIAAAAAAAA/1vzloG1uIjBNL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNVzLCpKrAwoyq+o/A8C/1SMeRgYKgrKgSTzSwYg0QAkShgYE8tZgAxGICupnKUeqBLISq4AAImnBJ1xAAAA");
     }
 
-    public void testBuilder()
-        throws Exception
-    {
+    public void testBuilder() throws Exception {
         assertSame(TrieArray.of(), TrieArray.builder().build());
 
         final List<Integer> expected = new ArrayList<>();
@@ -428,8 +426,7 @@ public class TrieArrayTest
         StandardBuilderTests.verifyThreadSafety(this::builder, a -> a.values());
     }
 
-    static List<Integer> createBranchIndexes()
-    {
+    static List<Integer> createBranchIndexes() {
         List<Integer> answer = new ArrayList<>();
         answer.add(0);
         answer.add(1 << 30);
@@ -446,74 +443,59 @@ public class TrieArrayTest
         return answer;
     }
 
-    private BuilderTestAdapter<Integer> builder()
-    {
+    private BuilderTestAdapter<Integer> builder() {
         return new BuilderTestAdapter<>(TrieArray.builder());
     }
 
-    private static class BuilderTestAdapter<T>
-        implements StandardBuilderTests.BuilderAdapter<T, IArray<T>>
-    {
+    private static class BuilderTestAdapter<T> implements StandardBuilderTests.BuilderAdapter<T, IArray<T>> {
         private final IArrayBuilder<T> builder;
 
-        public BuilderTestAdapter(IArrayBuilder<T> builder)
-        {
+        public BuilderTestAdapter(IArrayBuilder<T> builder) {
             this.builder = builder;
         }
 
         @Override
-        public IArray<T> build()
-        {
+        public IArray<T> build() {
             return builder.build();
         }
 
         @Override
-        public void clear()
-        {
+        public void clear() {
             builder.clear();
         }
 
         @Override
-        public int size()
-        {
+        public int size() {
             return builder.size();
         }
 
         @Override
-        public void add(T value)
-        {
+        public void add(T value) {
             builder.add(value);
         }
 
         @Override
-        public void add(Iterator<? extends T> source)
-        {
+        public void add(Iterator<? extends T> source) {
             builder.add(source);
         }
 
         @Override
-        public void add(Iterable<? extends T> source)
-        {
+        public void add(Iterable<? extends T> source) {
             builder.add(source);
         }
 
         @Override
-        public <K extends T> void add(K... source)
-        {
+        public <K extends T> void add(K... source) {
             builder.add(source);
         }
 
         @Override
-        public void add(Indexed<? extends T> source,
-                        int offset,
-                        int limit)
-        {
+        public void add(Indexed<? extends T> source, int offset, int limit) {
             builder.add(source, offset, limit);
         }
 
         @Override
-        public void add(Indexed<? extends T> source)
-        {
+        public void add(Indexed<? extends T> source) {
             builder.add(source);
         }
     }

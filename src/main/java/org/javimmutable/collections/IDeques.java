@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,25 +33,18 @@
 
 package org.javimmutable.collections;
 
+import java.util.Iterator;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.deque.ArrayDeque;
 import org.javimmutable.collections.indexed.IndexedArray;
 
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.stream.Collector;
+public final class IDeques {
+    private IDeques() {}
 
-public final class IDeques
-{
-    private IDeques()
-    {
-    }
-
-    /**
-     * Produces an empty {@link IList} built atop a balanced binary tree.
-     */
+    /** Produces an empty {@link IList} built atop a balanced binary tree. */
     @Nonnull
-    public static <T> IDeque<T> of()
-    {
+    public static <T> IDeque<T> of() {
         return ArrayDeque.of();
     }
 
@@ -62,8 +53,7 @@ public final class IDeques
      */
     @Nonnull
     @SafeVarargs
-    public static <T> IDeque<T> of(T... values)
-    {
+    public static <T> IDeque<T> of(T... values) {
         return IDeques.<T>builder().addAll(IndexedArray.retained(values)).build();
     }
 
@@ -71,8 +61,7 @@ public final class IDeques
      * Efficiently produces a {@link IList} containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull Iterator<? extends T> source)
-    {
+    public static <T> IDeque<T> allOf(@Nonnull Iterator<? extends T> source) {
         return IDeques.<T>builder().addAll(source).build();
     }
 
@@ -80,25 +69,18 @@ public final class IDeques
      * Efficiently produces a {@link IList} containing all of the values in source built atop a balanced binary tree.
      */
     @Nonnull
-    public static <T> IDeque<T> allOf(@Nonnull Iterable<? extends T> source)
-    {
+    public static <T> IDeque<T> allOf(@Nonnull Iterable<? extends T> source) {
         return IDeques.<T>builder().addAll(source).build();
     }
 
-    /**
-     * Produces a Builder for efficiently constructing an IDeque.
-     */
-    public static <T> IDequeBuilder<T> builder()
-    {
+    /** Produces a Builder for efficiently constructing an IDeque. */
+    public static <T> IDequeBuilder<T> builder() {
         return ArrayDeque.builder();
     }
 
-    /**
-     * Collects values into a IDeque.
-     */
+    /** Collects values into a IDeque. */
     @Nonnull
-    public static <T> Collector<T, ?, IDeque<T>> collector()
-    {
+    public static <T> Collector<T, ?, IDeque<T>> collector() {
         return ArrayDeque.collector();
     }
 }

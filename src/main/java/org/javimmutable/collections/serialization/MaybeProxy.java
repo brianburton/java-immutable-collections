@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,37 +33,30 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.Maybe;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.Maybe;
 
-public class MaybeProxy
-    implements Externalizable
-{
+public class MaybeProxy implements Externalizable {
     private static final long serialVersionUID = -210221;
     private static final int MAYBE_VERSION = 1001;
-    private static final short NONE_CODE = (short)0xaaaa;
-    private static final short SOME_CODE = (short)0xbbbb;
+    private static final short NONE_CODE = (short) 0xaaaa;
+    private static final short SOME_CODE = (short) 0xbbbb;
 
     private Maybe value;
 
-    public MaybeProxy()
-    {
+    public MaybeProxy() {
         this(Maybe.empty());
     }
 
-    public MaybeProxy(Maybe value)
-    {
+    public MaybeProxy(Maybe value) {
         this.value = value;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(MAYBE_VERSION);
         if (value.isEmpty()) {
             out.writeShort(NONE_CODE);
@@ -76,9 +67,7 @@ public class MaybeProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != MAYBE_VERSION) {
             throw new IOException("unexpected version number: expected " + MAYBE_VERSION + " found " + version);
@@ -92,12 +81,12 @@ public class MaybeProxy
                 value = Maybe.of(in.readObject());
                 break;
             default:
-                throw new IOException("unexpected Maybe type code: expected " + NONE_CODE + " or " + SOME_CODE + " found " + valueCode);
+                throw new IOException("unexpected Maybe type code: expected " + NONE_CODE + " or " + SOME_CODE
+                        + " found " + valueCode);
         }
     }
 
-    private Object readResolve()
-    {
+    private Object readResolve() {
         return value;
     }
 }

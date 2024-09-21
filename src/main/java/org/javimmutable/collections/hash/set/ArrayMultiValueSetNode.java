@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,44 +33,35 @@
 
 package org.javimmutable.collections.hash.set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 @Immutable
-public class ArrayMultiValueSetNode<T>
-    implements ArraySetNode<T>
-{
+public class ArrayMultiValueSetNode<T> implements ArraySetNode<T> {
     private final CollisionSet.Node node;
 
-    public ArrayMultiValueSetNode(@Nonnull CollisionSet.Node node)
-    {
+    public ArrayMultiValueSetNode(@Nonnull CollisionSet.Node node) {
         this.node = node;
     }
 
     @Override
-    public int size(@Nonnull CollisionSet<T> collisionSet)
-    {
+    public int size(@Nonnull CollisionSet<T> collisionSet) {
         return collisionSet.size(node);
     }
 
     @Override
-    public boolean contains(@Nonnull CollisionSet<T> collisionSet,
-                            @Nonnull T value)
-    {
+    public boolean contains(@Nonnull CollisionSet<T> collisionSet, @Nonnull T value) {
         return collisionSet.contains(node, value);
     }
 
     @Nonnull
     @Override
-    public ArraySetNode<T> insert(@Nonnull CollisionSet<T> collisionSet,
-                                  @Nonnull T value)
-    {
+    public ArraySetNode<T> insert(@Nonnull CollisionSet<T> collisionSet, @Nonnull T value) {
         final CollisionSet.Node oldNode = this.node;
         final CollisionSet.Node newNode = collisionSet.insert(oldNode, value);
         if (newNode == oldNode) {
@@ -84,9 +73,7 @@ public class ArrayMultiValueSetNode<T>
 
     @Nullable
     @Override
-    public ArraySetNode<T> delete(@Nonnull CollisionSet<T> collisionSet,
-                                  @Nonnull T value)
-    {
+    public ArraySetNode<T> delete(@Nonnull CollisionSet<T> collisionSet, @Nonnull T value) {
         final CollisionSet.Node oldNode = this.node;
         final CollisionSet.Node newNode = collisionSet.delete(oldNode, value);
         if (newNode == oldNode) {
@@ -106,23 +93,18 @@ public class ArrayMultiValueSetNode<T>
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<T> values(@Nonnull CollisionSet<T> collisionSet)
-    {
+    public GenericIterator.Iterable<T> values(@Nonnull CollisionSet<T> collisionSet) {
         return collisionSet.genericIterable(node);
     }
 
     @Override
-    public void forEach(@Nonnull CollisionSet<T> collisionSet,
-                        @Nonnull Proc1<T> proc)
-    {
+    public void forEach(@Nonnull CollisionSet<T> collisionSet, @Nonnull Proc1<T> proc) {
         collisionSet.forEach(node, proc);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull CollisionSet<T> collisionSet,
-                                                    @Nonnull Proc1Throws<T, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(
+            @Nonnull CollisionSet<T> collisionSet, @Nonnull Proc1Throws<T, E> proc) throws E {
         collisionSet.forEachThrows(node, proc);
     }
 }

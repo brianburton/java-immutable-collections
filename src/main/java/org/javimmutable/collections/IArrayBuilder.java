@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,25 +33,21 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
 
-public interface IArrayBuilder<T>
-{
+public interface IArrayBuilder<T> {
     /**
-     * Builds and returns a collection containing all of the added values.  May be called
-     * as often as desired and is safe to call and then continue adding more elements to build
-     * another collection with those additional elements.
+     * Builds and returns a collection containing all of the added values. May be called as often as desired and is safe
+     * to call and then continue adding more elements to build another collection with those additional elements.
      *
      * @return the collection
      */
     @Nonnull
     IArray<T> build();
 
-    /**
-     * Determines how many values will be in the collection if build() is called now.
-     */
+    /** Determines how many values will be in the collection if build() is called now. */
     int size();
 
     /**
@@ -62,8 +56,7 @@ public interface IArrayBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    IArrayBuilder<T> put(int index,
-                         T value);
+    IArrayBuilder<T> put(int index, T value);
 
     /**
      * Adds the specified value to the values included in the collection when build() is called.
@@ -73,9 +66,7 @@ public interface IArrayBuilder<T>
     @Nonnull
     IArrayBuilder<T> add(T value);
 
-    /**
-     * Sets the index at which next call to add() will insert the value.
-     */
+    /** Sets the index at which next call to add() will insert the value. */
     IArrayBuilder<T> setNextIndex(int index);
 
     /**
@@ -85,8 +76,7 @@ public interface IArrayBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IArrayBuilder<T> add(Iterator<? extends T> source)
-    {
+    default IArrayBuilder<T> add(Iterator<? extends T> source) {
         while (source.hasNext()) {
             add(source.next());
         }
@@ -100,8 +90,7 @@ public interface IArrayBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IArrayBuilder<T> add(Iterable<? extends T> source)
-    {
+    default IArrayBuilder<T> add(Iterable<? extends T> source) {
         return add(source.iterator());
     }
 
@@ -112,22 +101,19 @@ public interface IArrayBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default <K extends T> IArrayBuilder<T> add(K... source)
-    {
+    default <K extends T> IArrayBuilder<T> add(K... source) {
         return add(Arrays.asList(source));
     }
 
     /**
-     * Adds all values in the specified range of Indexed to the values included in the collection when build() is called.
+     * Adds all values in the specified range of Indexed to the values included in the collection when build() is
+     * called.
      *
      * @param source Indexed containing values to add
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IArrayBuilder<T> add(Indexed<? extends T> source,
-                                 int offset,
-                                 int limit)
-    {
+    default IArrayBuilder<T> add(Indexed<? extends T> source, int offset, int limit) {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));
         }
@@ -141,29 +127,25 @@ public interface IArrayBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IArrayBuilder<T> add(Indexed<? extends T> source)
-    {
+    default IArrayBuilder<T> add(Indexed<? extends T> source) {
         return add(source, 0, source.size());
     }
 
     /**
-     * Adds all values from the provided Iterator using the entry keys as indexes and the
-     * entry values as values.  Intended to simplify adding all values from an existing
-     * {@link IArray} or {@link IMap} into a new Builder.
+     * Adds all values from the provided Iterator using the entry keys as indexes and the entry values as values.
+     * Intended to simplify adding all values from an existing {@link IArray} or {@link IMap} into a new Builder.
      *
      * @param source Iterator containing entries to add
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IArrayBuilder<T> putAll(@Nonnull Iterator<IMapEntry<Integer, ? extends T>> source)
-    {
+    default IArrayBuilder<T> putAll(@Nonnull Iterator<IMapEntry<Integer, ? extends T>> source) {
         while (source.hasNext()) {
             final IMapEntry<Integer, ? extends T> entry = source.next();
             put(entry.getKey(), entry.getValue());
         }
         return this;
     }
-
 
     /**
      * Removes all objects and resets the builder to it's initial post-build state.

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,18 +33,16 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import junit.framework.TestCase;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.common.TestUtil;
 
-public class EmptyNodeTest
-    extends TestCase
-{
+public class EmptyNodeTest extends TestCase {
     private final AbstractNode<Integer> node = EmptyNode.instance();
 
-    public void testVarious()
-    {
+    public void testVarious() {
         final OneValueNode<Integer> leaf = new OneValueNode<>(100);
         assertEquals(true, node.isEmpty());
         assertEquals(0, node.size());
@@ -69,13 +65,12 @@ public class EmptyNodeTest
         TestUtil.verifyOutOfBounds(() -> node.suffix(1));
         Integer[] values = {1};
         node.copyTo(values, 0);
-        assertThat(values).isEqualTo(new Integer[]{1});
+        assertThat(values).isEqualTo(new Integer[] {1});
         TestUtil.verifyUnsupported(() -> node.left());
         TestUtil.verifyUnsupported(() -> node.right());
     }
 
-    public void testSeek()
-    {
+    public void testSeek() {
         assertEquals(Maybe.empty(), node.findImpl(-1, () -> Maybe.empty(), value2 -> Maybe.of(value2)));
         assertEquals(Maybe.empty(), node.findImpl(0, () -> Maybe.empty(), value1 -> Maybe.of(value1)));
         assertEquals(Maybe.empty(), node.findImpl(node.size(), () -> Maybe.empty(), value -> Maybe.of(value)));

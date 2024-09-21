@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,25 +33,22 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
-public interface IMapBuilder<K, V>
-{
+public interface IMapBuilder<K, V> {
     @Nonnull
     IMap<K, V> build();
 
     @Nonnull
-    IMapBuilder<K, V> add(@Nonnull K key,
-                          V value);
+    IMapBuilder<K, V> add(@Nonnull K key, V value);
 
     int size();
 
     @Nonnull
-    default IMapBuilder<K, V> add(IMapEntry<? extends K, ? extends V> e)
-    {
+    default IMapBuilder<K, V> add(IMapEntry<? extends K, ? extends V> e) {
         return add(e.getKey(), e.getValue());
     }
 
@@ -64,8 +59,7 @@ public interface IMapBuilder<K, V>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IMapBuilder<K, V> add(Iterator<? extends IMapEntry<? extends K, ? extends V>> source)
-    {
+    default IMapBuilder<K, V> add(Iterator<? extends IMapEntry<? extends K, ? extends V>> source) {
         while (source.hasNext()) {
             add(source.next());
         }
@@ -79,8 +73,7 @@ public interface IMapBuilder<K, V>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IMapBuilder<K, V> add(Map<? extends K, ? extends V> source)
-    {
+    default IMapBuilder<K, V> add(Map<? extends K, ? extends V> source) {
         for (Map.Entry<? extends K, ? extends V> e : source.entrySet()) {
             add(e.getKey(), e.getValue());
         }
@@ -94,8 +87,7 @@ public interface IMapBuilder<K, V>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IMapBuilder<K, V> add(Iterable<? extends IMapEntry<? extends K, ? extends V>> source)
-    {
+    default IMapBuilder<K, V> add(Iterable<? extends IMapEntry<? extends K, ? extends V>> source) {
         return add(source.iterator());
     }
 
@@ -106,22 +98,20 @@ public interface IMapBuilder<K, V>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default <T extends IMapEntry<? extends K, ? extends V>> IMapBuilder<K, V> add(T... source)
-    {
+    default <T extends IMapEntry<? extends K, ? extends V>> IMapBuilder<K, V> add(T... source) {
         return add(Arrays.asList(source));
     }
 
     /**
-     * Adds all values in the specified range of Indexed to the values included in the collection when build() is called.
+     * Adds all values in the specified range of Indexed to the values included in the collection when build() is
+     * called.
      *
      * @param source Indexed containing values to add
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IMapBuilder<K, V> add(Indexed<? extends IMapEntry<? extends K, ? extends V>> source,
-                                  int offset,
-                                  int limit)
-    {
+    default IMapBuilder<K, V> add(
+            Indexed<? extends IMapEntry<? extends K, ? extends V>> source, int offset, int limit) {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));
         }
@@ -135,20 +125,18 @@ public interface IMapBuilder<K, V>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IMapBuilder<K, V> add(Indexed<? extends IMapEntry<? extends K, ? extends V>> source)
-    {
+    default IMapBuilder<K, V> add(Indexed<? extends IMapEntry<? extends K, ? extends V>> source) {
         return add(source, 0, source.size());
     }
 
     @Nonnull
-    default IMapBuilder<K, V> add(@Nonnull IMapBuilder<K, V> other)
-    {
+    default IMapBuilder<K, V> add(@Nonnull IMapBuilder<K, V> other) {
         add(other.build());
         return this;
     }
 
     /**
-     * Deletes all values.  This is useful to reset to build a new map with the same builder.
+     * Deletes all values. This is useful to reset to build a new map with the same builder.
      *
      * @return the builder (convenience for chaining multiple calls)
      */

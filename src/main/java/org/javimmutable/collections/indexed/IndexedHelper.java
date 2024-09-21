@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,62 +33,49 @@
 
 package org.javimmutable.collections.indexed;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Maybe;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Provides a number of static utility methods for producing Indexed objects
- * from raw values.  Useful when you need an Indexed but don't have or want
- * to create an array just to get an Indexed of them.
+ * Provides a number of static utility methods for producing Indexed objects from raw values. Useful when you need an
+ * Indexed but don't have or want to create an array just to get an Indexed of them.
  */
-public class IndexedHelper
-{
-    private IndexedHelper()
-    {
-    }
+public class IndexedHelper {
+    private IndexedHelper() {}
 
     @Nonnull
-    public static <T> Indexed<T> empty()
-    {
-        return new Indexed<T>()
-        {
+    public static <T> Indexed<T> empty() {
+        return new Indexed<T>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 throw new ArrayIndexOutOfBoundsException(index);
             }
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 return Maybe.empty();
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return 0;
             }
         };
     }
 
     /**
-     * Returns an Indexed containing a single value.
-     * Note that the type of the Indexed may be a subclass of the type of the value.
+     * Returns an Indexed containing a single value. Note that the type of the Indexed may be a subclass of the type of
+     * the value.
      */
     @Nonnull
-    public static <T, V extends T> Indexed<T> indexed(V a)
-    {
-        return new Indexed<T>()
-        {
+    public static <T, V extends T> Indexed<T> indexed(V a) {
+        return new Indexed<T>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 if (index == 0) {
                     return a;
                 }
@@ -99,8 +84,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 if (index == 0) {
                     return Maybe.of(a);
                 }
@@ -108,26 +92,21 @@ public class IndexedHelper
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return 1;
             }
         };
     }
 
     /**
-     * Returns an Indexed containing two values.
-     * Note that the type of the Indexed may be a subclass of the type of the value.
+     * Returns an Indexed containing two values. Note that the type of the Indexed may be a subclass of the type of the
+     * value.
      */
     @Nonnull
-    public static <T, V extends T> Indexed<T> indexed(V a,
-                                                      V b)
-    {
-        return new Indexed<T>()
-        {
+    public static <T, V extends T> Indexed<T> indexed(V a, V b) {
+        return new Indexed<T>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 switch (index) {
                     case 0:
                         return a;
@@ -140,8 +119,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 switch (index) {
                     case 0:
                         return Maybe.of(a);
@@ -153,27 +131,21 @@ public class IndexedHelper
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return 2;
             }
         };
     }
 
     /**
-     * Returns an Indexed containing three values.
-     * Note that the type of the Indexed may be a subclass of the type of the value.
+     * Returns an Indexed containing three values. Note that the type of the Indexed may be a subclass of the type of
+     * the value.
      */
     @Nonnull
-    public static <T, V extends T> Indexed<T> indexed(V a,
-                                                      V b,
-                                                      V c)
-    {
-        return new Indexed<T>()
-        {
+    public static <T, V extends T> Indexed<T> indexed(V a, V b, V c) {
+        return new Indexed<T>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 switch (index) {
                     case 0:
                         return a;
@@ -188,8 +160,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 switch (index) {
                     case 0:
                         return Maybe.of(a);
@@ -203,29 +174,22 @@ public class IndexedHelper
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return 3;
             }
         };
     }
 
     /**
-     * Returns an Indexed containing three values.
-     * Note that the type of the Indexed may be a subclass of the type of the value.
+     * Returns an Indexed containing three values. Note that the type of the Indexed may be a subclass of the type of
+     * the value.
      */
     @Nonnull
-    public static <T, V extends T> Indexed<T> indexed(V a,
-                                                      V b,
-                                                      V c,
-                                                      V... others)
-    {
+    public static <T, V extends T> Indexed<T> indexed(V a, V b, V c, V... others) {
         final int length = 3 + others.length;
-        return new Indexed<T>()
-        {
+        return new Indexed<T>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 switch (index) {
                     case 0:
                         return a;
@@ -240,8 +204,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 switch (index) {
                     case 0:
                         return Maybe.of(a);
@@ -259,25 +222,20 @@ public class IndexedHelper
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return length;
             }
         };
     }
 
     @Nonnull
-    public static <T> Indexed<T> repeating(T value,
-                                           int count)
-    {
+    public static <T> Indexed<T> repeating(T value, int count) {
         if (count < 0) {
             throw new ArrayIndexOutOfBoundsException(count);
         }
-        return new Indexed<>()
-        {
+        return new Indexed<>() {
             @Override
-            public T get(int index)
-            {
+            public T get(int index) {
                 if (index < 0 || index >= count) {
                     throw new ArrayIndexOutOfBoundsException(index);
                 } else {
@@ -287,8 +245,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<T> find(int index)
-            {
+            public Maybe<T> find(int index) {
                 if (index < 0 || index >= count) {
                     return Maybe.empty();
                 } else {
@@ -297,26 +254,21 @@ public class IndexedHelper
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return count;
             }
         };
     }
 
     @Nonnull
-    public static Indexed<Integer> range(int low,
-                                         int high)
-    {
+    public static Indexed<Integer> range(int low, int high) {
         final int size = high - low + 1;
         if (size < 0) {
             throw new ArrayIndexOutOfBoundsException(size);
         }
-        return new Indexed<>()
-        {
+        return new Indexed<>() {
             @Override
-            public Integer get(int index)
-            {
+            public Integer get(int index) {
                 if (index < 0 || index >= size) {
                     throw new ArrayIndexOutOfBoundsException(index);
                 }
@@ -325,8 +277,7 @@ public class IndexedHelper
 
             @Nonnull
             @Override
-            public Maybe<Integer> find(int index)
-            {
+            public Maybe<Integer> find(int index) {
                 if (index < 0 || index >= size) {
                     return Maybe.empty();
                 }
@@ -334,19 +285,15 @@ public class IndexedHelper
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return size;
             }
         };
     }
 
-    /**
-     * Creates a mutable List containing all values from the Indexed.
-     */
+    /** Creates a mutable List containing all values from the Indexed. */
     @Nonnull
-    public static <T> List<T> asList(@Nonnull Indexed<T> indexed)
-    {
+    public static <T> List<T> asList(@Nonnull Indexed<T> indexed) {
         final List<T> answer = new ArrayList<>(indexed.size());
         for (int i = 0; i < indexed.size(); ++i) {
             answer.add(indexed.get(i));

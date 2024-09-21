@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,57 +33,45 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IList;
 
-/**
- * Immutable List implementation backed by a {@link IList}.
- */
+/** Immutable List implementation backed by a {@link IList}. */
 @Immutable
-public class ListAdaptor<T>
-    extends AbstractList<T>
-    implements List<T>
-{
+public class ListAdaptor<T> extends AbstractList<T> implements List<T> {
     private final IList<T> list;
 
-    public ListAdaptor(@Nonnull IList<T> list)
-    {
+    public ListAdaptor(@Nonnull IList<T> list) {
         this.list = list;
     }
 
-    public static <T> ListAdaptor<T> of(@Nonnull IList<T> list)
-    {
+    public static <T> ListAdaptor<T> of(@Nonnull IList<T> list) {
         return new ListAdaptor<T>(list);
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         return list.get(index);
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return list.size();
     }
 
     @Nonnull
     @Override
-    public Iterator<T> iterator()
-    {
+    public Iterator<T> iterator() {
         return list.iterator();
     }
 
     @Override
-    public Spliterator<T> spliterator()
-    {
+    public Spliterator<T> spliterator() {
         return list.spliterator();
     }
 }

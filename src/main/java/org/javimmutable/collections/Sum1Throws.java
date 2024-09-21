@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,16 +34,13 @@
 package org.javimmutable.collections;
 
 /**
- * Interface for lambdas that accept a result parameter and 1 value parameter and return
- * a value of the same type as the result parameter or might throw an exception.
+ * Interface for lambdas that accept a result parameter and 1 value parameter and return a value of the same type as the
+ * result parameter or might throw an exception.
  *
  * @param <A> value type
  * @param <R> result type
  */
 @FunctionalInterface
-public interface Sum1Throws<A, R, E extends Exception>
-{
-    R apply(R sum,
-            A a)
-        throws E;
+public interface Sum1Throws<A, R, E extends Exception> {
+    R apply(R sum, A a) throws E;
 }

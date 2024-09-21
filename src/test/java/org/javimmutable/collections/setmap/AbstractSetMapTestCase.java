@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,19 @@
 
 package org.javimmutable.collections.setmap;
 
+import static org.javimmutable.collections.common.TestUtil.makeSet;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IList;
@@ -48,33 +59,14 @@ import org.javimmutable.collections.Temp;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.javimmutable.collections.common.TestUtil.makeSet;
-
-public abstract class AbstractSetMapTestCase
-    extends TestCase
-{
-    public enum Ordering
-    {
+public abstract class AbstractSetMapTestCase extends TestCase {
+    public enum Ordering {
         INORDER,
         REVERSED,
         HASH
     }
 
-    public ISetMap<Integer, Integer> verifyOperations(ISetMap<Integer, Integer> map,
-                                                      Ordering ordering)
-    {
+    public ISetMap<Integer, Integer> verifyOperations(ISetMap<Integer, Integer> map, Ordering ordering) {
         verifySetOperations(map);
         verifyContains(map);
 
@@ -95,7 +87,8 @@ public abstract class AbstractSetMapTestCase
         assertFalse(map.isEmpty());
         assertTrue(map.isNonEmpty());
         assertEquals(1, map.size());
-        assertEquals(new java.util.HashSet<>(Arrays.asList(100, 18)), map.getSet(1).getSet());
+        assertEquals(
+                new java.util.HashSet<>(Arrays.asList(100, 18)), map.getSet(1).getSet());
         assertSame(map.getSet(1), map.get(1));
         assertEquals(2, map.getSet(1).size());
 
@@ -106,7 +99,9 @@ public abstract class AbstractSetMapTestCase
         assertFalse(map.isEmpty());
         assertTrue(map.isNonEmpty());
         assertEquals(3, map.size());
-        assertEquals(new java.util.HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
+        assertEquals(
+                new java.util.HashSet<>(Arrays.asList(100, 18, 87)),
+                map.getSet(1).getSet());
         assertEquals(3, map.getSet(1).size());
         assertSame(map.getSet(1), map.get(1));
         assertEquals(new java.util.HashSet<>(Arrays.asList(87)), map.getSet(2).getSet());
@@ -114,15 +109,20 @@ public abstract class AbstractSetMapTestCase
         assertEquals(new java.util.HashSet<>(Arrays.asList(87)), map.getSet(3).getSet());
         assertSame(map.getSet(3), map.get(3));
 
-        map = map.assign(3, map.getSet(Integer.MIN_VALUE).insert(300).insert(7).insert(7).insert(14));
+        map = map.assign(
+                3, map.getSet(Integer.MIN_VALUE).insert(300).insert(7).insert(7).insert(14));
         assertFalse(map.isEmpty());
         assertTrue(map.isNonEmpty());
         assertEquals(3, map.size());
-        assertEquals(new java.util.HashSet<>(Arrays.asList(100, 18, 87)), map.getSet(1).getSet());
+        assertEquals(
+                new java.util.HashSet<>(Arrays.asList(100, 18, 87)),
+                map.getSet(1).getSet());
         assertSame(map.getSet(1), map.get(1));
         assertEquals(new java.util.HashSet<>(Arrays.asList(87)), map.getSet(2).getSet());
         assertSame(map.getSet(2), map.get(2));
-        assertEquals(new java.util.HashSet<>(Arrays.asList(300, 7, 14)), map.getSet(3).getSet());
+        assertEquals(
+                new java.util.HashSet<>(Arrays.asList(300, 7, 14)),
+                map.getSet(3).getSet());
         assertSame(map.getSet(3), map.get(3));
         assertEquals(map.getSet(3), map.values(3).stream().collect(Collectors.toSet()));
 
@@ -140,20 +140,32 @@ public abstract class AbstractSetMapTestCase
         assertTrue(map.delete(3).delete(2).delete(1).delete(0).isEmpty());
 
         if (ordering == Ordering.HASH) {
-            StandardIteratorTests.listIteratorTest(Arrays.asList(18, 87, 100), map.values(1).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(87), map.values(2).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(7, 14, 300), map.values(3).iterator());
-            StandardIteratorTests.listIteratorTest(Collections.emptyList(), map.values(4).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(18, 87, 100), map.values(1).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(87), map.values(2).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(7, 14, 300), map.values(3).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Collections.emptyList(), map.values(4).iterator());
         } else if (ordering == Ordering.REVERSED) {
-            StandardIteratorTests.listIteratorTest(Arrays.asList(100, 87, 18), map.values(1).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(87), map.values(2).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(300, 14, 7), map.values(3).iterator());
-            StandardIteratorTests.listIteratorTest(Collections.emptyList(), map.values(4).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(100, 87, 18), map.values(1).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(87), map.values(2).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(300, 14, 7), map.values(3).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Collections.emptyList(), map.values(4).iterator());
         } else {
-            StandardIteratorTests.listIteratorTest(Arrays.asList(18, 87, 100), map.values(1).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(87), map.values(2).iterator());
-            StandardIteratorTests.listIteratorTest(Arrays.asList(7, 14, 300), map.values(3).iterator());
-            StandardIteratorTests.listIteratorTest(Collections.emptyList(), map.values(4).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(18, 87, 100), map.values(1).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(87), map.values(2).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Arrays.asList(7, 14, 300), map.values(3).iterator());
+            StandardIteratorTests.listIteratorTest(
+                    Collections.emptyList(), map.values(4).iterator());
         }
 
         verifyTransform(map);
@@ -162,8 +174,7 @@ public abstract class AbstractSetMapTestCase
         return map;
     }
 
-    private void verifyTransform(ISetMap<Integer, Integer> map)
-    {
+    private void verifyTransform(ISetMap<Integer, Integer> map) {
         final Func1<ISet<Integer>, ISet<Integer>> removeAll = set -> set.deleteAll();
         final Func1<ISet<Integer>, ISet<Integer>> removeLarge = set -> set.reject(x -> x >= 10);
         final Func1<ISet<Integer>, ISet<Integer>> removeEven = set -> set.reject(x -> x % 2 == 0);
@@ -185,12 +196,11 @@ public abstract class AbstractSetMapTestCase
         assertSame(start, start.transformIfPresent(badKey, removeAll));
     }
 
-    private void verifyContains(ISetMap<Integer, Integer> emptyMap)
-    {
+    private void verifyContains(ISetMap<Integer, Integer> emptyMap) {
         IList<Integer> values = ILists.of();
         ISetMap<Integer, Integer> jetMap = emptyMap.insertAll(1, ISets.hashed(1, 2, 4));
 
-        //empty with empty
+        // empty with empty
         assertEquals(false, emptyMap.contains(1));
         assertEquals(false, emptyMap.contains(1, null));
         assertEquals(false, emptyMap.containsAll(1, values));
@@ -198,7 +208,7 @@ public abstract class AbstractSetMapTestCase
         assertEquals(false, emptyMap.containsAny(1, values));
         assertEquals(false, emptyMap.containsAny(1, values.getList()));
 
-        //values with empty
+        // values with empty
         assertEquals(true, jetMap.contains(1));
         assertEquals(false, jetMap.contains(1, null));
         assertEquals(true, jetMap.containsAll(1, values));
@@ -206,7 +216,7 @@ public abstract class AbstractSetMapTestCase
         assertEquals(false, jetMap.containsAny(1, values));
         assertEquals(false, jetMap.containsAny(1, values.getList()));
 
-        //empty with values
+        // empty with values
         values = values.insert(1).insert(1).insert(2);
         assertEquals(false, emptyMap.contains(1, 1));
         assertEquals(false, emptyMap.containsAll(1, values));
@@ -214,22 +224,22 @@ public abstract class AbstractSetMapTestCase
         assertEquals(false, emptyMap.containsAny(1, values));
         assertEquals(false, emptyMap.containsAny(1, values.getList()));
 
-        //values with values
-        //smaller values
+        // values with values
+        // smaller values
         assertEquals(true, jetMap.contains(1, 1));
         assertEquals(true, jetMap.containsAll(1, values));
         assertEquals(true, jetMap.containsAll(1, values.getList()));
         assertEquals(true, jetMap.containsAny(1, values));
         assertEquals(true, jetMap.containsAny(1, values.getList()));
 
-        //extra values
+        // extra values
         values = values.insert(5);
         assertEquals(false, jetMap.containsAll(1, values));
         assertEquals(false, jetMap.containsAll(1, values.getList()));
         assertEquals(true, jetMap.containsAny(1, values));
         assertEquals(true, jetMap.containsAny(1, values.getList()));
 
-        //different values
+        // different values
         values = values.deleteAll().insert(3).insert(5);
         assertEquals(false, jetMap.containsAll(1, values));
         assertEquals(false, jetMap.containsAll(1, values.getList()));
@@ -237,8 +247,7 @@ public abstract class AbstractSetMapTestCase
         assertEquals(false, jetMap.containsAny(1, values.getList()));
     }
 
-    private void verifySetOperations(ISetMap<Integer, Integer> emptyMap)
-    {
+    private void verifySetOperations(ISetMap<Integer, Integer> emptyMap) {
         ISet<Integer> emptyJet = emptyMap.getSet(1);
         assert emptyJet.isEmpty();
         final Set<Integer> emptySet = Collections.emptySet();
@@ -268,7 +277,7 @@ public abstract class AbstractSetMapTestCase
         verifyContents(jetMap.union(1, values), expected);
         verifyContents(jetMap.union(1, values.iterator()), expected);
 
-        //intersect with larger set
+        // intersect with larger set
         jetMap = emptyMap.union(1, values);
         final Set<Integer> withExtra = makeSet(0, 1, 2, 3, 4, 5);
         Set<Integer> intersectionSet = new java.util.HashSet<>(withExtra);
@@ -279,7 +288,7 @@ public abstract class AbstractSetMapTestCase
         verifyContents(jetMap.intersection(1, intersectionJet), expected);
         verifyContents(jetMap.intersection(1, intersectionSet), expected);
 
-        //intersect with smaller set
+        // intersect with smaller set
         jetMap = emptyMap.union(1, withExtra);
         intersectionSet = new java.util.HashSet<>(values);
         intersectionJet = emptyJet.union(values);
@@ -289,7 +298,7 @@ public abstract class AbstractSetMapTestCase
         verifyContents(jetMap.intersection(1, intersectionJet), expected);
         verifyContents(jetMap.intersection(1, intersectionSet), expected);
 
-        //empty set intersection with non-empty set
+        // empty set intersection with non-empty set
         expected.put(1, emptySet);
         verifyExpected(expected, 1, emptySet);
         verifyExpected(expected, 1, emptySet);
@@ -299,7 +308,7 @@ public abstract class AbstractSetMapTestCase
         verifyContents(emptyMap.intersection(1, intersectionJet), expected);
         verifyContents(emptyMap.intersection(1, intersectionSet), expected);
 
-        //non-empty set intersection with empty set
+        // non-empty set intersection with empty set
         intersectionSet = new java.util.HashSet<>();
         intersectionJet = emptyJet;
         verifyContents(jetMap.intersection(1, asIterable(emptySet)), expected);
@@ -308,49 +317,49 @@ public abstract class AbstractSetMapTestCase
         verifyContents(jetMap.intersection(1, intersectionJet), expected);
         verifyContents(jetMap.intersection(1, intersectionSet), expected);
 
-        //deleteAll from smaller set
+        // deleteAll from smaller set
         expected.put(1, makeSet(0, 5));
         verifyExpected(expected, 1, makeSet(0, 5));
         jetMap = emptyMap.union(1, withExtra);
         verifyContents(jetMap.deleteAll(1, values), expected);
         verifyContents(jetMap.deleteAll(1, values.iterator()), expected);
 
-        //deleteAll from larger set
+        // deleteAll from larger set
         jetMap = emptyMap.union(1, values);
         expected.put(1, emptySet);
         verifyExpected(expected, 1, emptySet);
         verifyContents(jetMap.deleteAll(1, withExtra), expected);
         verifyContents(jetMap.deleteAll(1, withExtra.iterator()), expected);
 
-        //insertAll to empty set
+        // insertAll to empty set
         jetMap = emptyMap;
         expected.put(1, values);
         verifyExpected(expected, 1, values);
         verifyContents(jetMap.insertAll(1, values), expected);
         verifyContents(jetMap.insertAll(1, values.iterator()), expected);
 
-        //insertAll to non-empty set
+        // insertAll to non-empty set
         jetMap = emptyMap.union(1, values);
         expected.put(1, withExtra);
         verifyExpected(expected, 1, withExtra);
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
 
-        //insertAll to smaller set
+        // insertAll to smaller set
         jetMap = emptyMap.union(1, Arrays.asList(4, 5, 6, 7));
         expected.put(1, makeSet(0, 1, 2, 3, 4, 5, 6, 7));
         verifyExpected(expected, 1, makeSet(0, 1, 2, 3, 4, 5, 6, 7));
         verifyContents(jetMap.insertAll(1, withExtra), expected);
         verifyContents(jetMap.insertAll(1, withExtra.iterator()), expected);
 
-        //ICollection.insert to empty set
+        // ICollection.insert to empty set
         ISet<Integer> valuesSet = emptyJet.insertAll(values);
         jetMap = emptyMap;
         expected.put(1, values);
         verifyExpected(expected, 1, values);
         verifyContents(jetMap.insert(IMapEntry.of(1, valuesSet)), expected);
 
-        //ICollection.insert to non-empty set
+        // ICollection.insert to non-empty set
         valuesSet = emptyJet.insertAll(Arrays.asList(0, 5));
         jetMap = emptyMap.union(1, values);
         expected.put(1, withExtra);
@@ -358,9 +367,7 @@ public abstract class AbstractSetMapTestCase
         verifyContents(jetMap.insert(IMapEntry.of(1, valuesSet)), expected);
     }
 
-    public void verifyContents(ISetMap<Integer, Integer> jetMap,
-                               Map<Integer, Set<Integer>> expected)
-    {
+    public void verifyContents(ISetMap<Integer, Integer> jetMap, Map<Integer, Set<Integer>> expected) {
         assertEquals(expected.isEmpty(), jetMap.isEmpty());
         assertEquals(expected.size(), jetMap.size());
         for (Map.Entry<Integer, Set<Integer>> expectedEntry : expected.entrySet()) {
@@ -389,8 +396,7 @@ public abstract class AbstractSetMapTestCase
         verifyForEach(jetMap);
     }
 
-    private void verifyForEach(ISetMap<Integer, Integer> jetMap)
-    {
+    private void verifyForEach(ISetMap<Integer, Integer> jetMap) {
         final Temp.Int1 count = Temp.intVar(0);
         jetMap.forEach((key, set) -> {
             count.a += 1;
@@ -406,9 +412,7 @@ public abstract class AbstractSetMapTestCase
         assertEquals(jetMap.size(), count.a);
     }
 
-    public void verifyRandom(ISetMap<Integer, Integer> emptyJetMap,
-                             Map<Integer, Set<Integer>> expected)
-    {
+    public void verifyRandom(ISetMap<Integer, Integer> emptyJetMap, Map<Integer, Set<Integer>> expected) {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
@@ -459,13 +463,16 @@ public abstract class AbstractSetMapTestCase
                         break;
                     case 4:
                         if (expected.containsKey(key)) {
-                            assertEquals(jetMap.contains(key, key), expected.get(key).contains(key));
+                            assertEquals(
+                                    jetMap.contains(key, key), expected.get(key).contains(key));
                         }
                         assertEquals(expected.size(), jetMap.size());
                         break;
                     case 5:
                         if (expected.containsKey(key)) {
-                            assertEquals(jetMap.containsAll(key, set), expected.get(key).containsAll(set));
+                            assertEquals(
+                                    jetMap.containsAll(key, set),
+                                    expected.get(key).containsAll(set));
                         }
                         break;
                     case 6:
@@ -524,21 +531,16 @@ public abstract class AbstractSetMapTestCase
     }
 
     // forces java type system to use Iterable version of method
-    protected Iterable<Integer> asIterable(Collection<Integer> values)
-    {
+    protected Iterable<Integer> asIterable(Collection<Integer> values) {
         return values;
     }
 
-    protected void verifyExpected(Map<Integer, Set<Integer>> expected,
-                                  int key,
-                                  Set<Integer> values)
-    {
+    protected void verifyExpected(Map<Integer, Set<Integer>> expected, int key, Set<Integer> values) {
         assertEquals(true, expected.containsKey(key));
         assertEquals(true, expected.get(key).containsAll(values));
     }
 
-    private static void verifyCollector(ISetMap<Integer, Integer> template)
-    {
+    private static void verifyCollector(ISetMap<Integer, Integer> template) {
         ISetMap<Integer, Integer> expected = template;
         Collection<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 500; ++i) {

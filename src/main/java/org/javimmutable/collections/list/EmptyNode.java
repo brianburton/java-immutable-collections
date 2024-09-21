@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,10 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
@@ -43,100 +45,75 @@ import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.ToStringHelper;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.function.Consumer;
-
 @Immutable
-class EmptyNode<T>
-    extends AbstractNode<T>
-{
+class EmptyNode<T> extends AbstractNode<T> {
     private static final EmptyNode INSTANCE = new EmptyNode();
 
-    private EmptyNode()
-    {
-    }
+    private EmptyNode() {}
 
     @SuppressWarnings("unchecked")
-    static <T> EmptyNode<T> instance()
-    {
+    static <T> EmptyNode<T> instance() {
         return INSTANCE;
     }
 
     @Override
-    boolean isEmpty()
-    {
+    boolean isEmpty() {
         return true;
     }
 
     @Override
-    int size()
-    {
+    int size() {
         return 0;
     }
 
     @Override
-    int depth()
-    {
+    int depth() {
         return 0;
     }
 
     @Override
-    T get(int index)
-    {
+    T get(int index) {
         throw new IndexOutOfBoundsException();
     }
 
     @Override
-    <C> C findImpl(int index,
-                   Func0<C> defaultMapping,
-                   Func1<T, C> valueMapping)
-    {
+    <C> C findImpl(int index, Func0<C> defaultMapping, Func1<T, C> valueMapping) {
         return defaultMapping.apply();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> append(T value)
-    {
+    AbstractNode<T> append(T value) {
         return new OneValueNode<>(value);
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> append(@Nonnull AbstractNode<T> node)
-    {
+    AbstractNode<T> append(@Nonnull AbstractNode<T> node) {
         return node;
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> prepend(T value)
-    {
+    AbstractNode<T> prepend(T value) {
         return new OneValueNode<>(value);
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> prepend(@Nonnull AbstractNode<T> node)
-    {
+    AbstractNode<T> prepend(@Nonnull AbstractNode<T> node) {
         return node;
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> assign(int index,
-                           T value)
-    {
+    AbstractNode<T> assign(int index, T value) {
         throw new IndexOutOfBoundsException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> insert(int index,
-                           T value)
-    {
+    AbstractNode<T> insert(int index, T value) {
         if (index == 0) {
             return new OneValueNode<>(value);
         } else {
@@ -146,29 +123,25 @@ class EmptyNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> delete(int index)
-    {
+    AbstractNode<T> delete(int index) {
         throw new IndexOutOfBoundsException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> deleteFirst()
-    {
+    AbstractNode<T> deleteFirst() {
         throw new IndexOutOfBoundsException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> deleteLast()
-    {
+    AbstractNode<T> deleteLast() {
         throw new IndexOutOfBoundsException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> prefix(int limit)
-    {
+    AbstractNode<T> prefix(int limit) {
         if (limit == 0) {
             return this;
         } else {
@@ -177,15 +150,11 @@ class EmptyNode<T>
     }
 
     @Override
-    void copyTo(T[] array,
-                int offset)
-    {
-    }
+    void copyTo(T[] array, int offset) {}
 
     @Nonnull
     @Override
-    AbstractNode<T> suffix(int offset)
-    {
+    AbstractNode<T> suffix(int offset) {
         if (offset == 0) {
             return this;
         } else {
@@ -195,55 +164,38 @@ class EmptyNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> reverse()
-    {
+    AbstractNode<T> reverse() {
         return this;
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
-                                                     int offset,
-                                                     int limit)
-    {
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent, int offset, int limit) {
         assert offset == 0 && limit == 0;
         return parent;
     }
 
     @Override
-    public void forEach(Consumer<? super T> action)
-    {
-    }
+    public void forEach(Consumer<? super T> action) {}
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
-        throws E
-    {
-    }
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc) throws E {}
 
     @Override
-    public <V> V reduce(V initialValue,
-                        Func2<V, T, V> accumulator)
-    {
+    public <V> V reduce(V initialValue, Func2<V, T, V> accumulator) {
         return initialValue;
     }
 
     @Override
-    public <V, E extends Exception> V reduceThrows(V initialValue,
-                                                   Sum1Throws<T, V, E> accumulator)
-        throws E
-    {
+    public <V, E extends Exception> V reduceThrows(V initialValue, Sum1Throws<T, V, E> accumulator) throws E {
         return initialValue;
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
+    public void checkInvariants() {}
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("[");
         forEach(value -> ToStringHelper.addToString(sb, 1, value));

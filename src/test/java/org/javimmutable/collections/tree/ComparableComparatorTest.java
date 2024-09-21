@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -39,12 +37,8 @@ import junit.framework.TestCase;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.SingleValueIterator;
 
-public class ComparableComparatorTest
-    extends TestCase
-{
-    public void test()
-        throws Exception
-    {
+public class ComparableComparatorTest extends TestCase {
+    public void test() throws Exception {
         ComparableComparator<String> comp = new ComparableComparator<String>();
         assertEquals(-1, comp.compare(null, "a"));
         assertEquals(0, comp.compare(null, null));
@@ -52,7 +46,10 @@ public class ComparableComparatorTest
         assertEquals(-1, comp.compare("a", "b"));
         assertEquals(0, comp.compare("a", "a"));
         assertEquals(1, comp.compare("b", "a"));
-        StandardSerializableTests.verifySerializable(c -> SingleValueIterator.of(c), null, comp,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivpCg1Vc85P7cgsQgkB2WV5Bf9B4F/KsZMDAwVBQBVztHTSwAAAA==");
+        StandardSerializableTests.verifySerializable(
+                c -> SingleValueIterator.of(c),
+                null,
+                comp,
+                "H4sIAAAAAAAA/1vzloG1uIjBLL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivpCg1Vc85P7cgsQgkB2WV5Bf9B4F/KsZMDAwVBQBVztHTSwAAAA==");
     }
 }

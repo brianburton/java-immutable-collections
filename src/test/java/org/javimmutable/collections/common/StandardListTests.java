@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2018-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,15 +33,13 @@
 
 package org.javimmutable.collections.common;
 
+import static org.junit.Assert.*;
+
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.Maybe;
 
-import static org.junit.Assert.*;
-
-public class StandardListTests
-{
-    public static void standardTests(IList<Integer> empty)
-    {
+public class StandardListTests {
+    public static void standardTests(IList<Integer> empty) {
         verifyInsertAllFirst(empty);
         verifyInsertAllLast(empty);
         verifyTransform(empty);
@@ -51,8 +47,7 @@ public class StandardListTests
         verifySingle(empty);
     }
 
-    public static void verifyInsertAllFirst(IList<Integer> empty)
-    {
+    public static void verifyInsertAllFirst(IList<Integer> empty) {
         IList<Integer> actual = appendAll(empty, 1, 10);
         IList<Integer> expected = actual;
         while (actual.size() < 250_000) {
@@ -65,8 +60,7 @@ public class StandardListTests
         }
     }
 
-    public static void verifyInsertAllLast(IList<Integer> empty)
-    {
+    public static void verifyInsertAllLast(IList<Integer> empty) {
         IList<Integer> actual = appendAll(empty, 1, 10);
         IList<Integer> expected = actual;
         while (actual.size() < 250_000) {
@@ -79,8 +73,7 @@ public class StandardListTests
         }
     }
 
-    public static void verifyAssign(IList<Integer> empty)
-    {
+    public static void verifyAssign(IList<Integer> empty) {
         for (int size = 0; size < 4096; ++size) {
             IList<Integer> expected = appendAll(empty, 1, size);
             IList<Integer> actual = appendAll(empty, 101, 100 + size);
@@ -91,8 +84,7 @@ public class StandardListTests
         }
     }
 
-    public static void verifyTransform(IList<Integer> empty)
-    {
+    public static void verifyTransform(IList<Integer> empty) {
         IList<Integer> orig = appendAll(empty, 1, 20);
         IList<Integer> transformed = orig.transform(i -> i + 10);
         assertSame(orig.getClass(), transformed.getClass());
@@ -103,28 +95,21 @@ public class StandardListTests
         assertEquals(appendAll(empty, 1, 10), transformed);
     }
 
-    private static void verifySingle(IList<Integer> empty)
-    {
+    private static void verifySingle(IList<Integer> empty) {
         assertEquals(Maybe.empty(), empty.single());
         assertEquals(Maybe.of(1), empty.insert(1).single());
         assertEquals(Maybe.of(null), empty.insert(null).single());
         assertEquals(Maybe.empty(), empty.insert(1).insert(2).single());
     }
 
-    private static IList<Integer> appendAll(IList<Integer> answer,
-                                            int first,
-                                            int last)
-    {
+    private static IList<Integer> appendAll(IList<Integer> answer, int first, int last) {
         for (int i = first; i <= last; ++i) {
             answer = answer.insert(i);
         }
         return answer;
     }
 
-    private static IList<Integer> prependAll(IList<Integer> answer,
-                                             int first,
-                                             int last)
-    {
+    private static IList<Integer> prependAll(IList<Integer> answer, int first, int last) {
         for (int i = last; i >= first; --i) {
             answer = answer.insertFirst(i);
         }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,23 +33,18 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
 import junit.framework.TestCase;
 
-import java.util.Comparator;
-
-public class ValueNodeTest
-    extends TestCase
-{
+public class ValueNodeTest extends TestCase {
     private final Comparator<Integer> comparator = Comparator.naturalOrder();
 
-    public void testToString()
-    {
+    public void testToString() {
         assertEquals("[]", FringeNode.instance().toString());
         assertEquals("[(1,2)]", ValueNode.instance(1, 2).toString());
     }
 
-    public void testInstanceTypes()
-    {
+    public void testInstanceTypes() {
         AbstractNode<Integer, Integer> node = ValueNode.instance(1, 10);
         assertTrue(node instanceof LeafNode);
         assertEquals("[(1,10)]", node.toString());

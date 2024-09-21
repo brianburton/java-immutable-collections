@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,17 +33,9 @@
 
 package org.javimmutable.collections.common;
 
+import static junit.framework.Assert.*;
 
 import com.google.common.collect.Multiset;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IMultiset;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.hash.HashMultiset;
-import org.javimmutable.collections.hash.HashSet;
-import org.javimmutable.collections.inorder.OrderedMultiset;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,14 +45,17 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Function;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IMultiset;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.hash.HashMultiset;
+import org.javimmutable.collections.hash.HashSet;
+import org.javimmutable.collections.inorder.OrderedMultiset;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import static junit.framework.Assert.*;
-
-public class StandardMultisetTests
-{
-    public static void verifyMultiset(IMultiset<Integer> empty,
-                                      boolean emptyIsUnique)
-    {
+public class StandardMultisetTests {
+    public static void verifyMultiset(IMultiset<Integer> empty, boolean emptyIsUnique) {
         StandardIteratorTests.emptyIteratorTest(empty.iterator());
         StandardIteratorTests.emptyIteratorTest(empty.entries().iterator());
         StandardIteratorTests.emptyIteratorTest(empty.occurrences().iterator());
@@ -135,8 +128,7 @@ public class StandardMultisetTests
         verifyIntersectionOrder(empty);
     }
 
-    private static void testCollector(IMultiset<Integer> template)
-    {
+    private static void testCollector(IMultiset<Integer> template) {
         List<Integer> values = new ArrayList<>();
         for (int i = 1; i <= 500; ++i) {
             values.add(i);
@@ -149,22 +141,21 @@ public class StandardMultisetTests
         assertEquals(expected, actual);
     }
 
-    private static void verifyUnion(IMultiset<Integer> empty)
-    {
+    private static void verifyUnion(IMultiset<Integer> empty) {
         final List<Integer> values = Arrays.asList(1, 3, 3, 4);
         final IMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
         final List<Integer> emptyList = new ArrayList<>();
         Multiset<Integer> expected = com.google.common.collect.HashMultiset.create();
         Multiset<Integer> setExpected = com.google.common.collect.HashMultiset.create();
 
-        //empty into empty
+        // empty into empty
         verifyContents(empty.union(emptyList), expected);
         verifyContents(empty.union(emptyList.iterator()), expected);
         verifyContents(empty.union(asJMSet(emptyList)), expected);
         verifyContents(empty.union(asJSet(emptyList)), setExpected);
         verifyContents(empty.union(asSet(emptyList)), setExpected);
 
-        //values into empty
+        // values into empty
         expected.addAll(values);
         setExpected.addAll(Arrays.asList(1, 3, 4));
         verifyContents(empty.union(values), expected);
@@ -173,7 +164,7 @@ public class StandardMultisetTests
         verifyContents(empty.union(asJSet(values)), setExpected);
         verifyContents(empty.union(asSet(values)), setExpected);
 
-        //empty into values
+        // empty into values
         setExpected.clear();
         setExpected.addAll(values);
         verifyContents(jmet.union(emptyList), expected);
@@ -182,8 +173,8 @@ public class StandardMultisetTests
         verifyContents(jmet.union(asJSet(emptyList)), setExpected);
         verifyContents(jmet.union(asSet(emptyList)), setExpected);
 
-        //values into values
-        //with wider and deeper
+        // values into values
+        // with wider and deeper
         final List<Integer> wideDeep = Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4);
         expected.clear();
         expected.addAll(wideDeep);
@@ -195,7 +186,7 @@ public class StandardMultisetTests
         verifyContents(jmet.union(asJSet(wideDeep)), setExpected);
         verifyContents(jmet.union(asSet(wideDeep)), setExpected);
 
-        //with wider and shallower
+        // with wider and shallower
         final List<Integer> wideShallow = Arrays.asList(1, 2, 3, 4);
         expected.clear();
         expected.addAll(Arrays.asList(1, 2, 3, 3, 4));
@@ -205,7 +196,7 @@ public class StandardMultisetTests
         verifyContents(jmet.union(asJSet(wideShallow)), setExpected);
         verifyContents(jmet.union(asSet(wideShallow)), setExpected);
 
-        //with narrower and deeper
+        // with narrower and deeper
         final List<Integer> narrowDeep = Arrays.asList(2, 2, 2, 4, 4, 4);
         expected.clear();
         expected.addAll(Arrays.asList(1, 2, 2, 2, 3, 3, 4, 4, 4));
@@ -215,7 +206,7 @@ public class StandardMultisetTests
         verifyContents(jmet.union(asJSet(narrowDeep)), setExpected);
         verifyContents(jmet.union(asSet(narrowDeep)), setExpected);
 
-        //with narrower shallower
+        // with narrower shallower
         final List<Integer> narrowShallow = Arrays.asList(3, 4);
         expected.clear();
         expected.addAll(values);
@@ -226,40 +217,38 @@ public class StandardMultisetTests
         verifyContents(jmet.union(asJMSet(narrowShallow)), expected);
         verifyContents(jmet.union(asJSet(narrowShallow)), setExpected);
         verifyContents(jmet.union(asSet(narrowShallow)), setExpected);
-
     }
 
-    private static void verifyIntersection(IMultiset<Integer> empty)
-    {
+    private static void verifyIntersection(IMultiset<Integer> empty) {
         final List<Integer> values = Arrays.asList(1, 3, 3, 4);
         final IMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
         final List<Integer> emptyList = new ArrayList<>();
         Multiset<Integer> expected = com.google.common.collect.HashMultiset.create();
         Multiset<Integer> setExpected = com.google.common.collect.HashMultiset.create();
 
-        //empty into empty
+        // empty into empty
         verifyContents(empty.intersection(emptyList), expected);
         verifyContents(empty.intersection(emptyList.iterator()), expected);
         verifyContents(empty.intersection(asJMSet(emptyList)), expected);
         verifyContents(empty.intersection(asJSet(emptyList)), setExpected);
         verifyContents(empty.intersection(asSet(emptyList)), setExpected);
 
-        //values into empty
+        // values into empty
         verifyContents(empty.intersection(values), expected);
         verifyContents(empty.intersection(values.iterator()), expected);
         verifyContents(empty.intersection(asJMSet(values)), expected);
         verifyContents(empty.intersection(asJSet(values)), setExpected);
         verifyContents(empty.intersection(asSet(values)), setExpected);
 
-        //empty into values
+        // empty into values
         verifyContents(jmet.intersection(emptyList), expected);
         verifyContents(jmet.intersection(emptyList.iterator()), expected);
         verifyContents(jmet.intersection(asJMSet(emptyList)), expected);
         verifyContents(jmet.intersection(asJSet(emptyList)), setExpected);
         verifyContents(jmet.intersection(asSet(emptyList)), setExpected);
 
-        //values into values
-        //with wider and deeper
+        // values into values
+        // with wider and deeper
         final List<Integer> wideDeep = Arrays.asList(1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4);
         expected.addAll(values);
         setExpected.addAll(Arrays.asList(1, 3, 4));
@@ -269,7 +258,7 @@ public class StandardMultisetTests
         verifyContents(jmet.intersection(asJSet(wideDeep)), setExpected);
         verifyContents(jmet.intersection(asSet(wideDeep)), setExpected);
 
-        //with wider and shallower
+        // with wider and shallower
         final List<Integer> wideShallow = Arrays.asList(1, 2, 3, 4);
         expected.clear();
         expected.addAll(Arrays.asList(1, 3, 4));
@@ -279,7 +268,7 @@ public class StandardMultisetTests
         verifyContents(jmet.intersection(asJSet(wideShallow)), setExpected);
         verifyContents(jmet.intersection(asSet(wideShallow)), setExpected);
 
-        //with narrower and deeper
+        // with narrower and deeper
         final List<Integer> narrowDeep = Arrays.asList(2, 2, 2, 4, 4, 4);
         expected.clear();
         expected.add(4);
@@ -290,7 +279,7 @@ public class StandardMultisetTests
         verifyContents(jmet.intersection(asJSet(narrowDeep)), setExpected);
         verifyContents(jmet.intersection(asSet(narrowDeep)), setExpected);
 
-        //with narrower shallower
+        // with narrower shallower
         final List<Integer> narrowShallow = Arrays.asList(3, 4);
         expected.clear();
         expected.addAll(Arrays.asList(3, 4));
@@ -300,34 +289,35 @@ public class StandardMultisetTests
         verifyContents(jmet.intersection(asJMSet(narrowShallow)), expected);
         verifyContents(jmet.intersection(asJSet(narrowShallow)), setExpected);
         verifyContents(jmet.intersection(asSet(narrowShallow)), setExpected);
-
     }
 
-    private static void verifyOrder(IMultiset<Integer> jmet,
-                                    List<Integer> expected)
-    {
+    private static void verifyOrder(IMultiset<Integer> jmet, List<Integer> expected) {
         StandardIteratorTests.listIteratorTest(expected, jmet.iterator());
-
     }
 
-    private static void verifyIntersectionOrder(IMultiset<Integer> empty)
-    {
-        IMultiset<Integer> jmet = empty.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
+    private static void verifyIntersectionOrder(IMultiset<Integer> empty) {
+        IMultiset<Integer> jmet =
+                empty.insert(100).insert(50).insert(100).insert(600).insert(0).insert(400);
         List<Integer> expected = new ArrayList<>();
         expected.addAll(jmet.getSet());
         StandardIteratorTests.listIteratorTest(expected, jmet.iterator());
 
-        IMultiset<Integer> diffOrder = OrderedMultiset.<Integer>of().insert(400).insert(0)
-            .insert(600).insert(100).insert(50).insert(100);
+        IMultiset<Integer> diffOrder = OrderedMultiset.<Integer>of()
+                .insert(400)
+                .insert(0)
+                .insert(600)
+                .insert(100)
+                .insert(50)
+                .insert(100);
 
-        //with same width, same depth
+        // with same width, same depth
         verifyOrder(jmet.intersection(Arrays.asList(400, 0, 600, 100, 50, 100)), expected);
         verifyOrder(jmet.intersection(diffOrder), expected);
         verifyOrder(jmet.intersection(diffOrder.iterator()), expected);
-        verifyOrder(jmet.intersection((ISet<Integer>)diffOrder), expected);
+        verifyOrder(jmet.intersection((ISet<Integer>) diffOrder), expected);
         verifyOrder(jmet.intersection(diffOrder.getSet()), expected);
 
-        //with wider and deeper
+        // with wider and deeper
         final List<Integer> wideDeep = Arrays.asList(0, 0, 50, 100, 100, 100, 200, 200, 400, 600);
         verifyOrder(jmet.intersection(wideDeep), expected);
         verifyOrder(jmet.intersection(wideDeep.iterator()), expected);
@@ -335,7 +325,7 @@ public class StandardMultisetTests
         verifyOrder(jmet.intersection(asJSet(wideDeep)), expected);
         verifyOrder(jmet.intersection(asSet(wideDeep)), expected);
 
-        //with wider and shallower
+        // with wider and shallower
         final List<Integer> wideShallow = Arrays.asList(500, 400, 100, 150);
         expected.clear();
         for (Integer value : empty.insertAll(Arrays.asList(100, 400))) {
@@ -347,7 +337,7 @@ public class StandardMultisetTests
         verifyOrder(jmet.intersection(asJSet(wideShallow)), expected);
         verifyOrder(jmet.intersection(asSet(wideShallow)), expected);
 
-        //with narrower and deeper
+        // with narrower and deeper
         final List<Integer> narrowDeep = Arrays.asList(400, 400, 100, 400, 100, 100);
         expected.clear();
         for (Integer value : empty.insertAll(Arrays.asList(100, 100, 400))) {
@@ -359,7 +349,7 @@ public class StandardMultisetTests
         verifyOrder(jmet.intersection(asJSet(narrowDeep)), expected);
         verifyOrder(jmet.intersection(asSet(narrowDeep)), expected);
 
-        //with narrower shallower
+        // with narrower shallower
         final List<Integer> narrowShallow = Arrays.asList(400, 100);
         expected.clear();
         for (Integer value : empty.insertAll(Arrays.asList(100, 400))) {
@@ -372,34 +362,33 @@ public class StandardMultisetTests
         verifyOrder(jmet.intersection(asSet(narrowShallow)), expected);
     }
 
-    private static void verifyInsertAll(IMultiset<Integer> empty)
-    {
+    private static void verifyInsertAll(IMultiset<Integer> empty) {
         List<Integer> values = Arrays.asList(1, 3, 3, 4);
         final IMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
         final List<Integer> emptyList = new ArrayList<>();
         Multiset<Integer> expected = com.google.common.collect.HashMultiset.create();
 
-        //empty into empty
+        // empty into empty
         verifyContents(empty.insertAll(plainIterable(emptyList)), expected);
         verifyContents(empty.insertAll(emptyList), expected);
         verifyContents(empty.insertAll(emptyList.iterator()), expected);
         verifyContents(empty.insertAll(asJMSet(emptyList)), expected);
 
-        //values into empty
+        // values into empty
         expected.addAll(values);
         verifyContents(empty.insertAll(plainIterable(values)), expected);
         verifyContents(empty.insertAll(values), expected);
         verifyContents(empty.insertAll(values.iterator()), expected);
         verifyContents(empty.insertAll(asJMSet(values)), expected);
 
-        //empty into values
+        // empty into values
         verifyContents(jmet.insertAll(plainIterable(emptyList)), expected);
         verifyContents(jmet.insertAll(emptyList), expected);
         verifyContents(jmet.insertAll(emptyList.iterator()), expected);
         verifyContents(jmet.insertAll(asJMSet(emptyList)), expected);
 
-        //values into values
-        //with overlap
+        // values into values
+        // with overlap
         values = Arrays.asList(0, 0, 1, 2, 3);
         expected.clear();
         expected.addAll(Arrays.asList(0, 0, 1, 1, 2, 3, 3, 3, 4));
@@ -408,7 +397,7 @@ public class StandardMultisetTests
         verifyContents(jmet.insertAll(values.iterator()), expected);
         verifyContents(jmet.insertAll(asJMSet(values)), expected);
 
-        //without overlap
+        // without overlap
         values = Arrays.asList(0, 0, 2);
         expected.clear();
         expected.addAll(Arrays.asList(0, 0, 1, 2, 3, 3, 4));
@@ -418,33 +407,31 @@ public class StandardMultisetTests
         verifyContents(jmet.insertAll(asJMSet(values)), expected);
     }
 
-    private static Iterable<Integer> plainIterable(List<Integer> values)
-    {
+    private static Iterable<Integer> plainIterable(List<Integer> values) {
         return () -> values.iterator();
     }
 
-    private static void verifyDeleteAll(IMultiset<Integer> empty)
-    {
+    private static void verifyDeleteAll(IMultiset<Integer> empty) {
         List<Integer> values = Arrays.asList(1, 3, 3, 4);
         final IMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
         final List<Integer> emptyList = new ArrayList<>();
         Multiset<Integer> expected = com.google.common.collect.HashMultiset.create();
 
-        //empty from empty
+        // empty from empty
         verifyContents(empty.deleteAll(emptyList), expected);
         verifyContents(empty.deleteAll(emptyList.iterator()), expected);
         verifyContents(empty.deleteAll(asJMSet(emptyList)), expected);
         verifyContents(empty.deleteAll(asJSet(emptyList)), expected);
         verifyContents(empty.deleteAll(asSet(emptyList)), expected);
 
-        //values from empty
+        // values from empty
         verifyContents(empty.deleteAll(values), expected);
         verifyContents(empty.deleteAll(values.iterator()), expected);
         verifyContents(empty.deleteAll(asJMSet(values)), expected);
         verifyContents(empty.deleteAll(asJSet(values)), expected);
         verifyContents(empty.deleteAll(asSet(values)), expected);
 
-        //empty from values
+        // empty from values
         expected.addAll(values);
         verifyContents(jmet.deleteAll(emptyList), expected);
         verifyContents(jmet.deleteAll(emptyList.iterator()), expected);
@@ -452,8 +439,8 @@ public class StandardMultisetTests
         verifyContents(jmet.deleteAll(asJSet(emptyList)), expected);
         verifyContents(jmet.deleteAll(asSet(emptyList)), expected);
 
-        //values from values
-        //from smaller
+        // values from values
+        // from smaller
         values = Arrays.asList(3, 4);
         expected.clear();
         expected.add(1);
@@ -463,7 +450,7 @@ public class StandardMultisetTests
         verifyContents(jmet.deleteAll(asJSet(values)), expected);
         verifyContents(jmet.deleteAll(asSet(values)), expected);
 
-        //from larger
+        // from larger
         values = Arrays.asList(1, 1, 2, 3, 4, 5);
         expected.clear();
         verifyContents(jmet.deleteAll(values), expected);
@@ -473,29 +460,28 @@ public class StandardMultisetTests
         verifyContents(jmet.deleteAll(asSet(values)), expected);
     }
 
-    private static void verifyDeleteAllOccurrences(IMultiset<Integer> empty)
-    {
+    private static void verifyDeleteAllOccurrences(IMultiset<Integer> empty) {
         List<Integer> values = Arrays.asList(1, 3, 3, 4);
         final IMultiset<Integer> jmet = empty.insert(1).insert(3).insert(3).insert(4);
         final List<Integer> emptyList = new ArrayList<>();
         Multiset<Integer> expected = com.google.common.collect.HashMultiset.create();
         Multiset<Integer> setExpected = com.google.common.collect.HashMultiset.create();
 
-        //empty from empty
+        // empty from empty
         verifyContents(empty.deleteAllOccurrences(emptyList), expected);
         verifyContents(empty.deleteAllOccurrences(emptyList.iterator()), expected);
         verifyContents(empty.deleteAllOccurrences(asJMSet(emptyList)), expected);
         verifyContents(empty.deleteAllOccurrences(asJSet(emptyList)), expected);
         verifyContents(empty.deleteAllOccurrences(asSet(emptyList)), expected);
 
-        //values from empty
+        // values from empty
         verifyContents(empty.deleteAllOccurrences(values), expected);
         verifyContents(empty.deleteAllOccurrences(values.iterator()), expected);
         verifyContents(empty.deleteAllOccurrences(asJMSet(values)), expected);
         verifyContents(empty.deleteAllOccurrences(asJSet(values)), expected);
         verifyContents(empty.deleteAllOccurrences(asSet(values)), expected);
 
-        //empty from values
+        // empty from values
         expected.addAll(values);
         verifyContents(jmet.deleteAllOccurrences(emptyList), expected);
         verifyContents(jmet.deleteAllOccurrences(emptyList.iterator()), expected);
@@ -503,8 +489,8 @@ public class StandardMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asJSet(emptyList)), expected);
         verifyContents(jmet.deleteAllOccurrences(asSet(emptyList)), expected);
 
-        //values from values
-        //from smaller
+        // values from values
+        // from smaller
         values = Arrays.asList(3, 4);
         expected.clear();
         expected.addAll(Arrays.asList(1, 3));
@@ -514,7 +500,7 @@ public class StandardMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asJSet(values)), expected);
         verifyContents(jmet.deleteAllOccurrences(asSet(values)), expected);
 
-        //from larger
+        // from larger
         values = Arrays.asList(1, 1, 2, 3, 3, 4, 5);
         expected.clear();
         setExpected.add(3);
@@ -525,8 +511,7 @@ public class StandardMultisetTests
         verifyContents(jmet.deleteAllOccurrences(asSet(values)), setExpected);
     }
 
-    private static void testVarious(IMultiset<Integer> empty)
-    {
+    private static void testVarious(IMultiset<Integer> empty) {
         List<Integer> values = Arrays.asList(100, 200, 300, 300);
 
         IMultiset<Integer> jmet = empty;
@@ -623,8 +608,7 @@ public class StandardMultisetTests
         assertEquals(empty, jmet3.deleteAll(jmet3));
     }
 
-    private static void testEquals(IMultiset<Integer> empty)
-    {
+    private static void testEquals(IMultiset<Integer> empty) {
         assertEquals(false, empty.equals(null));
         assertEquals(true, empty.equals(empty));
 
@@ -651,9 +635,7 @@ public class StandardMultisetTests
         assertEquals(true, multiset.equals(set));
     }
 
-    public static void testRandom(final IMultiset<Integer> emptyJMet,
-                                  final Multiset<Integer> expected)
-    {
+    public static void testRandom(final IMultiset<Integer> emptyJMet, final Multiset<Integer> expected) {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
@@ -702,10 +684,10 @@ public class StandardMultisetTests
                 assertEquals(expected.size(), jmet.occurrenceCount());
             }
             jmet.checkInvariants();
-            //verify multisets have the same contents
+            // verify multisets have the same contents
             verifyContents(jmet, expected);
 
-            //verify ordering is the same in both sets
+            // verify ordering is the same in both sets
             if ((jmet.getSpliteratorCharacteristics() & Spliterator.ORDERED) != 0) {
                 assertEquals(new ArrayList<>(expected.elementSet()), new ArrayList<>(jmet.getSet()));
             }
@@ -721,9 +703,7 @@ public class StandardMultisetTests
         }
     }
 
-    public static void verifyContents(IMultiset<Integer> jmet,
-                                      Multiset<Integer> expected)
-    {
+    public static void verifyContents(IMultiset<Integer> jmet, Multiset<Integer> expected) {
         jmet.checkInvariants();
         assertEquals(expected.isEmpty(), jmet.isEmpty());
         assertEquals(expected.size(), jmet.occurrenceCount());
@@ -755,9 +735,7 @@ public class StandardMultisetTests
         assertEquals(!expected.isEmpty(), jmet.containsAny(expected.iterator()));
     }
 
-    public static <T> void verifyIterators(final IMultiset<T> jmet,
-                                           final Multiset<T> expected)
-    {
+    public static <T> void verifyIterators(final IMultiset<T> jmet, final Multiset<T> expected) {
         final ExpectedOrderSorter<T> ordering = new ExpectedOrderSorter<>(jmet.iterator());
         List<T> expectedSet = ordering.sort(expected.elementSet(), Function.identity());
         List<T> expectedList = ordering.sort(expected, Function.identity());
@@ -773,25 +751,27 @@ public class StandardMultisetTests
         StandardIteratorTests.iteratorTest(value -> entries.get(value).getKey(), entries.size(), jmet.iterator());
 
         StandardIteratorTests.listIteratorTest(expectedList, jmet.occurrences().iterator());
-        StandardIteratorTests.iteratorTest(value -> expectedList.get(value), expected.size(), jmet.occurrences().iterator());
+        StandardIteratorTests.iteratorTest(
+                value -> expectedList.get(value),
+                expected.size(),
+                jmet.occurrences().iterator());
 
         StandardIteratorTests.listIteratorTest(entries, jmet.entries().iterator());
-        StandardIteratorTests.iteratorTest(value -> entries.get(value), entries.size(), jmet.entries().iterator());
+        StandardIteratorTests.iteratorTest(
+                value -> entries.get(value), entries.size(), jmet.entries().iterator());
 
         StandardStreamableTests.verifyUnorderedUsingCollection(jmet.getSet(), jmet);
         StandardStreamableTests.verifyUnorderedUsingCollection(entries, jmet.entries(), MapEntry::new);
         StandardStreamableTests.verifyUnorderedUsingCollection(expectedList, jmet.occurrences());
     }
 
-    private static Set<Integer> asSet(List<Integer> list)
-    {
+    private static Set<Integer> asSet(List<Integer> list) {
         Set<Integer> set = new LinkedHashSet<>();
         set.addAll(list);
         return set;
     }
 
-    private static ISet<Integer> asJSet(Multiset<Integer> multi)
-    {
+    private static ISet<Integer> asJSet(Multiset<Integer> multi) {
         ISet<Integer> jet = HashSet.of();
         for (Integer value : multi) {
             jet = jet.insert(value);
@@ -799,8 +779,7 @@ public class StandardMultisetTests
         return jet;
     }
 
-    private static ISet<Integer> asJSet(List<Integer> list)
-    {
+    private static ISet<Integer> asJSet(List<Integer> list) {
         ISet<Integer> jet = HashSet.of();
         for (int i : list) {
             jet = jet.insert(i);
@@ -808,8 +787,7 @@ public class StandardMultisetTests
         return jet;
     }
 
-    private static IMultiset<Integer> asJMSet(Multiset<Integer> multi)
-    {
+    private static IMultiset<Integer> asJMSet(Multiset<Integer> multi) {
         IMultiset<Integer> jmet = HashMultiset.of();
         for (Integer value : multi) {
             jmet = jmet.insert(value);
@@ -817,8 +795,7 @@ public class StandardMultisetTests
         return jmet;
     }
 
-    private static IMultiset<Integer> asJMSet(List<Integer> list)
-    {
+    private static IMultiset<Integer> asJMSet(List<Integer> list) {
         IMultiset<Integer> jmet = HashMultiset.of();
         for (int i : list) {
             jmet = jmet.insert(i);
@@ -826,8 +803,7 @@ public class StandardMultisetTests
         return jmet;
     }
 
-    private static List<Integer> entryAsList(IMapEntry<Integer, Integer> entry)
-    {
+    private static List<Integer> entryAsList(IMapEntry<Integer, Integer> entry) {
         List<Integer> list = new ArrayList<>();
         int count = entry.getValue();
         int value = entry.getKey();
@@ -838,8 +814,7 @@ public class StandardMultisetTests
     }
 
     // forces java type system to use Iterable version of a method
-    private static Iterable<Integer> iterable(Iterable<Integer> object)
-    {
+    private static Iterable<Integer> iterable(Iterable<Integer> object) {
         return object;
     }
 }

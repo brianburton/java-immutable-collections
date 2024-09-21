@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,36 +33,29 @@
 
 package org.javimmutable.collections.hash.set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public interface ArraySetNode<T>
-{
+public interface ArraySetNode<T> {
     int size(@Nonnull CollisionSet<T> collisionSet);
 
-    boolean contains(@Nonnull CollisionSet<T> collisionSet,
-                     @Nonnull T value);
+    boolean contains(@Nonnull CollisionSet<T> collisionSet, @Nonnull T value);
 
     @Nonnull
-    ArraySetNode<T> insert(@Nonnull CollisionSet<T> collisionSet,
-                           @Nonnull T value);
+    ArraySetNode<T> insert(@Nonnull CollisionSet<T> collisionSet, @Nonnull T value);
 
     @Nullable
-    ArraySetNode<T> delete(@Nonnull CollisionSet<T> collisionSet,
-                           @Nonnull T value);
+    ArraySetNode<T> delete(@Nonnull CollisionSet<T> collisionSet, @Nonnull T value);
 
     @Nonnull
     GenericIterator.Iterable<T> values(@Nonnull CollisionSet<T> collisionSet);
 
-    void forEach(@Nonnull CollisionSet<T> collisionSet,
-                 @Nonnull Proc1<T> proc);
+    void forEach(@Nonnull CollisionSet<T> collisionSet, @Nonnull Proc1<T> proc);
 
-    <E extends Exception> void forEachThrows(@Nonnull CollisionSet<T> collisionSet,
-                                             @Nonnull Proc1Throws<T, E> proc)
-        throws E;
+    <E extends Exception> void forEachThrows(@Nonnull CollisionSet<T> collisionSet, @Nonnull Proc1Throws<T, E> proc)
+            throws E;
 }

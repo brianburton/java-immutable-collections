@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,25 +33,21 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
 
-public interface IListBuilder<T>
-{
+public interface IListBuilder<T> {
     /**
-     * Builds and returns a collection containing all of the added values.  May be called
-     * as often as desired and is safe to call and then continue adding more elements to build
-     * another collection with those additional elements.
+     * Builds and returns a collection containing all of the added values. May be called as often as desired and is safe
+     * to call and then continue adding more elements to build another collection with those additional elements.
      *
      * @return the collection
      */
     @Nonnull
     IList<T> build();
 
-    /**
-     * Determines how many values will be in the collection if build() is called now.
-     */
+    /** Determines how many values will be in the collection if build() is called now. */
     int size();
 
     /**
@@ -71,8 +65,7 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> addAll(Iterator<? extends T> source)
-    {
+    default IListBuilder<T> addAll(Iterator<? extends T> source) {
         while (source.hasNext()) {
             add(source.next());
         }
@@ -86,8 +79,7 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> addAll(Iterable<? extends T> source)
-    {
+    default IListBuilder<T> addAll(Iterable<? extends T> source) {
         return addAll(source.iterator());
     }
 
@@ -98,22 +90,19 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default <K extends T> IListBuilder<T> addAll(K... source)
-    {
+    default <K extends T> IListBuilder<T> addAll(K... source) {
         return addAll(Arrays.asList(source));
     }
 
     /**
-     * Adds all values in the specified range of Indexed to the values included in the collection when build() is called.
+     * Adds all values in the specified range of Indexed to the values included in the collection when build() is
+     * called.
      *
      * @param source Indexed containing values to add
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> addAll(Indexed<? extends T> source,
-                                   int offset,
-                                   int limit)
-    {
+    default IListBuilder<T> addAll(Indexed<? extends T> source, int offset, int limit) {
         for (int i = offset; i < limit; ++i) {
             add(source.get(i));
         }
@@ -127,13 +116,12 @@ public interface IListBuilder<T>
      * @return the builder (convenience for chaining multiple calls)
      */
     @Nonnull
-    default IListBuilder<T> addAll(Indexed<? extends T> source)
-    {
+    default IListBuilder<T> addAll(Indexed<? extends T> source) {
         return addAll(source, 0, source.size());
     }
 
     /**
-     * Deletes all values.  This is useful to reset to build a new list with the same builder.
+     * Deletes all values. This is useful to reset to build a new list with the same builder.
      *
      * @return the builder (convenience for chaining multiple calls)
      */

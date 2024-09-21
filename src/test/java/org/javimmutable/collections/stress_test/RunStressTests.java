@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,13 @@
 
 package org.javimmutable.collections.stress_test;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -59,64 +64,63 @@ import org.javimmutable.collections.stress_test.KeyFactory.ComparableBadHashKeyF
 import org.javimmutable.collections.stress_test.KeyFactory.ComparableRegularKeyFactory;
 import org.javimmutable.collections.stress_test.KeyFactory.RegularKeyFactory;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 /**
- * Test program to run an infinite loop feeding data to every implementation of every
- * collection type, querying the data, and deleting the data to verify
- * the collection always contains what it should.
+ * Test program to run an infinite loop feeding data to every implementation of every collection type, querying the
+ * data, and deleting the data to verify the collection always contains what it should.
  */
-public class RunStressTests
-{
+public class RunStressTests {
     private static final IList<StressTester> AllTesters = ILists.<StressTester>of()
-        .insert(new DequeStressTester(IDeques.of(), ICollectors.toDeque()))
-        .insert(new ListStressTester(ILists.of(), ICollectors.toList()))
+            .insert(new DequeStressTester(IDeques.of(), ICollectors.toDeque()))
+            .insert(new ListStressTester(ILists.of(), ICollectors.toList()))
+            .insert(new SetStressTester(ISets.hashed(), HashSet.class, IterationOrder.UNORDERED))
+            .insert(new SetStressTester(ISets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+            .insert(new SetStressTester(ISets.sorted(), TreeSet.class, IterationOrder.ORDERED))
+            .insert(new SetStressTester(IMultisets.hashed(), HashSet.class, IterationOrder.UNORDERED))
+            .insert(new SetStressTester(IMultisets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
+            .insert(new SetStressTester(IMultisets.sorted(), TreeSet.class, IterationOrder.ORDERED))
+            .insert(new MultisetStressTester(IMultisets.hashed()))
+            .insert(new MultisetStressTester(IMultisets.ordered()))
+            .insert(new MultisetStressTester(IMultisets.sorted()))
+            .insert(new MapStressTester<>(HashMap.usingList(), java.util.HashMap.class, new RegularKeyFactory()))
+            .insert(new MapStressTester<>(
+                    HashMap.usingTree(), java.util.HashMap.class, new ComparableRegularKeyFactory()))
+            .insert(new MapStressTester<>(HashMap.usingList(), java.util.HashMap.class, new BadHashKeyFactory()))
+            .insert(new MapStressTester<>(
+                    HashMap.usingTree(), java.util.HashMap.class, new ComparableBadHashKeyFactory()))
+            .insert(new MapStressTester<>(IMaps.ordered(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
+            .insert(new MapStressTester<>(IMaps.sorted(), TreeMap.class, new ComparableRegularKeyFactory()))
+            .insert(new SetMapStressTester(ISetMaps.hashed(), java.util.HashMap.class))
+            .insert(new SetMapStressTester(ISetMaps.ordered(), LinkedHashMap.class))
+            .insert(new SetMapStressTester(ISetMaps.sorted(), TreeMap.class))
+            .insert(new SetMapStressTester(
+                    ISetMaps.factory(String.class, String.class)
+                            .withMap(IMaps.sorted())
+                            .withSet(ISets.hashed())
+                            .create(),
+                    TreeMap.class))
+            .insert(new ListMapStressTester(IListMaps.hashed(), java.util.HashMap.class))
+            .insert(new ListMapStressTester(IListMaps.ordered(), LinkedHashMap.class))
+            .insert(new ListMapStressTester(IListMaps.sorted(), TreeMap.class))
+            .insert(new ArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
 
-        .insert(new SetStressTester(ISets.hashed(), HashSet.class, IterationOrder.UNORDERED))
-        .insert(new SetStressTester(ISets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-        .insert(new SetStressTester(ISets.sorted(), TreeSet.class, IterationOrder.ORDERED))
-        .insert(new SetStressTester(IMultisets.hashed(), HashSet.class, IterationOrder.UNORDERED))
-        .insert(new SetStressTester(IMultisets.ordered(), LinkedHashSet.class, IterationOrder.INSERT_ORDER))
-        .insert(new SetStressTester(IMultisets.sorted(), TreeSet.class, IterationOrder.ORDERED))
-
-        .insert(new MultisetStressTester(IMultisets.hashed()))
-        .insert(new MultisetStressTester(IMultisets.ordered()))
-        .insert(new MultisetStressTester(IMultisets.sorted()))
-
-        .insert(new MapStressTester<>(HashMap.usingList(), java.util.HashMap.class, new RegularKeyFactory()))
-        .insert(new MapStressTester<>(HashMap.usingTree(), java.util.HashMap.class, new ComparableRegularKeyFactory()))
-        .insert(new MapStressTester<>(HashMap.usingList(), java.util.HashMap.class, new BadHashKeyFactory()))
-        .insert(new MapStressTester<>(HashMap.usingTree(), java.util.HashMap.class, new ComparableBadHashKeyFactory()))
-
-        .insert(new MapStressTester<>(IMaps.ordered(), LinkedHashMap.class, new ComparableRegularKeyFactory()))
-        .insert(new MapStressTester<>(IMaps.sorted(), TreeMap.class, new ComparableRegularKeyFactory()))
-
-        .insert(new SetMapStressTester(ISetMaps.hashed(), java.util.HashMap.class))
-        .insert(new SetMapStressTester(ISetMaps.ordered(), LinkedHashMap.class))
-        .insert(new SetMapStressTester(ISetMaps.sorted(), TreeMap.class))
-        .insert(new SetMapStressTester(ISetMaps.factory(String.class, String.class).withMap(IMaps.sorted()).withSet(ISets.hashed()).create(), TreeMap.class))
-
-        .insert(new ListMapStressTester(IListMaps.hashed(), java.util.HashMap.class))
-        .insert(new ListMapStressTester(IListMaps.ordered(), LinkedHashMap.class))
-        .insert(new ListMapStressTester(IListMaps.sorted(), TreeMap.class))
-
-        .insert(new ArrayStressTester(IArrays.of(), ArrayIndexRange.INTEGER));
-
-    public static void main(String[] argv)
-        throws Exception
-    {
+    public static void main(String[] argv) throws Exception {
         final OptionParser parser = new OptionParser();
         parser.accepts("help", "prints available options");
-        final OptionSpec<String> fileSpec = parser.accepts("file", "specifies tokens file").withOptionalArg().ofType(String.class).defaultsTo("src/site/markdown/index.md");
-        final OptionSpec<Long> seedSpec = parser.accepts("seed", "specifies random number seed").withOptionalArg().ofType(Long.class).defaultsTo(System.currentTimeMillis());
-        final OptionSpec<String> testSpec = parser.accepts("test", "specifies tests to run").withRequiredArg().ofType(String.class);
-        final OptionSpec<Integer> loopsSpec = parser.accepts("loops", "specifies max number of loops to run").withOptionalArg().ofType(Integer.class).defaultsTo(-1);
+        final OptionSpec<String> fileSpec = parser.accepts("file", "specifies tokens file")
+                .withOptionalArg()
+                .ofType(String.class)
+                .defaultsTo("src/site/markdown/index.md");
+        final OptionSpec<Long> seedSpec = parser.accepts("seed", "specifies random number seed")
+                .withOptionalArg()
+                .ofType(Long.class)
+                .defaultsTo(System.currentTimeMillis());
+        final OptionSpec<String> testSpec = parser.accepts("test", "specifies tests to run")
+                .withRequiredArg()
+                .ofType(String.class);
+        final OptionSpec<Integer> loopsSpec = parser.accepts("loops", "specifies max number of loops to run")
+                .withOptionalArg()
+                .ofType(Integer.class)
+                .defaultsTo(-1);
         final OptionSet options;
         try {
             options = parser.parse(argv);
@@ -126,7 +130,8 @@ public class RunStressTests
             return;
         }
         final ISet<String> filters = ISets.sorted(testSpec.values(options));
-        final IList<StressTester> selectedTests = filters.isEmpty() ? AllTesters : AllTesters.select(tester -> filters.containsAny(tester.getOptions()));
+        final IList<StressTester> selectedTests =
+                filters.isEmpty() ? AllTesters : AllTesters.select(tester -> filters.containsAny(tester.getOptions()));
         if (options.has("help") || selectedTests.isEmpty()) {
             printHelpMessage(parser, filters, selectedTests);
             return;
@@ -141,7 +146,9 @@ public class RunStressTests
         final int maxLoops = options.valueOf(loopsSpec);
         int loopNumber = 1;
 
-        System.out.printf("%nRunning %d testers: %s%n", selectedTests.size(), valuesString(selectedTests.transform(StressTester::getTestName)));
+        System.out.printf(
+                "%nRunning %d testers: %s%n",
+                selectedTests.size(), valuesString(selectedTests.transform(StressTester::getTestName)));
         while (maxLoops < 0 || loopNumber <= maxLoops) {
             for (StressTester tester : selectedTests) {
                 System.out.printf("%nLoop %d Starting %s with seed %d%n", loopNumber, tester.getTestName(), seed);
@@ -155,11 +162,8 @@ public class RunStressTests
         }
     }
 
-    private static void printHelpMessage(OptionParser parser,
-                                         ISet<String> selectedTestArgs,
-                                         IList<StressTester> selectedTests)
-        throws IOException
-    {
+    private static void printHelpMessage(
+            OptionParser parser, ISet<String> selectedTestArgs, IList<StressTester> selectedTests) throws IOException {
         if (selectedTests.size() > 0) {
             System.out.println("Selected Tests: " + valuesString(selectedTests.transform(StressTester::getTestName)));
             System.out.println();
@@ -173,30 +177,27 @@ public class RunStressTests
         parser.printHelpOn(System.out);
 
         final SetMapFactory<String, String> filterMapFactory = ISetMaps.factory(String.class, String.class)
-            .withMap(IMaps.sorted())
-            .withSet(ISets.sorted());
+                .withMap(IMaps.sorted())
+                .withSet(ISets.sorted());
         final ISetMap<String, String> filterMap = AllTesters.stream()
-            .flatMap(tester -> tester.getOptions()
-                .stream()
-                .map(option -> IMapEntry.of(tester.getTestName(), option)))
-            .collect(filterMapFactory.collector());
+                .flatMap(tester ->
+                        tester.getOptions().stream().map(option -> IMapEntry.of(tester.getTestName(), option)))
+                .collect(filterMapFactory.collector());
         System.out.println();
         System.out.println("Available Filters By Class:");
         System.out.printf("%-40s  %s%n", "Tester Class", "Filters");
-        filterMap.stream()
-            .forEach(e -> System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue())));
+        filterMap.stream().forEach(e -> System.out.printf("%-40s  %s%n", e.getKey(), valuesString(e.getValue())));
 
         System.out.println();
         System.out.println("Available Filters");
         System.out.printf("%-20s  %s%n", "Filter", "Tester Classes");
         filterMap.stream()
-            .flatMap(e -> e.getValue().stream().map(s -> IMapEntry.of(s, e.getKey())))
-            .collect(filterMapFactory.collector())
-            .forEach(e -> System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue())));
+                .flatMap(e -> e.getValue().stream().map(s -> IMapEntry.of(s, e.getKey())))
+                .collect(filterMapFactory.collector())
+                .forEach(e -> System.out.printf("%-20s  %s%n", e.getKey(), valuesString(e.getValue())));
     }
 
-    private static String valuesString(Iterable<?> objects)
-    {
+    private static String valuesString(Iterable<?> objects) {
         StringBuilder sb = new StringBuilder();
         for (Object object : objects) {
             if (sb.length() > 0) {

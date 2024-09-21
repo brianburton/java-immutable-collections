@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,22 +33,17 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IList;
-
-import java.util.Random;
-
 import static org.javimmutable.collections.stress_test.KeyWrapper.*;
 
-public abstract class KeyFactory<T>
-{
-    abstract T newKey(IList<String> tokens,
-                      Random random);
+import java.util.Random;
+import org.javimmutable.collections.IList;
+
+public abstract class KeyFactory<T> {
+    abstract T newKey(IList<String> tokens, Random random);
 
     abstract T makeKey(String value);
 
-    protected String makeKey(IList<String> tokens,
-                             Random random)
-    {
+    protected String makeKey(IList<String> tokens, Random random) {
         int length = 1 + random.nextInt(250);
         StringBuilder sb = new StringBuilder();
         while (sb.length() < length) {
@@ -59,71 +52,50 @@ public abstract class KeyFactory<T>
         return sb.toString();
     }
 
-    static class RegularKeyFactory
-        extends KeyFactory<RegularKey<String>>
-    {
+    static class RegularKeyFactory extends KeyFactory<RegularKey<String>> {
         @Override
-        public RegularKey<String> newKey(IList<String> tokens,
-                                         Random random)
-        {
+        public RegularKey<String> newKey(IList<String> tokens, Random random) {
             return new RegularKey<String>(makeKey(tokens, random));
         }
 
         @Override
-        public RegularKey<String> makeKey(String value)
-        {
+        public RegularKey<String> makeKey(String value) {
             return new RegularKey<String>(value);
         }
     }
 
-    static class ComparableRegularKeyFactory
-        extends KeyFactory<ComparableRegularKey<String>>
-    {
+    static class ComparableRegularKeyFactory extends KeyFactory<ComparableRegularKey<String>> {
         @Override
-        public ComparableRegularKey<String> newKey(IList<String> tokens,
-                                                   Random random)
-        {
+        public ComparableRegularKey<String> newKey(IList<String> tokens, Random random) {
             return new ComparableRegularKey<String>(makeKey(tokens, random));
         }
 
         @Override
-        public ComparableRegularKey<String> makeKey(String value)
-        {
+        public ComparableRegularKey<String> makeKey(String value) {
             return new ComparableRegularKey<String>(value);
         }
-
     }
 
-    static class BadHashKeyFactory
-        extends KeyFactory<BadHashKey<String>>
-    {
+    static class BadHashKeyFactory extends KeyFactory<BadHashKey<String>> {
         @Override
-        public BadHashKey<String> newKey(IList<String> tokens,
-                                         Random random)
-        {
+        public BadHashKey<String> newKey(IList<String> tokens, Random random) {
             return new BadHashKey<String>(makeKey(tokens, random));
         }
 
         @Override
-        public BadHashKey<String> makeKey(String value)
-        {
+        public BadHashKey<String> makeKey(String value) {
             return new BadHashKey<String>(value);
         }
     }
 
-    static class ComparableBadHashKeyFactory
-        extends KeyFactory<ComparableBadHashKey<String>>
-    {
+    static class ComparableBadHashKeyFactory extends KeyFactory<ComparableBadHashKey<String>> {
         @Override
-        public ComparableBadHashKey<String> newKey(IList<String> tokens,
-                                                   Random random)
-        {
+        public ComparableBadHashKey<String> newKey(IList<String> tokens, Random random) {
             return new ComparableBadHashKey<String>(makeKey(tokens, random));
         }
 
         @Override
-        public ComparableBadHashKey<String> makeKey(String value)
-        {
+        public ComparableBadHashKey<String> makeKey(String value) {
             return new ComparableBadHashKey<String>(value);
         }
     }

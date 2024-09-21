@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,20 +33,17 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.AssertionFailedError;
+import static junit.framework.Assert.*;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
+import junit.framework.AssertionFailedError;
 
-import static junit.framework.Assert.*;
-
-public class StandardCollisionSetTests
-{
-    public static void randomTests(@Nonnull CollisionSet<Integer> set)
-    {
+public class StandardCollisionSetTests {
+    public static void randomTests(@Nonnull CollisionSet<Integer> set) {
         assertEquals(set.insert(set.empty(), -45), set.single(-45));
         Set<Integer> expected = new TreeSet<>();
         CollisionSet.Node node = set.empty();
@@ -94,10 +89,7 @@ public class StandardCollisionSetTests
         }
     }
 
-    private static void verifyValues(Set<Integer> expected,
-                                     CollisionSet<Integer> set,
-                                     CollisionSet.Node node)
-    {
+    private static void verifyValues(Set<Integer> expected, CollisionSet<Integer> set, CollisionSet.Node node) {
         StringBuilder sb = new StringBuilder();
         if (set.size(node) != expected.size()) {
             sb.append(String.format("size mismatch: expected=%d actual=%d\n", expected.size(), set.size(node)));

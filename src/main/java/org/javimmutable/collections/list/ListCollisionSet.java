@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.list;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Proc1;
 import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1;
@@ -42,65 +42,49 @@ import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.common.CollisionSet;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class ListCollisionSet<T>
-    implements CollisionSet<T>
-{
+public class ListCollisionSet<T> implements CollisionSet<T> {
     @SuppressWarnings("rawtypes")
     private static final ListCollisionSet INSTANCE = new ListCollisionSet();
 
-    private ListCollisionSet()
-    {
-    }
+    private ListCollisionSet() {}
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> ListCollisionSet<T> instance()
-    {
+    public static <T> ListCollisionSet<T> instance() {
         return INSTANCE;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private AbstractNode<T> root(@Nonnull Node node)
-    {
-        return (AbstractNode<T>)node;
+    private AbstractNode<T> root(@Nonnull Node node) {
+        return (AbstractNode<T>) node;
     }
 
     @Nonnull
     @Override
-    public Node empty()
-    {
+    public Node empty() {
         return EmptyNode.instance();
     }
 
     @Nonnull
     @Override
-    public Node single(@Nonnull T value)
-    {
+    public Node single(@Nonnull T value) {
         return new OneValueNode<>(value);
     }
 
     @Nonnull
     @Override
-    public Node dual(@Nonnull T value1,
-                     @Nonnull T value2)
-    {
+    public Node dual(@Nonnull T value1, @Nonnull T value2) {
         return new MultiValueNode<>(value1, value2);
     }
 
     @Override
-    public int size(@Nonnull Node node)
-    {
+    public int size(@Nonnull Node node) {
         return root(node).size();
     }
 
     @Override
-    public boolean contains(@Nonnull Node node,
-                            @Nonnull T value)
-    {
+    public boolean contains(@Nonnull Node node, @Nonnull T value) {
         for (T v : root(node)) {
             if (v.equals(value)) {
                 return true;
@@ -111,9 +95,7 @@ public class ListCollisionSet<T>
 
     @Nonnull
     @Override
-    public Node insert(@Nonnull Node node,
-                       @Nonnull T value)
-    {
+    public Node insert(@Nonnull Node node, @Nonnull T value) {
         final AbstractNode<T> root = root(node);
         int i = 0;
         for (T v : root) {
@@ -127,9 +109,7 @@ public class ListCollisionSet<T>
 
     @Nonnull
     @Override
-    public Node delete(@Nonnull Node node,
-                       @Nonnull T value)
-    {
+    public Node delete(@Nonnull Node node, @Nonnull T value) {
         final AbstractNode<T> root = root(node);
         int i = 0;
         for (T v : root) {
@@ -143,50 +123,35 @@ public class ListCollisionSet<T>
 
     @Nonnull
     @Override
-    public T first(@Nonnull Node node)
-    {
+    public T first(@Nonnull Node node) {
         return root(node).get(0);
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<T> iterateOverRange(@Nonnull Node node,
-                                                     @Nullable GenericIterator.State<T> parent,
-                                                     int offset,
-                                                     int limit)
-    {
+    public GenericIterator.State<T> iterateOverRange(
+            @Nonnull Node node, @Nullable GenericIterator.State<T> parent, int offset, int limit) {
         return root(node).iterateOverRange(parent, offset, limit);
     }
 
     @Override
-    public void forEach(@Nonnull Node node,
-                        @Nonnull Proc1<T> proc)
-    {
+    public void forEach(@Nonnull Node node, @Nonnull Proc1<T> proc) {
         root(node).forEach(proc::apply);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Node node,
-                                                    @Nonnull Proc1Throws<T, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(@Nonnull Node node, @Nonnull Proc1Throws<T, E> proc) throws E {
         root(node).forEachThrows(proc);
     }
 
     @Override
-    public <R> R reduce(@Nonnull Node node,
-                        R sum,
-                        @Nonnull Sum1<T, R> proc)
-    {
+    public <R> R reduce(@Nonnull Node node, R sum, @Nonnull Sum1<T, R> proc) {
         return root(node).reduce(sum, proc::apply);
     }
 
     @Override
-    public <R, E extends Exception> R reduceThrows(@Nonnull Node node,
-                                                   R sum,
-                                                   @Nonnull Sum1Throws<T, R, E> proc)
-        throws E
-    {
+    public <R, E extends Exception> R reduceThrows(@Nonnull Node node, R sum, @Nonnull Sum1Throws<T, R, E> proc)
+            throws E {
         return root(node).reduceThrows(sum, proc);
     }
 }

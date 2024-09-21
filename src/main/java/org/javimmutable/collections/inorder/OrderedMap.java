@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,12 @@
 
 package org.javimmutable.collections.inorder;
 
+import java.io.Serializable;
+import java.util.NoSuchElementException;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IMap;
@@ -49,26 +53,16 @@ import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.iterators.AbstractSplitableIterator;
 import org.javimmutable.collections.serialization.OrderedMapProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.NoSuchElementException;
-import java.util.stream.Collector;
-
 /**
- * {@link IMap} implementation that allows iteration over members in the order in which they
- * were inserted into the map.  Maintains two parallel data structures, one for sorting and
- * the other for storing entries.  Gets are approximately as fast as hash map gets but updates
- * are significantly slower.
+ * {@link IMap} implementation that allows iteration over members in the order in which they were inserted into the map.
+ * Maintains two parallel data structures, one for sorting and the other for storing entries. Gets are approximately as
+ * fast as hash map gets but updates are significantly slower.
  */
 @Immutable
-public class OrderedMap<K, V>
-    extends AbstractMap<K, V>
-    implements Serializable
-{
+public class OrderedMap<K, V> extends AbstractMap<K, V> implements Serializable {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static final OrderedMap EMPTY = new OrderedMap(HashMap.of(), null, null);
+
     private static final long serialVersionUID = -121805;
     private static final int SPLITERATOR_CHARACTERISTICS = StreamConstants.SPLITERATOR_ORDERED;
 
@@ -76,55 +70,44 @@ public class OrderedMap<K, V>
     private final @Nullable K firstKey;
     private final @Nullable K lastKey;
 
-    private OrderedMap(@Nonnull IMap<K, Node<K, V>> values,
-                       @Nullable K firstKey,
-                       @Nullable K lastKey)
-    {
+    private OrderedMap(@Nonnull IMap<K, Node<K, V>> values, @Nullable K firstKey, @Nullable K lastKey) {
         this.values = values;
         this.firstKey = firstKey;
         this.lastKey = lastKey;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> OrderedMap<K, V> of()
-    {
+    public static <K, V> OrderedMap<K, V> of() {
         return EMPTY;
     }
 
     @Nonnull
-    public static <K, V> IMapBuilder<K, V> builder()
-    {
-        return new IMapBuilder<K, V>()
-        {
+    public static <K, V> IMapBuilder<K, V> builder() {
+        return new IMapBuilder<K, V>() {
             private OrderedMap<K, V> map = of();
 
             @Nonnull
             @Override
-            public synchronized IMap<K, V> build()
-            {
+            public synchronized IMap<K, V> build() {
                 return map;
             }
 
             @Nonnull
             @Override
-            public synchronized IMapBuilder<K, V> clear()
-            {
+            public synchronized IMapBuilder<K, V> clear() {
                 map = of();
                 return this;
             }
 
             @Nonnull
             @Override
-            public synchronized IMapBuilder<K, V> add(@Nonnull K key,
-                                                      V value)
-            {
+            public synchronized IMapBuilder<K, V> add(@Nonnull K key, V value) {
                 map = map.assign(key, value);
                 return this;
             }
 
             @Override
-            public synchronized int size()
-            {
+            public synchronized int size() {
                 return map.size();
             }
         };
@@ -132,54 +115,46 @@ public class OrderedMap<K, V>
 
     @Nonnull
     @Override
-    public IMapBuilder<K, V> mapBuilder()
-    {
+    public IMapBuilder<K, V> mapBuilder() {
         return builder();
     }
 
     @Nonnull
-    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector()
-    {
+    public static <K, V> Collector<IMapEntry<K, V>, ?, IMap<K, V>> createMapCollector() {
         final IMap<K, V> empty = of();
-        return GenericCollector.ordered(empty, empty, a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+        return GenericCollector.ordered(
+                empty, empty, a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Nonnull
     @Override
-    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> mapCollector()
-    {
+    public Collector<IMapEntry<K, V>, ?, IMap<K, V>> mapCollector() {
         return GenericCollector.ordered(this, of(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override
-    public V getValueOr(K key,
-                        V defaultValue)
-    {
+    public V getValueOr(K key, V defaultValue) {
         final Node<K, V> current = values.get(key);
         return (current != null) ? current.value : defaultValue;
     }
 
     @Nonnull
     @Override
-    public Maybe<V> find(@Nonnull K key)
-    {
+    public Maybe<V> find(@Nonnull K key) {
         final Node<K, V> current = values.get(key);
         return current != null ? Maybe.of(current.value) : Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key)
-    {
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull K key) {
         final Node<K, V> current = values.get(key);
         return current != null ? Maybe.of(IMapEntry.of(key, current.value)) : Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public OrderedMap<K, V> assign(@Nonnull K key,
-                                   V value)
-    {
+    public OrderedMap<K, V> assign(@Nonnull K key, V value) {
         IMap<K, Node<K, V>> newValues = this.values;
         final Node<K, V> oldNode = newValues.get(key);
         if (oldNode == null) {
@@ -202,8 +177,7 @@ public class OrderedMap<K, V>
 
     @Nonnull
     @Override
-    public OrderedMap<K, V> delete(@Nonnull K key)
-    {
+    public OrderedMap<K, V> delete(@Nonnull K key) {
         IMap<K, Node<K, V>> newValues = this.values;
         final Node<K, V> oldNode = newValues.get(key);
         if (oldNode == null) {
@@ -227,120 +201,100 @@ public class OrderedMap<K, V>
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return values.size();
     }
 
     @Nonnull
     @Override
-    public OrderedMap<K, V> deleteAll()
-    {
+    public OrderedMap<K, V> deleteAll() {
         return of();
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<IMapEntry<K, V>> iterator()
-    {
+    public SplitableIterator<IMapEntry<K, V>> iterator() {
         return new NodeStreamable<>(NodeWalker::nextEntry).iterator();
     }
 
     @Nonnull
     @Override
-    public IStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return new NodeStreamable<>(NodeWalker::nextKey);
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values()
-    {
+    public IStreamable<V> values() {
         return new NodeStreamable<>(NodeWalker::nextValue);
     }
 
     @Nonnull
-    private Node<K, V> nodeForKey(K key)
-    {
+    private Node<K, V> nodeForKey(K key) {
         final Node<K, V> node = values.get(key);
         assert node != null;
         return node;
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return SPLITERATOR_CHARACTERISTICS;
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
+    public void checkInvariants() {}
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new OrderedMapProxy(this);
     }
 
     @Immutable
-    private static class Node<K, V>
-    {
+    private static class Node<K, V> {
         @Nullable
         private final K prevKey;
+
         @Nullable
         private final K nextKey;
+
         private final V value;
 
-        private Node(@Nullable K prevKey,
-                     @Nullable K nextKey,
-                     V value)
-        {
+        private Node(@Nullable K prevKey, @Nullable K nextKey, V value) {
             this.prevKey = prevKey;
             this.nextKey = nextKey;
             this.value = value;
         }
 
-        private Node<K, V> withPrevKey(K prevKey)
-        {
+        private Node<K, V> withPrevKey(K prevKey) {
             return new Node<>(prevKey, nextKey, value);
         }
 
-        private Node<K, V> withNextKey(K nextKey)
-        {
+        private Node<K, V> withNextKey(K nextKey) {
             return new Node<>(prevKey, nextKey, value);
         }
 
-        private Node<K, V> withValue(V value)
-        {
+        private Node<K, V> withValue(V value) {
             return (value == this.value) ? this : new Node<>(prevKey, nextKey, value);
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "(" + value + "," + prevKey + "," + nextKey + ")";
         }
     }
 
-    private class NodeWalker
-    {
+    private class NodeWalker {
         @Nullable
         private K key;
 
-        private NodeWalker()
-        {
+        private NodeWalker() {
             key = firstKey;
         }
 
-        public boolean hasNext()
-        {
+        public boolean hasNext() {
             return key != null;
         }
 
-        private Node<K, V> nextNode()
-        {
+        private Node<K, V> nextNode() {
             if (key == null) {
                 throw new NoSuchElementException();
             }
@@ -350,62 +304,51 @@ public class OrderedMap<K, V>
             return node;
         }
 
-        private K nextKey()
-        {
+        private K nextKey() {
             final K answer = key;
             nextNode();
             return answer;
         }
 
-        private V nextValue()
-        {
+        private V nextValue() {
             final Node<K, V> node = nextNode();
             return node.value;
         }
 
-        private IMapEntry<K, V> nextEntry()
-        {
+        private IMapEntry<K, V> nextEntry() {
             final K entryKey = key;
             final Node<K, V> node = nextNode();
             return IMapEntry.of(entryKey, node.value);
         }
     }
 
-    private class NodeStreamable<T>
-        implements IStreamable<T>
-    {
+    private class NodeStreamable<T> implements IStreamable<T> {
         private final Func1<NodeWalker, T> transforminator;
 
-        private NodeStreamable(Func1<NodeWalker, T> transforminator)
-        {
+        private NodeStreamable(Func1<NodeWalker, T> transforminator) {
             this.transforminator = transforminator;
         }
 
         @Nonnull
         @Override
-        public SplitableIterator<T> iterator()
-        {
-            return new AbstractSplitableIterator<T>()
-            {
+        public SplitableIterator<T> iterator() {
+            return new AbstractSplitableIterator<T>() {
                 private final NodeWalker nodes = new NodeWalker();
 
                 @Override
-                public boolean hasNext()
-                {
+                public boolean hasNext() {
                     return nodes.hasNext();
                 }
 
                 @Override
-                public T next()
-                {
+                public T next() {
                     return transforminator.apply(nodes);
                 }
             };
         }
 
         @Override
-        public int getSpliteratorCharacteristics()
-        {
+        public int getSpliteratorCharacteristics() {
             return SPLITERATOR_CHARACTERISTICS;
         }
     }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,11 +36,8 @@ package org.javimmutable.collections.common;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Indexed;
 
-public class BitmaskMathTest
-    extends TestCase
-{
-    public void testIndices()
-    {
+public class BitmaskMathTest extends TestCase {
+    public void testIndices() {
         long bitmask = 0;
         Indexed<Integer> indices = BitmaskMath.indices(bitmask);
         assertEquals(0, indices.size());
@@ -53,34 +48,32 @@ public class BitmaskMathTest
         bitmask = BitmaskMath.addBit(bitmask, BitmaskMath.bitFromIndex(27));
         indices = BitmaskMath.indices(bitmask);
         assertEquals(4, indices.size());
-        assertEquals(3, (int)indices.get(0));
-        assertEquals(9, (int)indices.get(1));
-        assertEquals(15, (int)indices.get(2));
-        assertEquals(27, (int)indices.get(3));
+        assertEquals(3, (int) indices.get(0));
+        assertEquals(9, (int) indices.get(1));
+        assertEquals(15, (int) indices.get(2));
+        assertEquals(27, (int) indices.get(3));
 
         for (int index = 0; index < BitmaskMath.ARRAY_SIZE; ++index) {
             long bit = BitmaskMath.bitFromIndex(index);
             indices = BitmaskMath.indices(bit);
             assertEquals(1, indices.size());
-            assertEquals(index, (int)indices.get(0));
+            assertEquals(index, (int) indices.get(0));
         }
 
         indices = BitmaskMath.indices(-1);
         assertEquals(BitmaskMath.ARRAY_SIZE, indices.size());
         for (int index = 0; index < BitmaskMath.ARRAY_SIZE; ++index) {
-            assertEquals(index, (int)indices.get(index));
+            assertEquals(index, (int) indices.get(index));
         }
     }
 
-    public void testVarious()
-    {
+    public void testVarious() {
         assertEquals(0, BitmaskMath.bitCount(0L));
         assertEquals(64, BitmaskMath.bitCount(-1L));
         assertEquals(4, BitmaskMath.bitCount(BitmaskMath.bitmask(1, 5, 30, 63)));
     }
 
-    public void testBits()
-    {
+    public void testBits() {
         for (int i = 0; i <= BitmaskMath.MAX_INDEX; ++i) {
             final long iBit = BitmaskMath.bitFromIndex(i);
             final long iMask = BitmaskMath.addBit(0, iBit);
@@ -110,16 +103,13 @@ public class BitmaskMathTest
         }
     }
 
-    public void testBitmask()
-    {
+    public void testBitmask() {
         verifyEquals(1L << 31, BitmaskMath.bitmask(31));
         verifyEquals(1L << 63, BitmaskMath.bitmask(63));
         verifyEquals(1L, BitmaskMath.bitmask(0));
     }
 
-    private void verifyEquals(long a,
-                              long b)
-    {
+    private void verifyEquals(long a, long b) {
         assertEquals(Long.toBinaryString(a), Long.toBinaryString(b));
     }
 }

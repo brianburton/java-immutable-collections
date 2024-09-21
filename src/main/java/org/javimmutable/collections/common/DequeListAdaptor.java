@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,54 +33,44 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IDeque;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IDeque;
 
 @Immutable
-public class DequeListAdaptor<T>
-    extends AbstractList<T>
-    implements List<T>
-{
+public class DequeListAdaptor<T> extends AbstractList<T> implements List<T> {
     private final IDeque<T> list;
 
-    public DequeListAdaptor(@Nonnull IDeque<T> list)
-    {
+    public DequeListAdaptor(@Nonnull IDeque<T> list) {
         this.list = list;
     }
 
-    public static <T> DequeListAdaptor<T> of(@Nonnull IDeque<T> list)
-    {
+    public static <T> DequeListAdaptor<T> of(@Nonnull IDeque<T> list) {
         return new DequeListAdaptor<T>(list);
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         return list.get(index);
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return list.size();
     }
 
     @Nonnull
     @Override
-    public Iterator<T> iterator()
-    {
+    public Iterator<T> iterator() {
         return list.iterator();
     }
 
     @Override
-    public Spliterator<T> spliterator()
-    {
+    public Spliterator<T> spliterator() {
         return list.spliterator();
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,36 +33,29 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.IListBuilder;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.function.Supplier;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.IListBuilder;
 
 @SuppressWarnings("unchecked")
-abstract class AbstractListProxy
-    implements Externalizable
-{
+abstract class AbstractListProxy implements Externalizable {
     private static final int LIST_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
     protected final Supplier<IListBuilder> builderFactory;
     protected IList list;
 
-    protected AbstractListProxy(Supplier<IListBuilder> builderFactory,
-                                IList list)
-    {
+    protected AbstractListProxy(Supplier<IListBuilder> builderFactory, IList list) {
         this.builderFactory = builderFactory;
         this.list = list;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(LIST_VERSION);
         out.writeInt(list.size());
         for (Object obj : list) {
@@ -73,9 +64,7 @@ abstract class AbstractListProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != LIST_VERSION) {
             throw new IOException("unexpected version number: expected " + LIST_VERSION + " found " + version);
@@ -88,8 +77,7 @@ abstract class AbstractListProxy
         list = builder.build();
     }
 
-    protected Object readResolve()
-    {
+    protected Object readResolve() {
         return list;
     }
 }

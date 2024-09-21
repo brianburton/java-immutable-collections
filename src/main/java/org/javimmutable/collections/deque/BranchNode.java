@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,40 +33,30 @@
 
 package org.javimmutable.collections.deque;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.Maybe;
 import org.javimmutable.collections.indexed.IndexedArray;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 /**
- * Node implementation containing other nodes.  Prefix and suffix nodes can contain nodes
- * of any depth and size (including empty) while body nodes array contains only full nodes
- * of exactly depth - 1.  This allows fast access to the body nodes by a computed offset
- * based on size but also quick adds and deletes from either end using the prefix and suffix
- * nodes.  Once a BranchNode reaches its theoretical limit based on depth any insert triggers
- * the creation of a new higher depth node containing the branch so that the new parent's prefix
- * or suffix can contain the new value.
+ * Node implementation containing other nodes. Prefix and suffix nodes can contain nodes of any depth and size
+ * (including empty) while body nodes array contains only full nodes of exactly depth - 1. This allows fast access to
+ * the body nodes by a computed offset based on size but also quick adds and deletes from either end using the prefix
+ * and suffix nodes. Once a BranchNode reaches its theoretical limit based on depth any insert triggers the creation of
+ * a new higher depth node containing the branch so that the new parent's prefix or suffix can contain the new value.
  */
 @Immutable
-class BranchNode<T>
-    implements Node<T>
-{
+class BranchNode<T> implements Node<T> {
     private final int depth;
     private final int size;
-    private final Node<T> prefix;  // possibly empty and can be any depth < this.depth
+    private final Node<T> prefix; // possibly empty and can be any depth < this.depth
     private final Node<T>[] nodes; // all of these are full and have depth - 1
-    private final Node<T> suffix;  // possibly empty and can be any depth < this.depth
+    private final Node<T> suffix; // possibly empty and can be any depth < this.depth
 
-    private BranchNode(int depth,
-                       int size,
-                       Node<T> prefix,
-                       Node<T>[] nodes,
-                       Node<T> suffix)
-    {
+    private BranchNode(int depth, int size, Node<T> prefix, Node<T>[] nodes, Node<T> suffix) {
         assert nodes.length <= 32;
         assert size <= DequeHelper.sizeForDepth(depth);
         this.depth = depth;
@@ -78,88 +66,64 @@ class BranchNode<T>
         this.suffix = suffix;
     }
 
-    BranchNode(T prefixValue,
-               Node<T> node)
-    {
-        this(node.getDepth() + 1,
-             node.size() + 1,
-             new LeafNode<>(prefixValue),
-             DequeHelper.allocateSingleNode(node),
-             EmptyNode.of());
+    BranchNode(T prefixValue, Node<T> node) {
+        this(
+                node.getDepth() + 1,
+                node.size() + 1,
+                new LeafNode<>(prefixValue),
+                DequeHelper.allocateSingleNode(node),
+                EmptyNode.of());
         assert node.isFull();
     }
 
-    BranchNode(Node<T> node,
-               T suffixValue)
-    {
-        this(node.getDepth() + 1,
-             node.size() + 1,
-             EmptyNode.of(),
-             DequeHelper.allocateSingleNode(node),
-             new LeafNode<>(suffixValue));
+    BranchNode(Node<T> node, T suffixValue) {
+        this(
+                node.getDepth() + 1,
+                node.size() + 1,
+                EmptyNode.of(),
+                DequeHelper.allocateSingleNode(node),
+                new LeafNode<>(suffixValue));
         assert node.isFull();
     }
 
-    static <T> Node<T> forNodeBuilder(int depth,
-                                      int size,
-                                      Node<T> prefix,
-                                      Indexed<Node<T>> sourceNodes,
-                                      int offset,
-                                      int limit,
-                                      Node<T> suffix)
-    {
+    static <T> Node<T> forNodeBuilder(
+            int depth, int size, Node<T> prefix, Indexed<Node<T>> sourceNodes, int offset, int limit, Node<T> suffix) {
         assert limit >= offset;
         assert DequeHelper.allNodesFull(depth, sourceNodes, offset, limit);
         final Node<T>[] nodes = DequeHelper.allocateNodes(sourceNodes, offset, limit);
         return new BranchNode<>(depth, size, prefix, nodes, suffix);
     }
 
-    static <T> BranchNode<T> forTesting(Node<T> prefix,
-                                        Node<T>[] nodes,
-                                        Node<T> suffix)
-    {
-        return new BranchNode<>(2,
-                                prefix.size() + (nodes.length * 32) + suffix.size(),
-                                prefix,
-                                nodes.clone(),
-                                suffix);
+    static <T> BranchNode<T> forTesting(Node<T> prefix, Node<T>[] nodes, Node<T> suffix) {
+        return new BranchNode<>(2, prefix.size() + (nodes.length * 32) + suffix.size(), prefix, nodes.clone(), suffix);
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return size == 0;
     }
 
     @Override
-    public boolean isFull()
-    {
+    public boolean isFull() {
         return size == DequeHelper.sizeForDepth(depth);
     }
 
     @Override
-    public int iterableSize()
-    {
+    public int iterableSize() {
         return size;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return size;
     }
 
     @Override
-    public int getDepth()
-    {
+    public int getDepth() {
         return depth;
     }
 
-    private static <T> Node<T> forDelete(int size,
-                                         Node<T> prefix,
-                                         Node<T>[] nodes,
-                                         Node<T> suffix)
-    {
+    private static <T> Node<T> forDelete(int size, Node<T> prefix, Node<T>[] nodes, Node<T> suffix) {
         if (nodes.length == 0) {
             if (prefix.isEmpty()) {
                 return suffix;
@@ -178,8 +142,7 @@ class BranchNode<T>
     }
 
     @Override
-    public Node<T> deleteFirst()
-    {
+    public Node<T> deleteFirst() {
         if (!prefix.isEmpty()) {
             return forDelete(size - 1, prefix.deleteFirst(), nodes, suffix);
         }
@@ -195,8 +158,7 @@ class BranchNode<T>
     }
 
     @Override
-    public Node<T> deleteLast()
-    {
+    public Node<T> deleteLast() {
         if (!suffix.isEmpty()) {
             return forDelete(size - 1, prefix, nodes, suffix.deleteLast());
         }
@@ -212,8 +174,7 @@ class BranchNode<T>
     }
 
     @Override
-    public Node<T> insertFirst(T value)
-    {
+    public Node<T> insertFirst(T value) {
         if (isFull()) {
             return new BranchNode<>(value, this);
         }
@@ -230,8 +191,7 @@ class BranchNode<T>
     }
 
     @Override
-    public Node<T> insertLast(T value)
-    {
+    public Node<T> insertLast(T value) {
         if (isFull()) {
             return new BranchNode<>(this, value);
         }
@@ -248,14 +208,12 @@ class BranchNode<T>
     }
 
     @Override
-    public boolean containsIndex(int index)
-    {
+    public boolean containsIndex(int index) {
         return (index >= 0) && (index < size);
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         if (prefix.containsIndex(index)) {
             return prefix.get(index);
         }
@@ -274,16 +232,13 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         T value = get(index);
         return Maybe.of(value);
     }
 
     @Override
-    public Node<T> assign(int index,
-                          T value)
-    {
+    public Node<T> assign(int index, T value) {
         if (prefix.containsIndex(index)) {
             return new BranchNode<>(depth, size, prefix.assign(index, value), nodes, suffix);
         }
@@ -305,45 +260,35 @@ class BranchNode<T>
 
     @Nullable
     @Override
-    public BranchNode<T> castAsBranch()
-    {
+    public BranchNode<T> castAsBranch() {
         return this;
     }
 
     @Nonnull
     @Override
-    public Node<T> prune()
-    {
+    public Node<T> prune() {
         if (suffix.isEmpty() && nodes.length == 0) {
             return prefix.prune();
         }
         if (prefix.isEmpty() && nodes.length == 0) {
             return suffix.prune();
         }
-        return prefix.isEmpty() && suffix().isEmpty() && nodes.length == 1
-               ? nodes[0].prune()
-               : this;
+        return prefix.isEmpty() && suffix().isEmpty() && nodes.length == 1 ? nodes[0].prune() : this;
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
-                                                     int offset,
-                                                     int limit)
-    {
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent, int offset, int limit) {
         return GenericIterator.multiIterableState(parent, indexedForIterator(), offset, limit);
     }
 
     @Nonnull
-    private Indexed<Node<T>> indexedForIterator()
-    {
+    private Indexed<Node<T>> indexedForIterator() {
         final int size = nodes.length + 2;
         final int last = size - 1;
-        return new Indexed<Node<T>>()
-        {
+        return new Indexed<Node<T>>() {
             @Override
-            public Node<T> get(int index)
-            {
+            public Node<T> get(int index) {
                 if (index == 0) {
                     return prefix;
                 } else if (index == last) {
@@ -355,22 +300,19 @@ class BranchNode<T>
 
             @Nonnull
             @Override
-            public Maybe<Node<T>> find(int index)
-            {
+            public Maybe<Node<T>> find(int index) {
                 return Maybe.of(get(index));
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return size;
             }
         };
     }
 
     @Override
-    public int computedSize()
-    {
+    public int computedSize() {
         int computedSize = prefix.computedSize() + suffix.computedSize();
         for (Node<T> node : nodes) {
             computedSize += node.computedSize();
@@ -379,8 +321,7 @@ class BranchNode<T>
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         if (nodes.length > 32) {
             throw new IllegalStateException();
         }
@@ -412,8 +353,7 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    public Node<T> reverse()
-    {
+    public Node<T> reverse() {
         Node<T>[] newNodes = DequeHelper.allocateNodes(nodes.length);
         int to = newNodes.length;
         for (Node<T> node : nodes) {
@@ -422,25 +362,21 @@ class BranchNode<T>
         return new BranchNode<>(depth, size, suffix.reverse(), newNodes, prefix.reverse());
     }
 
-    Node<T> prefix()
-    {
+    Node<T> prefix() {
         return prefix;
     }
 
-    Indexed<Node<T>> filledNodes()
-    {
+    Indexed<Node<T>> filledNodes() {
         return IndexedArray.retained(nodes);
     }
 
-    Node<T> suffix()
-    {
+    Node<T> suffix() {
         return suffix;
     }
 
     @Nonnull
     @Override
-    public Node<T> prefix(int limit)
-    {
+    public Node<T> prefix(int limit) {
         if (limit < 0 || limit > size) {
             throw new IndexOutOfBoundsException();
         }
@@ -470,8 +406,7 @@ class BranchNode<T>
 
     @Nonnull
     @Override
-    public Node<T> suffix(int offset)
-    {
+    public Node<T> suffix(int offset) {
         if (offset < 0 || offset > size) {
             throw new IndexOutOfBoundsException();
         }

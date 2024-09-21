@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2021-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,27 +33,22 @@
 
 package org.javimmutable.collections;
 
-import junit.framework.TestCase;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import junit.framework.TestCase;
 
-import static org.assertj.core.api.Assertions.*;
-
-public class ComputationTest
-    extends TestCase
-{
-    public void testLazy()
-        throws Exception
-    {
+public class ComputationTest extends TestCase {
+    public void testLazy() throws Exception {
         List<Object> values = new ArrayList<>();
         Computation<Double> cb0 = Computation.of(() -> 10)
-            .apply(values::add)
-            .map(x -> (double)(x + 1))
-            .apply(values::add);
+                .apply(values::add)
+                .map(x -> (double) (x + 1))
+                .apply(values::add);
         assertEquals(Result.success(11.0), cb0.compute());
         assertEquals(Arrays.asList(10, 11.0), values);
         assertEquals(Result.success(11.0), cb0.compute());
@@ -71,38 +64,38 @@ public class ComputationTest
         values.clear();
         final IOException error = new IOException();
         Computation<Boolean> cb2 = Computation.success(10)
-            .apply(x -> {
-                throw error;
-            })
-            .map(x -> (double)(x + 1))
-            .apply(values::add)
-            .map(x -> x > 10);
+                .apply(x -> {
+                    throw error;
+                })
+                .map(x -> (double) (x + 1))
+                .apply(values::add)
+                .map(x -> x > 10);
         assertEquals(Result.failure(error), cb2.compute());
         assertEquals(Collections.emptyList(), values);
 
         values.clear();
         Computation<Boolean> cb3 = Computation.of(() -> 10)
-            .apply(values::add)
-            .map(x -> (double)(x + 1))
-            .apply(x -> {
-                throw error;
-            })
-            .map(x -> x > 10);
+                .apply(values::add)
+                .map(x -> (double) (x + 1))
+                .apply(x -> {
+                    throw error;
+                })
+                .map(x -> x > 10);
         assertEquals(Result.failure(error), cb3.compute());
         assertEquals(Collections.singletonList(10), values);
 
         values.clear();
         Computation<String> cb4 = Computation.success(18)
-            .flatMap(x -> Computation.of(() -> x + 4))
-            .apply(values::add)
-            .flatMap(x -> Computation.of(() -> String.valueOf(x)));
+                .flatMap(x -> Computation.of(() -> x + 4))
+                .apply(values::add)
+                .flatMap(x -> Computation.of(() -> String.valueOf(x)));
         assertEquals(Result.success("22"), cb4.compute());
         assertEquals(Collections.singletonList(22), values);
 
         values.clear();
         Computation<String> cb5 = Computation.<String>failure(new IOException())
-            .apply(values::add)
-            .flatMap(x -> Computation.of(() -> String.valueOf(x)));
+                .apply(values::add)
+                .flatMap(x -> Computation.of(() -> String.valueOf(x)));
         assertThatThrownBy(cb5::call).isInstanceOf(IOException.class);
         assertEquals(Collections.emptyList(), values);
     }

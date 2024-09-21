@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,12 @@
 
 package org.javimmutable.collections.deque;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.IDequeBuilder;
@@ -48,61 +52,47 @@ import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.serialization.ArrayDequeProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-
 /**
- * IDeque implementation using 32-way trees.  The underlying trees
- * only allow values to be inserted or deleted from the head or tail.
+ * IDeque implementation using 32-way trees. The underlying trees only allow values to be inserted or deleted from the
+ * head or tail.
  */
-public class ArrayDeque<T>
-    implements IDeque<T>
-{
+public class ArrayDeque<T> implements IDeque<T> {
     @SuppressWarnings("unchecked")
     private static final ArrayDeque EMPTY = new ArrayDeque(EmptyNode.of());
 
     private final Node<T> root;
 
-    private ArrayDeque(Node<T> root)
-    {
+    private ArrayDeque(Node<T> root) {
         this.root = root;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> ArrayDeque<T> of()
-    {
-        return (ArrayDeque<T>)EMPTY;
+    public static <T> ArrayDeque<T> of() {
+        return (ArrayDeque<T>) EMPTY;
     }
 
     @Nonnull
-    public static <T> IDeque<T> of(Indexed<? extends T> source)
-    {
+    public static <T> IDeque<T> of(Indexed<? extends T> source) {
         return new Builder<T>().addAll(source).build();
     }
 
     @Nonnull
-    public static <T> Builder<T> builder()
-    {
+    public static <T> Builder<T> builder() {
         return new Builder<>();
     }
 
     @Nonnull
-    public static <T> Collector<T, ?, IDeque<T>> collector()
-    {
-        return Collector.<T, Builder<T>, IDeque<T>>of(() -> new Builder<>(),
-                                                      (b, v) -> b.add(v),
-                                                      (b1, b2) -> (Builder<T>)b1.addAll(b2.iterator()),
-                                                      b -> b.build());
+    public static <T> Collector<T, ?, IDeque<T>> collector() {
+        return Collector.<T, Builder<T>, IDeque<T>>of(
+                () -> new Builder<>(),
+                (b, v) -> b.add(v),
+                (b1, b2) -> (Builder<T>) b1.addAll(b2.iterator()),
+                b -> b.build());
     }
 
     @Nonnull
-    static <T> ArrayDeque<T> create(@Nonnull Node<T> root)
-    {
+    static <T> ArrayDeque<T> create(@Nonnull Node<T> root) {
         if (root.isEmpty()) {
             return of();
         } else {
@@ -111,43 +101,36 @@ public class ArrayDeque<T>
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return root.size();
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         return root.get(index);
     }
 
     @Nonnull
     @Override
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         return root.find(index);
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> assign(int index,
-                                @Nullable T value)
-    {
+    public ArrayDeque<T> assign(int index, @Nullable T value) {
         return create(root.assign(index, value));
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insert(@Nullable T value)
-    {
+    public ArrayDeque<T> insert(@Nullable T value) {
         return create(root.insertLast(value));
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> select(@Nonnull Predicate<T> predicate)
-    {
+    public ArrayDeque<T> select(@Nonnull Predicate<T> predicate) {
         final Builder<T> builder = builder();
         for (T value : this) {
             if (predicate.test(value)) {
@@ -159,66 +142,53 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public ArrayDeque<T> reject(@Nonnull Predicate<T> predicate)
-    {
+    public ArrayDeque<T> reject(@Nonnull Predicate<T> predicate) {
         return select(predicate.negate());
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insertFirst(@Nullable T value)
-    {
+    public ArrayDeque<T> insertFirst(@Nullable T value) {
         return create(root.insertFirst(value));
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insertLast(@Nullable T value)
-    {
+    public ArrayDeque<T> insertLast(@Nullable T value) {
         return create(root.insertLast(value));
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insertAll(@Nonnull Iterable<? extends T> values)
-    {
+    public ArrayDeque<T> insertAll(@Nonnull Iterable<? extends T> values) {
         return insertAllLast(values);
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insertAll(@Nonnull Iterator<? extends T> values)
-    {
+    public ArrayDeque<T> insertAll(@Nonnull Iterator<? extends T> values) {
         return insertAllLast(values);
     }
 
-    private static <T> Node<T> insertAllFirstImpl(Node<T> root,
-                                                  Indexed<? extends T> values)
-    {
+    private static <T> Node<T> insertAllFirstImpl(Node<T> root, Indexed<? extends T> values) {
         ReverseBuilder<T> builder = ReverseBuilder.insertAtBeginning(root);
         builder.addAll(values.reversed());
         return builder.build();
     }
 
-    private static <T> Node<T> insertAllFirstImpl(Node<T> root,
-                                                  Iterator<? extends T> values)
-    {
+    private static <T> Node<T> insertAllFirstImpl(Node<T> root, Iterator<? extends T> values) {
         ReverseBuilder<T> builder = ReverseBuilder.insertAtBeginning(root);
         builder.addAll(IteratorHelper.<T>reverse(values));
         return builder.build();
     }
 
-    private static <T> Node<T> insertAllLastImpl(Node<T> root,
-                                                 Indexed<? extends T> values)
-    {
+    private static <T> Node<T> insertAllLastImpl(Node<T> root, Indexed<? extends T> values) {
         ForwardBuilder<T> builder = ForwardBuilder.insertAtEnd(root);
         builder.addAll(values);
         return builder.build();
     }
 
-    private static <T> Node<T> insertAllLastImpl(Node<T> root,
-                                                 Iterator<? extends T> values)
-    {
+    private static <T> Node<T> insertAllLastImpl(Node<T> root, Iterator<? extends T> values) {
         ForwardBuilder<T> builder = ForwardBuilder.insertAtEnd(root);
         builder.addAll(values);
         return builder.build();
@@ -227,21 +197,20 @@ public class ArrayDeque<T>
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ArrayDeque<T> insertAllFirst(@Nonnull Iterable<? extends T> values)
-    {
+    public ArrayDeque<T> insertAllFirst(@Nonnull Iterable<? extends T> values) {
         final Node<T> newRoot;
         if (values instanceof ArrayDeque) {
-            final Node<T> other = ((ArrayDeque<T>)values).root;
+            final Node<T> other = ((ArrayDeque<T>) values).root;
             if (other.size() > root.size()) {
                 newRoot = insertAllLastImpl(other, root);
             } else {
                 newRoot = insertAllFirstImpl(root, other);
             }
         } else if (values instanceof Indexed) {
-            final Indexed<T> indexed = (Indexed<T>)values;
+            final Indexed<T> indexed = (Indexed<T>) values;
             newRoot = insertAllFirstImpl(root, indexed);
         } else if (values instanceof List) {
-            final Indexed<T> indexed = IndexedList.retained((List<T>)values);
+            final Indexed<T> indexed = IndexedList.retained((List<T>) values);
             newRoot = insertAllFirstImpl(root, indexed);
         } else {
             newRoot = insertAllFirstImpl(root, values.iterator());
@@ -251,8 +220,7 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insertAllFirst(@Nonnull Iterator<? extends T> values)
-    {
+    public ArrayDeque<T> insertAllFirst(@Nonnull Iterator<? extends T> values) {
         final Node<T> newRoot = insertAllFirstImpl(root, values);
         return (newRoot != root) ? create(newRoot) : this;
     }
@@ -260,10 +228,9 @@ public class ArrayDeque<T>
     @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ArrayDeque<T> insertAllLast(@Nonnull Iterable<? extends T> values)
-    {
+    public ArrayDeque<T> insertAllLast(@Nonnull Iterable<? extends T> values) {
         if (values instanceof ArrayDeque) {
-            final Node<T> other = ((ArrayDeque<T>)values).root;
+            final Node<T> other = ((ArrayDeque<T>) values).root;
             if (other.size() > root.size()) {
                 final Node<T> newRoot = insertAllFirstImpl(other, root);
                 return (newRoot != root) ? create(newRoot) : this;
@@ -274,16 +241,14 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public ArrayDeque<T> insertAllLast(@Nonnull Iterator<? extends T> values)
-    {
+    public ArrayDeque<T> insertAllLast(@Nonnull Iterator<? extends T> values) {
         final Node<T> newRoot = insertAllLastImpl(root, values);
         return (newRoot != root) ? create(newRoot) : this;
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> deleteFirst()
-    {
+    public ArrayDeque<T> deleteFirst() {
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
@@ -292,8 +257,7 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public ArrayDeque<T> deleteLast()
-    {
+    public ArrayDeque<T> deleteLast() {
         if (root.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
@@ -301,48 +265,41 @@ public class ArrayDeque<T>
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return root.isEmpty();
     }
 
     @Override
-    public boolean isNonEmpty()
-    {
+    public boolean isNonEmpty() {
         return !root.isEmpty();
     }
 
     @Nonnull
     @Override
-    public ArrayDeque<T> deleteAll()
-    {
+    public ArrayDeque<T> deleteAll() {
         return of();
     }
 
     @Nonnull
     @Override
-    public List<T> getList()
-    {
+    public List<T> getList() {
         return DequeListAdaptor.of(this);
     }
 
     @Nonnull
     @Override
-    public IDeque<T> reverse()
-    {
+    public IDeque<T> reverse() {
         return create(root.reverse());
     }
 
     @Override
     @Nonnull
-    public SplitableIterator<T> iterator()
-    {
+    public SplitableIterator<T> iterator() {
         return root.iterator();
     }
 
     @Override
-    public <A> ArrayDeque<A> transform(@Nonnull Func1<T, A> transform)
-    {
+    public <A> ArrayDeque<A> transform(@Nonnull Func1<T, A> transform) {
         final Builder<A> builder = builder();
         for (T t : root) {
             builder.add(transform.apply(t));
@@ -351,8 +308,7 @@ public class ArrayDeque<T>
     }
 
     @Override
-    public <A> ArrayDeque<A> transformSome(@Nonnull Func1<T, Maybe<A>> transform)
-    {
+    public <A> ArrayDeque<A> transformSome(@Nonnull Func1<T, Maybe<A>> transform) {
         final Builder<A> builder = builder();
         for (T t : root) {
             transform.apply(t).apply(v -> builder.add(v));
@@ -362,111 +318,92 @@ public class ArrayDeque<T>
 
     @Nonnull
     @Override
-    public IDeque<T> prefix(int limit)
-    {
+    public IDeque<T> prefix(int limit) {
         final Node<T> newRoot = root.prefix(limit);
         return (newRoot == root) ? this : create(newRoot);
     }
 
     @Nonnull
     @Override
-    public IDeque<T> suffix(int offset)
-    {
+    public IDeque<T> suffix(int offset) {
         final Node<T> newRoot = root.suffix(offset);
         return (newRoot == root) ? this : create(newRoot);
     }
 
     @Nonnull
-    public IDeque<T> middle(int offset,
-                            int limit)
-    {
+    public IDeque<T> middle(int offset, int limit) {
         return prefix(limit).suffix(offset);
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         root.checkInvariants();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        return (o == this) || ((o instanceof IDeque) && IteratorHelper.iteratorEquals(iterator(), ((IDeque)o).iterator()));
+    public boolean equals(Object o) {
+        return (o == this)
+                || ((o instanceof IDeque) && IteratorHelper.iteratorEquals(iterator(), ((IDeque) o).iterator()));
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return IteratorHelper.iteratorToString(iterator());
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new ArrayDequeProxy(this);
     }
 
-    public static class Builder<T>
-        implements IDequeBuilder<T>,
-                   InvariantCheckable
-    {
+    public static class Builder<T> implements IDequeBuilder<T>, InvariantCheckable {
         private final ForwardBuilder<T> builder;
 
-        private Builder()
-        {
+        private Builder() {
             builder = ForwardBuilder.insertAtEnd(EmptyNode.of());
         }
 
         @Nonnull
         @Override
-        public synchronized ArrayDeque<T> build()
-        {
+        public synchronized ArrayDeque<T> build() {
             return create(builder.build());
         }
 
         @Override
-        public synchronized int size()
-        {
+        public synchronized int size() {
             return builder.size();
         }
 
         @Nonnull
         @Override
-        public synchronized Builder<T> add(T value)
-        {
+        public synchronized Builder<T> add(T value) {
             builder.add(value);
             return this;
         }
 
         @Nonnull
-        private synchronized Iterator<T> iterator()
-        {
+        private synchronized Iterator<T> iterator() {
             return builder.build().iterator();
         }
 
         @Nonnull
         @Override
-        public synchronized IDequeBuilder<T> clear()
-        {
+        public synchronized IDequeBuilder<T> clear() {
             builder.clear();
             return this;
         }
 
         @Override
-        public void checkInvariants()
-        {
+        public void checkInvariants() {
             builder.checkInvariants();
         }
     }

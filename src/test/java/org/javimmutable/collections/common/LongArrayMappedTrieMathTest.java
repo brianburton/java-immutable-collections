@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,16 +33,13 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.TestCase;
-
 import static org.javimmutable.collections.common.BitmaskMath.MAX_INDEX;
 import static org.javimmutable.collections.common.LongArrayMappedTrieMath.*;
 
-public class LongArrayMappedTrieMathTest
-    extends TestCase
-{
-    public void testVarious()
-    {
+import junit.framework.TestCase;
+
+public class LongArrayMappedTrieMathTest extends TestCase {
+    public void testVarious() {
         assertEquals(11, MAX_SHIFTS);
         assertEquals(10, MAX_FULL_SHIFTS);
         final long hashCode = hash(1, 2, 3, 4, 5, 6);
@@ -53,27 +48,34 @@ public class LongArrayMappedTrieMathTest
         verifyEquals(hash(0, 1, 2, 3, 4, 5), remainderFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(hash(0, 1, 2, 3, 4, 5), remainderFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
         verifyEquals(hash(0, 1, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(1, 2, 3, 4, MAX_INDEX, 6)));
-        verifyEquals(hash(0, MAX_INDEX, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, 2, 3, 4, MAX_INDEX, 6)));
-        verifyEquals(hash(0, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 6)));
+        verifyEquals(
+                hash(0, MAX_INDEX, 2, 3, 4, MAX_INDEX), remainderFromHashCode(hash(MAX_INDEX, 2, 3, 4, MAX_INDEX, 6)));
+        verifyEquals(
+                hash(0, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX),
+                remainderFromHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 6)));
         verifyEquals(hash(1, 2, 3, 4, 5, 0), baseIndexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(6, indexFromHashCode(hash(1, 2, 3, 4, 5, 6)));
         verifyEquals(MAX_INDEX, indexFromHashCode(hash(1, 2, 3, 4, 5, MAX_INDEX)));
-        verifyEquals(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 0), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 0));
-        verifyEquals(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 1), liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 1));
+        verifyEquals(
+                hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 0),
+                liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 0));
+        verifyEquals(
+                hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, 1),
+                liftedHashCode(hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 1));
         assertEquals(11, maxShiftsForBitCount(64));
         assertEquals(10, maxShiftsForBitCount(60));
     }
 
-    public void testHash()
-    {
+    public void testHash() {
         verifyEquals(0b000001000010000011000100000101000110L, hash(1, 2, 3, 4, 5, 6));
         verifyEquals(0b000001000010000011000100000101111111L, hash(1, 2, 3, 4, 5, MAX_INDEX));
         verifyEquals(0b0111111000010000011000100000101000110L, hash(MAX_INDEX, 2, 3, 4, 5, 6));
-        verifyEquals(0b0111111111111111111111111111111111111L, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX));
+        verifyEquals(
+                0b0111111111111111111111111111111111111L,
+                hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX));
     }
 
-    public void testShifts()
-    {
+    public void testShifts() {
         assertEquals(MAX_INDEX, indexAtShift(0, MAX_INDEX));
         assertEquals(MAX_INDEX, indexAtShift(0, -1));
         assertEquals(15, indexAtShift(MAX_SHIFT_NUMBER, -1));
@@ -101,8 +103,7 @@ public class LongArrayMappedTrieMathTest
         assertEquals(3, findMaxShiftForHashCode(hash(1, MAX_INDEX, MAX_INDEX, MAX_INDEX)));
     }
 
-    public void testHashCodeBelowShift()
-    {
+    public void testHashCodeBelowShift() {
         final long hashCode = hash(3, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011);
         assertEquals(0, hashCodeBelowShift(0, hashCode));
         assertEquals(hash(0, 0, 0, 0, 0, 0b101011), hashCodeBelowShift(1, hashCode));
@@ -112,8 +113,7 @@ public class LongArrayMappedTrieMathTest
         assertEquals(hash(0, 0b110001, 0b100001, 0b101001, 0b100101, 0b101011), hashCodeBelowShift(5, hashCode));
     }
 
-    public void testFindMinimumShiftForZeroBelowHashCode()
-    {
+    public void testFindMinimumShiftForZeroBelowHashCode() {
         assertEquals(0, findMinimumShiftForZeroBelowHashCode(0));
         assertEquals(0, findMinimumShiftForZeroBelowHashCode(0b0_100000));
         assertEquals(1, findMinimumShiftForZeroBelowHashCode(0b1_000000));
@@ -122,42 +122,28 @@ public class LongArrayMappedTrieMathTest
         assertEquals(2, findMinimumShiftForZeroBelowHashCode(0b100000_000000_000000));
     }
 
-    public void testFindMaxCommonShift()
-    {
+    public void testFindMaxCommonShift() {
         assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, 0, 0));
         assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, 1, 2));
-        assertEquals(5, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(9, 5, 4, 3, 2, 1)));
-        assertEquals(4, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 9, 4, 3, 2, 1)));
-        assertEquals(3, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 9, 3, 2, 1)));
-        assertEquals(2, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 4, 9, 2, 1)));
-        assertEquals(1, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 4, 3, 9, 1)));
-        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER,
-                                           hash(6, 5, 4, 3, 2, 1),
-                                           hash(6, 5, 4, 3, 2, 9)));
+        assertEquals(5, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(9, 5, 4, 3, 2, 1)));
+        assertEquals(4, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 9, 4, 3, 2, 1)));
+        assertEquals(3, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 9, 3, 2, 1)));
+        assertEquals(2, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 4, 9, 2, 1)));
+        assertEquals(1, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 4, 3, 9, 1)));
+        assertEquals(0, findMaxCommonShift(MAX_SHIFT_NUMBER, hash(6, 5, 4, 3, 2, 1), hash(6, 5, 4, 3, 2, 9)));
     }
 
-    public void testWithIndexAtShift()
-    {
+    public void testWithIndexAtShift() {
         verifyEquals(hash(1), withIndexAtShift(0, 0, 1));
         verifyEquals(hash(MAX_INDEX), withIndexAtShift(0, 0, MAX_INDEX));
         verifyEquals(hash(1), withIndexAtShift(0, MAX_INDEX, 1));
-        verifyEquals(hash(MAX_INDEX, MAX_INDEX, 10, MAX_INDEX), withIndexAtShift(1, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 10));
+        verifyEquals(
+                hash(MAX_INDEX, MAX_INDEX, 10, MAX_INDEX),
+                withIndexAtShift(1, hash(MAX_INDEX, MAX_INDEX, MAX_INDEX, MAX_INDEX), 10));
         verifyEquals(hash(2, 0, 0, 0, 0, 0), withIndexAtShift(5, 0, 2));
     }
 
-    private void verifyEquals(long a,
-                              long b)
-    {
+    private void verifyEquals(long a, long b) {
         assertEquals(Long.toBinaryString(a), Long.toBinaryString(b));
     }
 }

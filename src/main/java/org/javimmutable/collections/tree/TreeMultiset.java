@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,82 +33,65 @@
 
 package org.javimmutable.collections.tree;
 
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.common.AbstractMultiset;
 import org.javimmutable.collections.serialization.TreeMultisetProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Map;
-
 @Immutable
-public class TreeMultiset<T>
-    extends AbstractMultiset<T>
-    implements Serializable
-{
+public class TreeMultiset<T> extends AbstractMultiset<T> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final TreeMultiset EMPTY = new TreeMultiset(new ComparableComparator());
 
     private final Comparator<T> comparator;
 
-    private TreeMultiset(Comparator<T> comparator)
-    {
+    private TreeMultiset(Comparator<T> comparator) {
         this(TreeMap.of(comparator), 0, comparator);
     }
 
-    private TreeMultiset(IMap<T, Integer> map,
-                         int occurrences,
-                         Comparator<T> comparator)
-    {
+    private TreeMultiset(IMap<T, Integer> map, int occurrences, Comparator<T> comparator) {
         super(map, occurrences);
         this.comparator = comparator;
     }
 
     @Nonnull
     @Override
-    public TreeMultiset<T> deleteAll()
-    {
+    public TreeMultiset<T> deleteAll() {
         return of(comparator);
     }
 
-    public Comparator<T> getComparator()
-    {
+    public Comparator<T> getComparator() {
         return comparator;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> TreeMultiset<T> of()
-    {
+    public static <T extends Comparable<T>> TreeMultiset<T> of() {
         return EMPTY;
     }
 
-    public static <T> TreeMultiset<T> of(Comparator<T> comparator)
-    {
+    public static <T> TreeMultiset<T> of(Comparator<T> comparator) {
         return new TreeMultiset<>(comparator);
     }
 
     @Override
-    protected TreeMultiset<T> create(IMap<T, Integer> map,
-                                     int occurrences)
-    {
+    protected TreeMultiset<T> create(IMap<T, Integer> map, int occurrences) {
         return new TreeMultiset<>(map, occurrences, comparator);
     }
 
     @Override
-    protected Map<T, Integer> emptyMutableMap()
-    {
+    protected Map<T, Integer> emptyMutableMap() {
         return new java.util.TreeMap<>(comparator);
     }
 
-    IMap getMap()
-    {
+    IMap getMap() {
         return map;
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new TreeMultisetProxy(this);
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2023-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,21 +33,17 @@
 
 package org.javimmutable.collections.deque;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import junit.framework.TestCase;
 import org.javimmutable.collections.IDeque;
 import org.javimmutable.collections.Indexed;
 import org.javimmutable.collections.indexed.IndexedHelper;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class BranchNodeTest
-    extends TestCase
-{
-    public void testDeleteFirst()
-    {
+public class BranchNodeTest extends TestCase {
+    public void testDeleteFirst() {
         Node<Integer> node = BranchNode.forTesting(leaf(2, 1), nodesArray(1, 3), leaf(2, 35));
         assertEquals(36, node.size());
         node.checkInvariants();
@@ -87,8 +81,7 @@ public class BranchNodeTest
         }
     }
 
-    public void testDeleteLast()
-    {
+    public void testDeleteLast() {
         Node<Integer> node = BranchNode.forTesting(leaf(2, 1), nodesArray(1, 3), leaf(2, 35));
         assertEquals(36, node.size());
         node.checkInvariants();
@@ -131,8 +124,7 @@ public class BranchNodeTest
         }
     }
 
-    public void testReverse()
-    {
+    public void testReverse() {
         Node<Integer> prefix = LeafNode.fromList(IndexedHelper.range(-3, 0), 0, 4);
         Node<Integer> filled1 = LeafNode.fromList(IndexedHelper.range(1, 32), 0, 32);
         Node<Integer> filled2 = LeafNode.fromList(IndexedHelper.range(33, 64), 0, 32);
@@ -151,8 +143,7 @@ public class BranchNodeTest
         assertEquals(IndexedHelper.asList(expected), IndexedHelper.asList(node));
     }
 
-    public void testInsertFirst()
-    {
+    public void testInsertFirst() {
         Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), DequeHelper.allocateNodes(0), EmptyNode.of());
         assertEquals(0, node.size());
         node.checkInvariants();
@@ -194,8 +185,7 @@ public class BranchNodeTest
         }
     }
 
-    public void testInsertLast()
-    {
+    public void testInsertLast() {
         Node<Integer> node = BranchNode.forTesting(EmptyNode.of(), DequeHelper.allocateNodes(0), EmptyNode.of());
         assertEquals(0, node.size());
         node.checkInvariants();
@@ -250,8 +240,7 @@ public class BranchNodeTest
         }
     }
 
-    public void testGetAndAssign()
-    {
+    public void testGetAndAssign() {
         Node<Integer> node = BranchNode.forTesting(leaf(2, 1), nodesArray(3, 3), leaf(2, 99));
         assertEquals(100, node.size());
         node.checkInvariants();
@@ -282,8 +271,7 @@ public class BranchNodeTest
         }
     }
 
-    public void testInsertFirstDeleteFirstDepthReduction()
-    {
+    public void testInsertFirstDeleteFirstDepthReduction() {
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32769; ++i) {
             node = node.insertFirst(i);
@@ -325,8 +313,7 @@ public class BranchNodeTest
         assertEquals(0, node.size());
     }
 
-    public void testInsertLastDeleteFirstDepthReduction()
-    {
+    public void testInsertLastDeleteFirstDepthReduction() {
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32769; ++i) {
             node = node.insertLast(i);
@@ -366,8 +353,7 @@ public class BranchNodeTest
         assertEquals(0, node.size());
     }
 
-    public void testInsertFirstDeleteLastDepthReduction()
-    {
+    public void testInsertFirstDeleteLastDepthReduction() {
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32769; ++i) {
             node = node.insertFirst(i);
@@ -407,8 +393,7 @@ public class BranchNodeTest
         assertEquals(0, node.size());
     }
 
-    public void testInsertLastDeleteLastDepthReduction()
-    {
+    public void testInsertLastDeleteLastDepthReduction() {
         Node<Integer> node = EmptyNode.of();
         for (int i = 1; i <= 32769; ++i) {
             node = node.insertLast(i);
@@ -445,10 +430,11 @@ public class BranchNodeTest
         assertEquals(0, node.size());
     }
 
-    public void testSubsequences()
-    {
+    public void testSubsequences() {
         // a list from 0 to 6141 with nearly full prefix and suffix and 4 filled nodes in the middle
-        IDeque<Integer> deque = ArrayDeque.<Integer>builder().addAll(IndexedHelper.range(1023, 5118)).build();
+        IDeque<Integer> deque = ArrayDeque.<Integer>builder()
+                .addAll(IndexedHelper.range(1023, 5118))
+                .build();
         assert deque.size() % 1024 == 0;
         for (int i = 1022; i >= 0; --i) {
             deque = deque.insertFirst(i);
@@ -473,9 +459,7 @@ public class BranchNodeTest
         }
     }
 
-    static Node<Integer>[] nodesArray(int length,
-                                      int value)
-    {
+    static Node<Integer>[] nodesArray(int length, int value) {
         Node<Integer>[] nodes = DequeHelper.allocateNodes(length);
         for (int i = 0; i < length; ++i) {
             nodes[i] = leaf(32, value);
@@ -484,9 +468,7 @@ public class BranchNodeTest
         return nodes;
     }
 
-    static Node<Integer> leaf(int size,
-                              int value)
-    {
+    static Node<Integer> leaf(int size, int value) {
         Integer[] values = new Integer[size];
         for (int index = 0; index < size; ++index) {
             values[index] = value++;
@@ -494,9 +476,7 @@ public class BranchNodeTest
         return LeafNode.forTesting(values);
     }
 
-    static List<Integer> values(int first,
-                                int last)
-    {
+    static List<Integer> values(int first, int last) {
         List<Integer> answer = new ArrayList<Integer>();
         if (last == first) {
             answer.add(first);
@@ -512,9 +492,7 @@ public class BranchNodeTest
         return answer;
     }
 
-    static List<Integer> sequence(int offset,
-                                  int limit)
-    {
+    static List<Integer> sequence(int offset, int limit) {
         List<Integer> answer = new ArrayList<>();
         while (limit > offset) {
             answer.add(offset);

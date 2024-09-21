@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.setmap;
 
+import java.io.Serializable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetMap;
@@ -42,48 +42,34 @@ import org.javimmutable.collections.hash.HashMap;
 import org.javimmutable.collections.hash.HashSet;
 import org.javimmutable.collections.serialization.HashSetMapProxy;
 
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-
-
-/**
- * {@link ISetMap} using a hash map for fast lookup.
- */
+/** {@link ISetMap} using a hash map for fast lookup. */
 @Immutable
-public class HashSetMap<K, V>
-    extends AbstractSetMap<K, V>
-    implements Serializable
-{
+public class HashSetMap<K, V> extends AbstractSetMap<K, V> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final HashSetMap EMPTY = new HashSetMap(HashMap.of(), HashSet.of());
+
     private static final long serialVersionUID = -121805;
 
-    private HashSetMap(IMap<K, ISet<V>> contents,
-                       ISet<V> emptySet)
-    {
+    private HashSetMap(IMap<K, ISet<V>> contents, ISet<V> emptySet) {
         super(contents, emptySet);
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashSetMap<K, V> of()
-    {
+    public static <K, V> HashSetMap<K, V> of() {
         return EMPTY;
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         checkSetMapInvariants();
     }
 
     @Override
-    protected ISetMap<K, V> create(IMap<K, ISet<V>> map)
-    {
+    protected ISetMap<K, V> create(IMap<K, ISet<V>> map) {
         return new HashSetMap<>(map, emptySet);
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new HashSetMapProxy(this);
     }
 }

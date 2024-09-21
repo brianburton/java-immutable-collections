@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,35 +33,27 @@
 
 package org.javimmutable.collections.tree;
 
-import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Comparator;
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Comparator that uses the associated type's own compareTo() method.
- * Places null values before non-null values in its ordering.
+ * Comparator that uses the associated type's own compareTo() method. Places null values before non-null values in its
+ * ordering.
  */
 @Immutable
-public final class ComparableComparator<V extends Comparable<V>>
-    implements Comparator<V>,
-               Serializable
-{
+public final class ComparableComparator<V extends Comparable<V>> implements Comparator<V>, Serializable {
     private static final ComparableComparator INSTANCE = new ComparableComparator();
     private static final long serialVersionUID = -121805;
 
-    /**
-     * Creates a type appropriate reference to the singleton instance of this class.
-     */
+    /** Creates a type appropriate reference to the singleton instance of this class. */
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> ComparableComparator<T> of()
-    {
+    public static <T extends Comparable<T>> ComparableComparator<T> of() {
         return INSTANCE;
     }
 
     @Override
-    public int compare(V a,
-                       V b)
-    {
+    public int compare(V a, V b) {
         if (a == null) {
             return (b == null) ? 0 : -1;
         }
@@ -74,19 +64,16 @@ public final class ComparableComparator<V extends Comparable<V>>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return 3571; // prime number
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return (o == this) || (o.getClass() == this.getClass());
     }
 
-    private Object readResolve()
-    {
+    private Object readResolve() {
         return INSTANCE;
     }
 }

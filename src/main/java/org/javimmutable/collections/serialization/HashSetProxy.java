@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,18 +36,14 @@ package org.javimmutable.collections.serialization;
 import org.javimmutable.collections.hash.HashSet;
 
 @SuppressWarnings("rawtypes")
-public class HashSetProxy
-    extends AbstractSetProxy
-{
+public class HashSetProxy extends AbstractSetProxy {
     private static final long serialVersionUID = -121805;
 
-    public HashSetProxy()
-    {
+    public HashSetProxy() {
         super(HashSet.of());
     }
 
-    public HashSetProxy(HashSet set)
-    {
+    public HashSetProxy(HashSet set) {
         super(set);
     }
 }

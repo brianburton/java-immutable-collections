@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,13 +33,11 @@
 
 package org.javimmutable.collections.array;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-
-public interface ArrayIterationMapper<K, V, T>
-{
+public interface ArrayIterationMapper<K, V, T> {
     @Nonnull
     GenericIterator.Iterable<K> mappedKeys(@Nonnull T mapping);
 

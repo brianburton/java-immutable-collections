@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,32 +33,22 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import org.javimmutable.collections.IList;
 
-
-abstract class AbstractSetStressTestable
-    extends StressTester
-{
-    AbstractSetStressTestable(String testName)
-    {
+abstract class AbstractSetStressTestable extends StressTester {
+    AbstractSetStressTestable(String testName) {
         super(testName);
     }
 
-    protected String containedValue(List<String> list,
-                                    Random random)
-    {
+    protected String containedValue(List<String> list, Random random) {
         return (list.isEmpty()) ? "" : list.get(random.nextInt(list.size()));
     }
 
-    protected String notContainedValue(IList<String> tokens,
-                                       Random random,
-                                       Collection<String> expected)
-    {
+    protected String notContainedValue(IList<String> tokens, Random random, Collection<String> expected) {
         String value = RandomKeyManager.makeValue(tokens, random);
         while (expected.contains(value)) {
             value = RandomKeyManager.makeValue(tokens, random);
@@ -68,19 +56,13 @@ abstract class AbstractSetStressTestable
         return value;
     }
 
-    protected String makeInsertValue(IList<String> tokens,
-                                     Random random,
-                                     List<String> list,
-                                     Collection<String> expected)
-    {
+    protected String makeInsertValue(
+            IList<String> tokens, Random random, List<String> list, Collection<String> expected) {
         return random.nextBoolean() ? containedValue(list, random) : notContainedValue(tokens, random, expected);
     }
 
-    protected String makeDeleteValue(IList<String> tokens,
-                                     Random random,
-                                     List<String> list,
-                                     Collection<String> expected)
-    {
+    protected String makeDeleteValue(
+            IList<String> tokens, Random random, List<String> list, Collection<String> expected) {
         String value;
         if (random.nextBoolean() || list.size() == 0) {
             value = notContainedValue(tokens, random, expected);
@@ -92,11 +74,8 @@ abstract class AbstractSetStressTestable
         return value;
     }
 
-    protected List<String> makeContainsList(IList<String> tokens,
-                                            Random random,
-                                            List<String> list,
-                                            Collection<String> expected)
-    {
+    protected List<String> makeContainsList(
+            IList<String> tokens, Random random, List<String> list, Collection<String> expected) {
         List<String> values = new ArrayList<String>();
         for (int n = 0, limit = random.nextInt(3); n < limit; ++n) {
             if (random.nextBoolean()) {
@@ -108,12 +87,10 @@ abstract class AbstractSetStressTestable
         return values;
     }
 
-    protected void verifyList(List<String> list,
-                              Collection<String> expected)
-    {
+    protected void verifyList(List<String> list, Collection<String> expected) {
         if (list.size() != expected.size()) {
-            throw new RuntimeException(String.format("list size mismatch - expected: %d, list: %d",
-                                                     expected.size(), list.size()));
+            throw new RuntimeException(
+                    String.format("list size mismatch - expected: %d, list: %d", expected.size(), list.size()));
         }
     }
 }

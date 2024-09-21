@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,10 @@
 
 package org.javimmutable.collections.tree;
 
+import java.util.Comparator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -44,202 +46,150 @@ import org.javimmutable.collections.Sum2;
 import org.javimmutable.collections.Sum2Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Comparator;
-
 /**
- * Node with no value and no children.  Used as the terminating node at the bottom
- * of every tree or the root of an empty tree.  Only one instance exists and is
- * reused everywhere.
+ * Node with no value and no children. Used as the terminating node at the bottom of every tree or the root of an empty
+ * tree. Only one instance exists and is reused everywhere.
  */
 @Immutable
-class FringeNode<K, V>
-    extends AbstractNode<K, V>
-{
+class FringeNode<K, V> extends AbstractNode<K, V> {
     @SuppressWarnings("rawtypes")
     private static final FringeNode INSTANCE = new FringeNode();
 
-    private FringeNode()
-    {
-    }
+    private FringeNode() {}
 
     @SuppressWarnings("unchecked")
-    static <K, V> AbstractNode<K, V> instance()
-    {
+    static <K, V> AbstractNode<K, V> instance() {
         return INSTANCE;
     }
 
     @Nonnull
     @Override
-    public AbstractNode<K, V> assign(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key,
-                                     @Nullable V value)
-    {
+    public AbstractNode<K, V> assign(@Nonnull Comparator<K> comp, @Nonnull K key, @Nullable V value) {
         return ValueNode.instance(key, value);
     }
 
     @Nonnull
     @Override
-    public AbstractNode<K, V> update(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key,
-                                     @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    public AbstractNode<K, V> update(
+            @Nonnull Comparator<K> comp, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator) {
         return ValueNode.instance(key, generator.apply(Maybe.empty()));
     }
 
     @Nonnull
     @Override
-    public AbstractNode<K, V> delete(@Nonnull Comparator<K> comp,
-                                     @Nonnull K key)
-    {
+    public AbstractNode<K, V> delete(@Nonnull Comparator<K> comp, @Nonnull K key) {
         return this;
     }
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteLeftmost()
-    {
+    DeleteResult<K, V> deleteLeftmost() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    DeleteResult<K, V> deleteRightmost()
-    {
+    DeleteResult<K, V> deleteRightmost() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    boolean containsKey(@Nonnull Comparator<K> comp,
-                        @Nonnull K key)
-    {
+    boolean containsKey(@Nonnull Comparator<K> comp, @Nonnull K key) {
         return false;
     }
 
     @Nullable
     @Override
-    public V get(@Nonnull Comparator<K> comp,
-                 @Nonnull K key,
-                 V defaultValue)
-    {
+    public V get(@Nonnull Comparator<K> comp, @Nonnull K key, V defaultValue) {
         return defaultValue;
     }
 
     @Nonnull
     @Override
-    public Maybe<V> find(@Nonnull Comparator<K> comp,
-                         @Nonnull K key)
-    {
+    public Maybe<V> find(@Nonnull Comparator<K> comp, @Nonnull K key) {
         return Maybe.empty();
     }
 
     @Nonnull
     @Override
-    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp,
-                                            @Nonnull K key)
-    {
+    public Maybe<IMapEntry<K, V>> findEntry(@Nonnull Comparator<K> comp, @Nonnull K key) {
         return Maybe.empty();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return true;
     }
 
     @Override
-    int depth()
-    {
+    int depth() {
         return 0;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return 0;
     }
 
     @Nonnull
     @Override
-    K key()
-    {
+    K key() {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    V value()
-    {
+    V value() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> leftMost()
-    {
+    AbstractNode<K, V> leftMost() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> left()
-    {
+    AbstractNode<K, V> left() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    AbstractNode<K, V> right()
-    {
+    AbstractNode<K, V> right() {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(@Nullable GenericIterator.State<IMapEntry<K, V>> parent,
-                                                                   int offset,
-                                                                   int limit)
-    {
+    public GenericIterator.State<IMapEntry<K, V>> iterateOverRange(
+            @Nullable GenericIterator.State<IMapEntry<K, V>> parent, int offset, int limit) {
         assert offset == 0 && limit == 0;
         return parent;
     }
 
     @Override
-    public int iterableSize()
-    {
+    public int iterableSize() {
         return 0;
     }
 
     @Override
-    void forEach(@Nonnull Proc2<K, V> proc)
-    {
-    }
+    void forEach(@Nonnull Proc2<K, V> proc) {}
 
     @Override
-    <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc)
-        throws E
-    {
-    }
+    <E extends Exception> void forEachThrows(@Nonnull Proc2Throws<K, V, E> proc) throws E {}
 
     @Override
-    <R> R reduce(R sum,
-                 @Nonnull Sum2<K, V, R> proc)
-    {
+    <R> R reduce(R sum, @Nonnull Sum2<K, V, R> proc) {
         return sum;
     }
 
     @Override
-    <R, E extends Exception> R reduceThrows(R sum,
-                                            @Nonnull Sum2Throws<K, V, R, E> proc)
-        throws E
-    {
+    <R, E extends Exception> R reduceThrows(R sum, @Nonnull Sum2Throws<K, V, R, E> proc) throws E {
         return sum;
     }
 
     @Override
-    public void checkInvariants(@Nonnull Comparator<K> comp)
-    {
-    }
+    public void checkInvariants(@Nonnull Comparator<K> comp) {}
 }

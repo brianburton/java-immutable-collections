@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,15 +33,12 @@
 
 package org.javimmutable.collections.list;
 
-import junit.framework.TestCase;
-
 import static org.assertj.core.api.Assertions.*;
 
-public class TreeBuilderTest
-    extends TestCase
-{
-    public void testBuilderRebuild()
-    {
+import junit.framework.TestCase;
+
+public class TreeBuilderTest extends TestCase {
+    public void testBuilderRebuild() {
         for (int size = 0; size < 1024; ++size) {
             TreeBuilder<Integer> builder = new TreeBuilder<>();
             for (int i = 1; i <= size; ++i) {

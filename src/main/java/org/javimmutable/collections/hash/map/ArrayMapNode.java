@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,8 @@
 
 package org.javimmutable.collections.hash.map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.Maybe;
@@ -43,38 +43,26 @@ import org.javimmutable.collections.Proc2Throws;
 import org.javimmutable.collections.common.CollisionMap;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public interface ArrayMapNode<K, V>
-{
+public interface ArrayMapNode<K, V> {
     int size(@Nonnull CollisionMap<K, V> collisionMap);
 
-    V getValueOr(@Nonnull CollisionMap<K, V> collisionMap,
-                 @Nonnull K key,
-                 V defaultValue);
+    V getValueOr(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key, V defaultValue);
 
     @Nonnull
-    Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap,
-                  @Nonnull K key);
+    Maybe<V> find(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key);
 
     @Nonnull
-    Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap,
-                                     @Nonnull K key);
+    Maybe<IMapEntry<K, V>> findEntry(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key);
 
     @Nonnull
-    ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap,
-                              @Nonnull K key,
-                              V value);
+    ArrayMapNode<K, V> assign(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key, V value);
 
     @Nullable
-    ArrayMapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap,
-                              @Nonnull K key);
+    ArrayMapNode<K, V> delete(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key);
 
     @Nonnull
-    ArrayMapNode<K, V> update(@Nonnull CollisionMap<K, V> collisionMap,
-                              @Nonnull K key,
-                              @Nonnull Func1<Maybe<V>, V> generator);
+    ArrayMapNode<K, V> update(
+            @Nonnull CollisionMap<K, V> collisionMap, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator);
 
     @Nonnull
     GenericIterator.Iterable<K> keys(@Nonnull CollisionMap<K, V> collisionMap);
@@ -85,10 +73,8 @@ public interface ArrayMapNode<K, V>
     @Nonnull
     GenericIterator.Iterable<IMapEntry<K, V>> entries(@Nonnull CollisionMap<K, V> collisionMap);
 
-    void forEach(@Nonnull CollisionMap<K, V> collisionMap,
-                 @Nonnull Proc2<K, V> proc);
+    void forEach(@Nonnull CollisionMap<K, V> collisionMap, @Nonnull Proc2<K, V> proc);
 
-    <E extends Exception> void forEachThrows(@Nonnull CollisionMap<K, V> collisionMap,
-                                             @Nonnull Proc2Throws<K, V, E> proc)
-        throws E;
+    <E extends Exception> void forEachThrows(
+            @Nonnull CollisionMap<K, V> collisionMap, @Nonnull Proc2Throws<K, V, E> proc) throws E;
 }

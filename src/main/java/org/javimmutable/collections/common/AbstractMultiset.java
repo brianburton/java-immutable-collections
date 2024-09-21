@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2015-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,13 @@
 
 package org.javimmutable.collections.common;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IMultiset;
@@ -46,40 +51,25 @@ import org.javimmutable.collections.iterators.IndexedIterator;
 import org.javimmutable.collections.iterators.IteratorHelper;
 import org.javimmutable.collections.iterators.LazyMultiIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiConsumer;
-
 @Immutable
-public abstract class AbstractMultiset<T>
-    implements IMultiset<T>
-{
+public abstract class AbstractMultiset<T> implements IMultiset<T> {
     protected final IMap<T, Integer> map;
     protected final int occurrences;
 
-    protected AbstractMultiset(IMap<T, Integer> map,
-                               int occurrences)
-    {
+    protected AbstractMultiset(IMap<T, Integer> map, int occurrences) {
         this.map = map;
         this.occurrences = occurrences;
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> insert(@Nonnull T value)
-    {
+    public IMultiset<T> insert(@Nonnull T value) {
         return new Editor().delta(value, 1).build();
     }
 
     @Nonnull
     @Override
-    public IMultiset<T> insert(@Nonnull T value,
-                               int count)
-    {
+    public IMultiset<T> insert(@Nonnull T value, int count) {
         if (count < 0) {
             throw new IllegalArgumentException();
         } else if (count == 0) {
@@ -90,15 +80,12 @@ public abstract class AbstractMultiset<T>
     }
 
     @Override
-    public boolean contains(@Nullable T value)
-    {
+    public boolean contains(@Nullable T value) {
         return (value != null) && (count(value) > 0);
     }
 
     @Override
-    public boolean containsAtLeast(@Nullable T value,
-                                   int count)
-    {
+    public boolean containsAtLeast(@Nullable T value, int count) {
         if (count < 0) {
             throw new IllegalArgumentException();
         } else {
@@ -107,14 +94,12 @@ public abstract class AbstractMultiset<T>
     }
 
     @Override
-    public boolean containsAll(@Nonnull Iterable<? extends T> other)
-    {
+    public boolean containsAll(@Nonnull Iterable<? extends T> other) {
         return containsAll(other.iterator());
     }
 
     @Override
-    public boolean containsAll(@Nonnull Iterator<? extends T> other)
-    {
+    public boolean containsAll(@Nonnull Iterator<? extends T> other) {
         while (other.hasNext()) {
             if (!contains(other.next())) {
                 return false;
@@ -124,14 +109,12 @@ public abstract class AbstractMultiset<T>
     }
 
     @Override
-    public boolean containsAllOccurrences(@Nonnull Iterable<? extends T> other)
-    {
+    public boolean containsAllOccurrences(@Nonnull Iterable<? extends T> other) {
         return containsAllOccurrences(other.iterator());
     }
 
     @Override
-    public boolean containsAllOccurrences(@Nonnull Iterator<? extends T> other)
-    {
+    public boolean containsAllOccurrences(@Nonnull Iterator<? extends T> other) {
         final Counter counter = new Counter();
         while (other.hasNext()) {
             final T value = other.next();
@@ -143,20 +126,17 @@ public abstract class AbstractMultiset<T>
     }
 
     @Override
-    public boolean containsAllOccurrences(@Nonnull IMultiset<? extends T> values)
-    {
+    public boolean containsAllOccurrences(@Nonnull IMultiset<? extends T> values) {
         return containsAllOccurrencesMultisetHelper(values);
     }
 
     @Override
-    public boolean containsAny(@Nonnull Iterable<? extends T> other)
-    {
+    public boolean containsAny(@Nonnull Iterable<? extends T> other) {
         return containsAny(other.iterator());
     }
 
     @Override
-    public boolean containsAny(@Nonnull Iterator<? extends T> other)
-    {
+    public boolean containsAny(@Nonnull Iterator<? extends T> other) {
         while (other.hasNext()) {
             if (contains(other.next())) {
                 return true;
@@ -167,23 +147,19 @@ public abstract class AbstractMultiset<T>
 
     @Override
     @Nonnull
-    public IMultiset<T> delete(@Nonnull T value)
-    {
+    public IMultiset<T> delete(@Nonnull T value) {
         return new Editor().remove(value).build();
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteOccurrence(@Nonnull T value)
-    {
+    public IMultiset<T> deleteOccurrence(@Nonnull T value) {
         return new Editor().delta(value, -1).build();
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteOccurrence(@Nonnull T value,
-                                         int subtractBy)
-    {
+    public IMultiset<T> deleteOccurrence(@Nonnull T value, int subtractBy) {
         if (subtractBy < 0) {
             throw new IllegalArgumentException();
         } else {
@@ -193,15 +169,13 @@ public abstract class AbstractMultiset<T>
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other)
-    {
+    public IMultiset<T> deleteAll(@Nonnull Iterable<? extends T> other) {
         return deleteAll(other.iterator());
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other)
-    {
+    public IMultiset<T> deleteAll(@Nonnull Iterator<? extends T> other) {
         Editor editor = new Editor();
         while (other.hasNext()) {
             final T value = other.next();
@@ -214,15 +188,13 @@ public abstract class AbstractMultiset<T>
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other)
-    {
+    public IMultiset<T> deleteAllOccurrences(@Nonnull Iterable<? extends T> other) {
         return deleteAllOccurrences(other.iterator());
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other)
-    {
+    public IMultiset<T> deleteAllOccurrences(@Nonnull Iterator<? extends T> other) {
         Editor editor = new Editor();
         while (other.hasNext()) {
             final T value = other.next();
@@ -235,22 +207,19 @@ public abstract class AbstractMultiset<T>
 
     @Override
     @Nonnull
-    public IMultiset<T> deleteAllOccurrences(@Nonnull IMultiset<? extends T> other)
-    {
+    public IMultiset<T> deleteAllOccurrences(@Nonnull IMultiset<? extends T> other) {
         return deleteAllOccurrencesMultisetHelper(other);
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> insertAll(@Nonnull Iterable<? extends T> values)
-    {
+    public IMultiset<T> insertAll(@Nonnull Iterable<? extends T> values) {
         return insertAll(values.iterator());
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> insertAll(@Nonnull Iterator<? extends T> other)
-    {
+    public IMultiset<T> insertAll(@Nonnull Iterator<? extends T> other) {
         Editor editor = new Editor();
         while (other.hasNext()) {
             final T value = other.next();
@@ -263,87 +232,70 @@ public abstract class AbstractMultiset<T>
 
     @Override
     @Nonnull
-    public IMultiset<T> insertAll(@Nonnull IMultiset<? extends T> values)
-    {
+    public IMultiset<T> insertAll(@Nonnull IMultiset<? extends T> values) {
         return insertAllMultisetHelper(values);
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> union(@Nonnull Iterable<? extends T> other)
-    {
+    public IMultiset<T> union(@Nonnull Iterable<? extends T> other) {
         return union(other.iterator());
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> union(@Nonnull Iterator<? extends T> other)
-    {
+    public IMultiset<T> union(@Nonnull Iterator<? extends T> other) {
         final Counter counter = new Counter(other);
-        return new Editor()
-            .max(counter)
-            .build();
+        return new Editor().max(counter).build();
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> union(@Nonnull IMultiset<? extends T> other)
-    {
+    public IMultiset<T> union(@Nonnull IMultiset<? extends T> other) {
         return unionMultisetHelper(other);
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> intersection(@Nonnull Iterable<? extends T> other)
-    {
+    public IMultiset<T> intersection(@Nonnull Iterable<? extends T> other) {
         return intersection(other.iterator());
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> intersection(@Nonnull Iterator<? extends T> other)
-    {
+    public IMultiset<T> intersection(@Nonnull Iterator<? extends T> other) {
         if (isEmpty()) {
             return this;
         } else if (!other.hasNext()) {
             return deleteAll();
         } else {
             final Counter counter = new Counter(other);
-            return new Editor()
-                .min(counter)
-                .removeValuesNotInCounter(counter)
-                .build();
+            return new Editor().min(counter).removeValuesNotInCounter(counter).build();
         }
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> intersection(@Nonnull IMultiset<? extends T> other)
-    {
+    public IMultiset<T> intersection(@Nonnull IMultiset<? extends T> other) {
         if (isEmpty()) {
             return this;
         } else if (other.isEmpty()) {
             return deleteAll();
         } else {
             final Counter counter = new Counter(other.entries());
-            return new Editor()
-                .min(counter)
-                .removeValuesNotInCounter(counter)
-                .build();
+            return new Editor().min(counter).removeValuesNotInCounter(counter).build();
         }
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> intersection(@Nonnull ISet<? extends T> other)
-    {
+    public IMultiset<T> intersection(@Nonnull ISet<? extends T> other) {
         return intersection(other.getSet());
     }
 
     @Override
     @Nonnull
-    public IMultiset<T> intersection(@Nonnull Set<? extends T> other)
-    {
+    public IMultiset<T> intersection(@Nonnull Set<? extends T> other) {
         if (isEmpty()) {
             return this;
         } else if (other.isEmpty()) {
@@ -364,17 +316,14 @@ public abstract class AbstractMultiset<T>
     }
 
     @Override
-    public int count(@Nonnull T value)
-    {
+    public int count(@Nonnull T value) {
         Conditions.stopNull(value);
         return map.getValueOr(value, 0);
     }
 
     @Nonnull
     @Override
-    public IMultiset<T> setCount(@Nonnull T value,
-                                 int count)
-    {
+    public IMultiset<T> setCount(@Nonnull T value, int count) {
         Conditions.stopNull(value, count);
         if (count < 0) {
             throw new IllegalArgumentException();
@@ -386,105 +335,92 @@ public abstract class AbstractMultiset<T>
     /**
      * Implemented by derived classes to create a new instance of the appropriate class.
      *
-     * @param map         base map for new multiset
+     * @param map base map for new multiset
      * @param occurrences total occurrences in map
      * @return new multiset built from map
      */
-    protected abstract IMultiset<T> create(IMap<T, Integer> map,
-                                           int occurrences);
+    protected abstract IMultiset<T> create(IMap<T, Integer> map, int occurrences);
 
     /**
-     * Implemented by derived classes to create a new empty mutable Map
-     * that operates in the same way as this multiset's underlying immutable Map.
+     * Implemented by derived classes to create a new empty mutable Map that operates in the same way as this multiset's
+     * underlying immutable Map.
      *
      * @return new empty Counter
      */
     protected abstract Map<T, Integer> emptyMutableMap();
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return map.isEmpty();
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return map.size();
     }
 
     @Override
-    public int occurrenceCount()
-    {
+    public int occurrenceCount() {
         return occurrences;
     }
 
     @Nonnull
-    public Set<T> getSet()
-    {
+    public Set<T> getSet() {
         return SetAdaptor.of(this);
     }
 
     @Override
     @Nonnull
-    public SplitableIterator<T> iterator()
-    {
+    public SplitableIterator<T> iterator() {
         return map.keys().iterator();
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return map.getSpliteratorCharacteristics();
     }
 
     @Nonnull
     @Override
-    public IStreamable<IMapEntry<T, Integer>> entries()
-    {
+    public IStreamable<IMapEntry<T, Integer>> entries() {
         return map;
     }
 
     @Nonnull
     @Override
-    public IStreamable<T> occurrences()
-    {
-        return new IStreamable<T>()
-        {
+    public IStreamable<T> occurrences() {
+        return new IStreamable<T>() {
             @Nonnull
             @Override
-            public SplitableIterator<T> iterator()
-            {
-                return LazyMultiIterator.transformed(map.iterator(), e -> IndexedIterator.fwd(IndexedHelper.repeating(e.getKey(), e.getValue())));
+            public SplitableIterator<T> iterator() {
+                return LazyMultiIterator.transformed(
+                        map.iterator(), e -> IndexedIterator.fwd(IndexedHelper.repeating(e.getKey(), e.getValue())));
             }
 
             @Override
-            public int getSpliteratorCharacteristics()
-            {
+            public int getSpliteratorCharacteristics() {
                 return map.getSpliteratorCharacteristics();
             }
         };
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o == null) {
             return false;
         } else if (o instanceof IMultiset) {
-            final IMultiset that = (IMultiset)o;
+            final IMultiset that = (IMultiset) o;
             //noinspection unchecked
             return (occurrenceCount() == that.occurrenceCount()) && containsAllOccurrences(that);
         } else if (o instanceof ISet) {
-            final ISet that = (ISet)o;
+            final ISet that = (ISet) o;
             return (size() == occurrences) && getSet().equals(that.getSet());
         } else {
             return (o instanceof Set) && (size() == occurrences) && getSet().equals(o);
@@ -492,13 +428,11 @@ public abstract class AbstractMultiset<T>
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return IteratorHelper.iteratorToString(occurrences().iterator());
     }
 
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         map.checkInvariants();
         if (occurrences < map.size()) {
             throw new IllegalStateException();
@@ -507,17 +441,18 @@ public abstract class AbstractMultiset<T>
         for (IMapEntry<T, Integer> entry : entries()) {
             int entryCount = entry.getValue();
             if (entryCount <= 0) {
-                throw new IllegalStateException(String.format("illegal count of %d for value %s%n", entryCount, entry.getKey()));
+                throw new IllegalStateException(
+                        String.format("illegal count of %d for value %s%n", entryCount, entry.getKey()));
             }
             checkOccurrences += entryCount;
         }
         if (occurrences != checkOccurrences) {
-            throw new RuntimeException(String.format("occurrence size mismatch - expected %d found %d%n", checkOccurrences, occurrences));
+            throw new RuntimeException(
+                    String.format("occurrence size mismatch - expected %d found %d%n", checkOccurrences, occurrences));
         }
     }
 
-    private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull IMultiset<T1> values)
-    {
+    private <T1 extends T> boolean containsAllOccurrencesMultisetHelper(@Nonnull IMultiset<T1> values) {
         for (IMapEntry<T1, Integer> entry : values.entries()) {
             final T value = entry.getKey();
             final int otherCount = entry.getValue();
@@ -528,8 +463,7 @@ public abstract class AbstractMultiset<T>
         return true;
     }
 
-    private <T1 extends T> IMultiset<T> deleteAllOccurrencesMultisetHelper(@Nonnull IMultiset<T1> values)
-    {
+    private <T1 extends T> IMultiset<T> deleteAllOccurrencesMultisetHelper(@Nonnull IMultiset<T1> values) {
         final Editor editor = new Editor();
         for (IMapEntry<T1, Integer> entry : values.entries()) {
             final T value = entry.getKey();
@@ -539,8 +473,7 @@ public abstract class AbstractMultiset<T>
         return editor.build();
     }
 
-    private <T1 extends T> IMultiset<T> insertAllMultisetHelper(@Nonnull IMultiset<T1> values)
-    {
+    private <T1 extends T> IMultiset<T> insertAllMultisetHelper(@Nonnull IMultiset<T1> values) {
         final Editor editor = new Editor();
         for (IMapEntry<T1, Integer> entry : values.entries()) {
             final T value = entry.getKey();
@@ -551,8 +484,7 @@ public abstract class AbstractMultiset<T>
     }
 
     @Nonnull
-    private <T1 extends T> IMultiset<T> unionMultisetHelper(@Nonnull IMultiset<T1> other)
-    {
+    private <T1 extends T> IMultiset<T> unionMultisetHelper(@Nonnull IMultiset<T1> other) {
         final Editor editor = new Editor();
         for (IMapEntry<T1, Integer> entry : other.entries()) {
             final T value = entry.getKey();
@@ -562,40 +494,32 @@ public abstract class AbstractMultiset<T>
         return editor.build();
     }
 
-    private class Editor
-    {
+    private class Editor {
         private IMap<T, Integer> newMap;
         private int newOccurrences;
 
-        private Editor()
-        {
+        private Editor() {
             this.newMap = map;
             this.newOccurrences = occurrences;
         }
 
-        private Editor remove(T value)
-        {
+        private Editor remove(T value) {
             return set(value, 0);
         }
 
-        private Editor delta(T value,
-                             int delta)
-        {
+        private Editor delta(T value, int delta) {
             final int oldCount = newMap.getValueOr(value, 0);
             adjust(value, oldCount, oldCount + delta);
             return this;
         }
 
-        private Editor set(T value,
-                           int newCount)
-        {
+        private Editor set(T value, int newCount) {
             final int oldCount = newMap.getValueOr(value, 0);
             adjust(value, oldCount, newCount);
             return this;
         }
 
-        private Editor max(Counter counter)
-        {
+        private Editor max(Counter counter) {
             counter.forEach((value, count) -> {
                 final int ourCount = newMap.getValueOr(value, 0);
                 final int theirCount = count;
@@ -604,8 +528,7 @@ public abstract class AbstractMultiset<T>
             return this;
         }
 
-        private Editor min(Counter counter)
-        {
+        private Editor min(Counter counter) {
             counter.forEach((value, count) -> {
                 final int ourCount = newMap.getValueOr(value, 0);
                 final int theirCount = count;
@@ -614,10 +537,7 @@ public abstract class AbstractMultiset<T>
             return this;
         }
 
-        private void adjust(T value,
-                            int oldCount,
-                            int newCount)
-        {
+        private void adjust(T value, int oldCount, int newCount) {
             if (newCount != oldCount) {
                 if (newCount <= 0) {
                     newMap = newMap.delete(value);
@@ -629,8 +549,7 @@ public abstract class AbstractMultiset<T>
             }
         }
 
-        private Editor removeValuesNotInCounter(Counter counter)
-        {
+        private Editor removeValuesNotInCounter(Counter counter) {
             newMap.forEach((value, count) -> {
                 if (counter.get(value) == 0) {
                     newMap = newMap.delete(value);
@@ -640,8 +559,7 @@ public abstract class AbstractMultiset<T>
             return this;
         }
 
-        private IMultiset<T> build()
-        {
+        private IMultiset<T> build() {
             if (newMap == map) {
                 return AbstractMultiset.this;
             } else if (newMap.isEmpty()) {
@@ -652,18 +570,15 @@ public abstract class AbstractMultiset<T>
         }
     }
 
-    private class Counter
-    {
+    private class Counter {
         private final Map<T, Integer> counts;
 
-        private Counter()
-        {
+        private Counter() {
             counts = emptyMutableMap();
             assert counts.isEmpty();
         }
 
-        private Counter(@Nonnull Iterator<? extends T> values)
-        {
+        private Counter(@Nonnull Iterator<? extends T> values) {
             this();
             while (values.hasNext()) {
                 final T value = values.next();
@@ -673,17 +588,14 @@ public abstract class AbstractMultiset<T>
             }
         }
 
-        private <T1 extends T> Counter(@Nonnull IStreamable<IMapEntry<T1, Integer>> values)
-        {
+        private <T1 extends T> Counter(@Nonnull IStreamable<IMapEntry<T1, Integer>> values) {
             this();
             for (IMapEntry<? extends T, Integer> entry : values) {
                 add(entry.getKey(), entry.getValue());
             }
         }
 
-        private int add(T value,
-                        int number)
-        {
+        private int add(T value, int number) {
             assert value != null;
             assert number > 0;
             final int currentCount = get(value);
@@ -692,16 +604,14 @@ public abstract class AbstractMultiset<T>
             return newCount;
         }
 
-        private int get(T value)
-        {
+        private int get(T value) {
             assert value != null;
             final Integer count = counts.get(value);
             assert (count == null) || (count > 0);
             return (count == null) ? 0 : count;
         }
 
-        void forEach(@Nonnull BiConsumer<T, Integer> proc)
-        {
+        void forEach(@Nonnull BiConsumer<T, Integer> proc) {
             counts.forEach(proc);
         }
     }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,18 +35,14 @@ package org.javimmutable.collections.serialization;
 
 import org.javimmutable.collections.inorder.OrderedSet;
 
-public class OrderedSetProxy
-    extends AbstractSetProxy
-{
+public class OrderedSetProxy extends AbstractSetProxy {
     private static final long serialVersionUID = -121805;
 
-    public OrderedSetProxy()
-    {
+    public OrderedSetProxy() {
         super(OrderedSet.of());
     }
 
-    public OrderedSetProxy(OrderedSet set)
-    {
+    public OrderedSetProxy(OrderedSet set) {
         super(set);
     }
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,13 @@
 
 package org.javimmutable.collections.hash;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
@@ -55,64 +60,46 @@ import org.javimmutable.collections.list.ListCollisionSet;
 import org.javimmutable.collections.serialization.HashSetProxy;
 import org.javimmutable.collections.tree.TreeCollisionSet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.function.Consumer;
-
 @Immutable
-public class HashSet<T>
-    extends AbstractSet<T>
-    implements ArrayAssignMapper<T, T, ArraySetNode<T>>,
-               ArrayContainsMapper<T, ArraySetNode<T>>,
-               ArrayIterationMapper<T, T, ArraySetNode<T>>,
-               ArrayDeleteMapper<T, ArraySetNode<T>>,
-               Serializable
-{
+public class HashSet<T> extends AbstractSet<T>
+        implements ArrayAssignMapper<T, T, ArraySetNode<T>>,
+                ArrayContainsMapper<T, ArraySetNode<T>>,
+                ArrayIterationMapper<T, T, ArraySetNode<T>>,
+                ArrayDeleteMapper<T, ArraySetNode<T>>,
+                Serializable {
     private static final long serialVersionUID = -121805;
 
     private final TrieArrayNode<ArraySetNode<T>> root;
     private final CollisionSet<T> collisionSet;
 
-    HashSet(@Nonnull TrieArrayNode<ArraySetNode<T>> root,
-            @Nonnull CollisionSet<T> collisionSet)
-    {
+    HashSet(@Nonnull TrieArrayNode<ArraySetNode<T>> root, @Nonnull CollisionSet<T> collisionSet) {
         this.root = root;
         this.collisionSet = collisionSet;
     }
 
-    HashSet(@Nonnull T value)
-    {
+    HashSet(@Nonnull T value) {
         root = TrieArrayNode.<ArraySetNode<T>>empty().mappedAssign(this, value, value);
         collisionSet = selectCollisionSetForValue(value);
     }
 
-    public static <T> ISet<T> of()
-    {
+    public static <T> ISet<T> of() {
         return EmptyHashSet.instance();
     }
 
-    static <T> ISet<T> usingList()
-    {
+    static <T> ISet<T> usingList() {
         return new HashSet<>(TrieArrayNode.empty(), ListCollisionSet.instance());
     }
 
-    static <T> ISet<T> usingTree()
-    {
+    static <T> ISet<T> usingTree() {
         return new HashSet<>(TrieArrayNode.empty(), TreeCollisionSet.instance());
     }
 
     @Nonnull
-    public static <T> ISetBuilder<T> builder()
-    {
+    public static <T> ISetBuilder<T> builder() {
         return new HashSetBuilder<>();
     }
 
-    static <T> CollisionSet<T> selectCollisionSetForValue(@Nonnull T value)
-    {
+    static <T> CollisionSet<T> selectCollisionSetForValue(@Nonnull T value) {
         if (value instanceof Comparable) {
             return TreeCollisionSet.instance();
         } else {
@@ -122,41 +109,35 @@ public class HashSet<T>
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll()
-    {
+    public ISet<T> deleteAll() {
         return of();
     }
 
     @Override
-    protected Set<T> emptyMutableSet()
-    {
+    protected Set<T> emptyMutableSet() {
         return new java.util.HashSet<>();
     }
 
     @Nonnull
     @Override
-    public ISet<T> insert(@Nonnull T value)
-    {
+    public ISet<T> insert(@Nonnull T value) {
         return createForUpdate(root.mappedAssign(this, value, value));
     }
 
     @Override
-    public boolean contains(@Nullable T value)
-    {
+    public boolean contains(@Nullable T value) {
         return value != null && root.mappedContains(this, value);
     }
 
     @Nonnull
     @Override
-    public ISet<T> delete(T value)
-    {
+    public ISet<T> delete(T value) {
         return createForDelete(root.mappedDelete(this, value));
     }
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> other)
-    {
+    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> other) {
         TrieArrayNode<ArraySetNode<T>> newRoot = root;
         while (other.hasNext()) {
             T value = other.next();
@@ -167,8 +148,7 @@ public class HashSet<T>
 
     @Nonnull
     @Override
-    public ISet<T> union(@Nonnull Iterator<? extends T> other)
-    {
+    public ISet<T> union(@Nonnull Iterator<? extends T> other) {
         TrieArrayNode<ArraySetNode<T>> newRoot = root;
         while (other.hasNext()) {
             T value = other.next();
@@ -179,8 +159,7 @@ public class HashSet<T>
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> intersection(@Nonnull Iterator<? extends T> values) {
         if (isEmpty()) {
             return this;
         }
@@ -202,8 +181,7 @@ public class HashSet<T>
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Set<? extends T> otherSet)
-    {
+    public ISet<T> intersection(@Nonnull Set<? extends T> otherSet) {
         TrieArrayNode<ArraySetNode<T>> newRoot = root;
         for (T value : root.mappedKeys(this)) {
             if (!otherSet.contains(value)) {
@@ -214,117 +192,94 @@ public class HashSet<T>
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return root.size();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return root.isEmpty();
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         root.checkInvariants(this);
     }
 
     @Override
-    public void forEach(@Nonnull Consumer<? super T> action)
-    {
+    public void forEach(@Nonnull Consumer<? super T> action) {
         root.forEach(node -> node.forEach(collisionSet, action::accept));
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc) throws E {
         root.forEachThrows(node -> node.forEachThrows(collisionSet, proc));
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<T> iterator()
-    {
+    public SplitableIterator<T> iterator() {
         return root.mappedKeys(this).iterator();
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_UNORDERED;
     }
 
     @Override
-    public boolean mappedContains(@Nonnull ArraySetNode<T> mapping,
-                                  @Nonnull T key)
-    {
+    public boolean mappedContains(@Nonnull ArraySetNode<T> mapping, @Nonnull T key) {
         return mapping.contains(collisionSet, key);
     }
 
     @Nonnull
     @Override
-    public ArraySetNode<T> mappedAssign(@Nonnull T key,
-                                        T ignored)
-    {
+    public ArraySetNode<T> mappedAssign(@Nonnull T key, T ignored) {
         assert key == ignored;
         return new ArraySingleValueSetNode<>(key);
     }
 
     @Nonnull
     @Override
-    public ArraySetNode<T> mappedAssign(@Nonnull ArraySetNode<T> current,
-                                        @Nonnull T key,
-                                        T ignored)
-    {
+    public ArraySetNode<T> mappedAssign(@Nonnull ArraySetNode<T> current, @Nonnull T key, T ignored) {
         assert key == ignored;
         return current.insert(collisionSet, key);
     }
 
     @Nullable
     @Override
-    public ArraySetNode<T> mappedDelete(@Nonnull ArraySetNode<T> current,
-                                        @Nonnull T key)
-    {
+    public ArraySetNode<T> mappedDelete(@Nonnull ArraySetNode<T> current, @Nonnull T key) {
         return current.delete(collisionSet, key);
     }
 
     @Override
-    public int mappedSize(@Nonnull ArraySetNode<T> mapping)
-    {
+    public int mappedSize(@Nonnull ArraySetNode<T> mapping) {
         return mapping.size(collisionSet);
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<T> mappedKeys(@Nonnull ArraySetNode<T> mapping)
-    {
+    public GenericIterator.Iterable<T> mappedKeys(@Nonnull ArraySetNode<T> mapping) {
         return mapping.values(collisionSet);
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<T> mappedValues(@Nonnull ArraySetNode<T> mapping)
-    {
+    public GenericIterator.Iterable<T> mappedValues(@Nonnull ArraySetNode<T> mapping) {
         return mapping.values(collisionSet);
     }
 
     @Nonnull
     @Override
-    public GenericIterator.Iterable<IMapEntry<T, T>> mappedEntries(@Nonnull ArraySetNode<T> mapping)
-    {
+    public GenericIterator.Iterable<IMapEntry<T, T>> mappedEntries(@Nonnull ArraySetNode<T> mapping) {
         return GenericIterator.transformIterable(mapping.values(collisionSet), k -> IMapEntry.of(k, k));
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new HashSetProxy(this);
     }
 
-    private ISet<T> createForUpdate(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot)
-    {
+    private ISet<T> createForUpdate(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot) {
         if (root == newRoot) {
             return this;
         } else {
@@ -333,8 +288,7 @@ public class HashSet<T>
         }
     }
 
-    private ISet<T> createForDelete(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot)
-    {
+    private ISet<T> createForDelete(@Nonnull TrieArrayNode<ArraySetNode<T>> newRoot) {
         if (root == newRoot) {
             return this;
         } else if (newRoot.isEmpty()) {

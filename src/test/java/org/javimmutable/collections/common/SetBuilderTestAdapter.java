@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,75 +33,60 @@
 
 package org.javimmutable.collections.common;
 
+import java.util.Iterator;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
 import org.javimmutable.collections.Indexed;
 
-import java.util.Iterator;
-
-public class SetBuilderTestAdapter<T>
-    implements StandardBuilderTests.BuilderAdapter<T, ISet<T>>
-{
+public class SetBuilderTestAdapter<T> implements StandardBuilderTests.BuilderAdapter<T, ISet<T>> {
     private final ISetBuilder<T> builder;
 
-    public SetBuilderTestAdapter(ISetBuilder<T> builder)
-    {
+    public SetBuilderTestAdapter(ISetBuilder<T> builder) {
         this.builder = builder;
     }
 
     @Override
-    public ISet<T> build()
-    {
+    public ISet<T> build() {
         return builder.build();
     }
 
     @Override
-    public void clear()
-    {
+    public void clear() {
         builder.clear();
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return builder.size();
     }
 
     @Override
-    public void add(T value)
-    {
+    public void add(T value) {
         builder.add(value);
     }
 
     @Override
-    public void add(Iterator<? extends T> source)
-    {
+    public void add(Iterator<? extends T> source) {
         builder.add(source);
     }
 
     @Override
-    public void add(Iterable<? extends T> source)
-    {
+    public void add(Iterable<? extends T> source) {
         builder.add(source);
     }
 
     @Override
-    public <K extends T> void add(K... source)
-    {
+    public <K extends T> void add(K... source) {
         builder.add(source);
     }
 
     @Override
-    public void add(Indexed<? extends T> source,
-                    int offset,
-                    int limit)
-    {
+    public void add(Indexed<? extends T> source, int offset, int limit) {
         builder.add(source, offset, limit);
     }
 
     @Override
-    public void add(Indexed<? extends T> source)
-    {
+    public void add(Indexed<? extends T> source) {
         builder.add(source);
     }
 }

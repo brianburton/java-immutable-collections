@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,33 +33,29 @@
 
 package org.javimmutable.collections.setmap;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISetMap;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-
-public class OrderedSetMapTest
-    extends AbstractSetMapTestCase
-{
+public class OrderedSetMapTest extends AbstractSetMapTestCase {
     @SuppressWarnings("unchecked")
-    public void test()
-    {
+    public void test() {
         ISetMap<Integer, Integer> map = verifyOperations(OrderedSetMap.of(), Ordering.HASH);
         verifyRandom(OrderedSetMap.of(), new LinkedHashMap<>());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 3, 2), map.keys().iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(IMapEntry.of(1, map.getSet(1)),
-                                                             IMapEntry.of(3, map.getSet(3)),
-                                                             IMapEntry.of(2, map.getSet(2))),
-                                               map.iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(1, 3, 2), map.keys().iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(
+                        IMapEntry.of(1, map.getSet(1)), IMapEntry.of(3, map.getSet(3)), IMapEntry.of(2, map.getSet(2))),
+                map.iterator());
     }
 
-    public void testEquals()
-    {
+    public void testEquals() {
         ISetMap<Integer, Integer> a = OrderedSetMap.of();
         ISetMap<Integer, Integer> b = OrderedSetMap.of();
         assertEquals(a, b);
@@ -79,18 +73,28 @@ public class OrderedSetMapTest
         assertEquals(b, a);
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((OrderedSetMap)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((OrderedSetMap) a).iterator();
         ISetMap<String, String> empty = OrderedSetMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZgKACAIBo9y+qAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZGBgYSxgYHctZoKzECgCMQoKEuAAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("a", "b").insert("Z", "c"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZgEQJA6NjOQuQxQhkJRYy1DGwwLlJQBwF5yVXAAB6HbIG1QAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("A", "a").insert("b", "B").delete("A", "a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZGBiYShgYHctZgCwGICsJzGIEspwqAA83f2nCAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZgKACAIBo9y+qAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("A", "a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZGBgYSxgYHctZoKzECgCMQoKEuAAAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("A", "a").insert("a", "b").insert("Z", "c"),
+                "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZgEQJA6NjOQuQxQhkJRYy1DGwwLlJQBwF5yVXAAB6HbIG1QAAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("A", "a").insert("b", "B").delete("A", "a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBNr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4t8U0sCCjKr6j8DwL/VIx5GBgqihjsSDDLMam4pCgxuQSHYQXlHAwMzC8ZGBiYShgYHctZgCwGICsJzGIEspwqAA83f2nCAAAA");
     }
 }

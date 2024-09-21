@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,26 +33,20 @@
 
 package org.javimmutable.collections.util;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.TestCase;
 import org.javimmutable.collections.ILists;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class ZipTest
-    extends TestCase
-{
-    public void test()
-    {
+public class ZipTest extends TestCase {
+    public void test() {
         AtomicInteger sum = new AtomicInteger();
         Zip.forEach(ILists.of(1, 2), ILists.of(3, 4), (a, b) -> sum.addAndGet(a + b));
         assertEquals(10, sum.get());
         assertEquals(Integer.valueOf(10), Zip.reduce(0, ILists.of(1, 2), ILists.of(3, 4), ZipTest::adder));
     }
 
-    public void testThrows()
-        throws IOException
-    {
+    public void testThrows() throws IOException {
         AtomicInteger sum = new AtomicInteger();
         Zip.forEachThrows(ILists.of(1, 2), ILists.of(3, 4), (a, b) -> {
             if (a == -1) {
@@ -66,18 +58,11 @@ public class ZipTest
         assertEquals(Integer.valueOf(10), Zip.reduceThrows(0, ILists.of(1, 2), ILists.of(3, 4), ZipTest::adderThrows));
     }
 
-    private static Integer adder(Integer s,
-                                 Integer a,
-                                 Integer b)
-    {
+    private static Integer adder(Integer s, Integer a, Integer b) {
         return s + a + b;
     }
 
-    private static Integer adderThrows(Integer s,
-                                       Integer a,
-                                       Integer b)
-        throws IOException
-    {
+    private static Integer adderThrows(Integer s, Integer a, Integer b) throws IOException {
         return s + a + b;
     }
 }

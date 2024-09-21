@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,42 +33,35 @@
 
 package org.javimmutable.collections.common;
 
+import java.util.Iterator;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMultiset;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.iterators.IteratorHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
-import java.util.Set;
-
 @Immutable
-public abstract class AbstractSet<T>
-    implements ISet<T>
-{
+public abstract class AbstractSet<T> implements ISet<T> {
     @Override
     @Nonnull
-    public ISet<T> insertAll(@Nonnull Iterable<? extends T> values)
-    {
+    public ISet<T> insertAll(@Nonnull Iterable<? extends T> values) {
         return union(values.iterator());
     }
 
     @Override
     @Nonnull
-    public ISet<T> insertAll(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> insertAll(@Nonnull Iterator<? extends T> values) {
         return union(values);
     }
 
     @Override
-    public boolean containsAll(@Nonnull Iterable<? extends T> values)
-    {
+    public boolean containsAll(@Nonnull Iterable<? extends T> values) {
         return containsAll(values.iterator());
     }
 
     @Override
-    public boolean containsAll(@Nonnull Iterator<? extends T> values)
-    {
+    public boolean containsAll(@Nonnull Iterator<? extends T> values) {
         while (values.hasNext()) {
             if (!contains(values.next())) {
                 return false;
@@ -80,14 +71,12 @@ public abstract class AbstractSet<T>
     }
 
     @Override
-    public boolean containsAny(@Nonnull Iterable<? extends T> values)
-    {
+    public boolean containsAny(@Nonnull Iterable<? extends T> values) {
         return containsAny(values.iterator());
     }
 
     @Override
-    public boolean containsAny(@Nonnull Iterator<? extends T> values)
-    {
+    public boolean containsAny(@Nonnull Iterator<? extends T> values) {
         while (values.hasNext()) {
             if (contains(values.next())) {
                 return true;
@@ -98,48 +87,41 @@ public abstract class AbstractSet<T>
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll(@Nonnull Iterable<? extends T> other)
-    {
+    public ISet<T> deleteAll(@Nonnull Iterable<? extends T> other) {
         return deleteAll(other.iterator());
     }
 
     @Nonnull
     @Override
-    public ISet<T> union(@Nonnull Iterable<? extends T> other)
-    {
+    public ISet<T> union(@Nonnull Iterable<? extends T> other) {
         return union(other.iterator());
     }
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Iterable<? extends T> other)
-    {
+    public ISet<T> intersection(@Nonnull Iterable<? extends T> other) {
         return intersection(other.iterator());
     }
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull ISet<? extends T> other)
-    {
+    public ISet<T> intersection(@Nonnull ISet<? extends T> other) {
         return intersection(other.getSet());
     }
 
     @Nonnull
     @Override
-    public Set<T> getSet()
-    {
+    public Set<T> getSet() {
         return SetAdaptor.of(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return IteratorHelper.iteratorHashCode(iterator());
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o == null) {
@@ -147,20 +129,17 @@ public abstract class AbstractSet<T>
         } else if (o instanceof IMultiset) {
             return o.equals(this);
         } else if (o instanceof ISet) {
-            return getSet().equals(((ISet)o).getSet());
+            return getSet().equals(((ISet) o).getSet());
         } else {
             return (o instanceof Set) && getSet().equals(o);
         }
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return IteratorHelper.iteratorToString(iterator());
     }
 
-    /**
-     * Implemented by derived classes to create a new empty Set
-     */
+    /** Implemented by derived classes to create a new empty Set */
     protected abstract Set<T> emptyMutableSet();
 }

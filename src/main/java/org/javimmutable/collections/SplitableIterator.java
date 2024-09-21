@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,44 +33,36 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Spliterator;
+import javax.annotation.Nonnull;
 
 /**
- * Merges the concepts of Spliterator and Iterator.  Objects implementing this
- * interface are Iterators that are capable of splitting into two parts under
- * certain conditions and are also capable of creating Spliterators on demand.
+ * Merges the concepts of Spliterator and Iterator. Objects implementing this interface are Iterators that are capable
+ * of splitting into two parts under certain conditions and are also capable of creating Spliterators on demand.
  */
-public interface SplitableIterator<T>
-    extends Iterator<T>
-{
-    /**
-     * Tests to determine if this Iterator is capable of splitting into two new Iterators.
-     */
-    default boolean isSplitAllowed()
-    {
+public interface SplitableIterator<T> extends Iterator<T> {
+    /** Tests to determine if this Iterator is capable of splitting into two new Iterators. */
+    default boolean isSplitAllowed() {
         return false;
     }
 
     /**
-     * Whenever isSplitAllowed returns true this method can be used to create two new
-     * SplitableIterators that collectively visit all the same elements as this Iterator.
-     * Whenever isSplitAllowed returns false this method throws UnsupportedOperationException.
+     * Whenever isSplitAllowed returns true this method can be used to create two new SplitableIterators that
+     * collectively visit all the same elements as this Iterator. Whenever isSplitAllowed returns false this method
+     * throws UnsupportedOperationException.
      *
      * @return two new SplitableIterators spanning the same elements as this
      * @throws UnsupportedOperationException if splitting is not allowed
      */
     @Nonnull
-    default SplitIterator<T> splitIterator()
-    {
+    default SplitIterator<T> splitIterator() {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Utility method that creates a Spliterator with the specified characteristics that
-     * encounters all of the same elements as this Iterator.  Implementations are allowed
-     * to link the Spliterator to use this Iterator directly.
+     * Utility method that creates a Spliterator with the specified characteristics that encounters all of the same
+     * elements as this Iterator. Implementations are allowed to link the Spliterator to use this Iterator directly.
      */
     @Nonnull
     Spliterator<T> spliterator(int characteristics);

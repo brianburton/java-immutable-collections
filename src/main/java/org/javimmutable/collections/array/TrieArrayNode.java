@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,14 @@
 
 package org.javimmutable.collections.array;
 
+import static org.javimmutable.collections.common.BitmaskMath.*;
+import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntFunction;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMapEntry;
@@ -50,30 +56,20 @@ import org.javimmutable.collections.common.IntArrayMappedTrieMath;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntFunction;
-
-import static org.javimmutable.collections.common.BitmaskMath.*;
-import static org.javimmutable.collections.common.IntArrayMappedTrieMath.*;
-
-/**
- * Implements an array mapped trie using integers as keys.  When iterating keys
- * are visited in signed-integer order.
- */
-public class TrieArrayNode<T>
-{
+/** Implements an array mapped trie using integers as keys. When iterating keys are visited in signed-integer order. */
+public class TrieArrayNode<T> {
     static final int LEAF_SHIFT_COUNT = 0;
     static final int ROOT_SHIFT_COUNT = IntArrayMappedTrieMath.maxShiftsForBitCount(30);
     private static final int SIGN_BIT = 1 << 31;
 
     private static final Object[] EMPTY_VALUES = new Object[0];
+
     @SuppressWarnings({"rawtypes"})
     private static final TrieArrayNode[] EMPTY_NODES = new TrieArrayNode[0];
+
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final TrieArrayNode EMPTY = new TrieArrayNode(ROOT_SHIFT_COUNT, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
+    private static final TrieArrayNode EMPTY =
+            new TrieArrayNode(ROOT_SHIFT_COUNT, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
 
     private final int shiftCount;
     private final int baseIndex;
@@ -83,14 +79,14 @@ public class TrieArrayNode<T>
     private final TrieArrayNode<T>[] nodes;
     private final int size;
 
-    TrieArrayNode(int shiftCount,
-                  int baseIndex,
-                  long valuesBitmask,
-                  T[] values,
-                  long nodesBitmask,
-                  @Nonnull TrieArrayNode<T>[] nodes,
-                  int size)
-    {
+    TrieArrayNode(
+            int shiftCount,
+            int baseIndex,
+            long valuesBitmask,
+            T[] values,
+            long nodesBitmask,
+            @Nonnull TrieArrayNode<T>[] nodes,
+            int size) {
         assert bitCount(valuesBitmask) == values.length;
         assert bitCount(nodesBitmask) == nodes.length;
         this.shiftCount = shiftCount;
@@ -101,21 +97,17 @@ public class TrieArrayNode<T>
         this.nodes = nodes;
         this.size = size;
         assert checkChildShifts(shiftCount, nodes);
-//        assert computeSize(nodes) + values.length == size;
+        //        assert computeSize(nodes) + values.length == size;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> TrieArrayNode<T> empty()
-    {
-        return (TrieArrayNode<T>)EMPTY;
+    public static <T> TrieArrayNode<T> empty() {
+        return (TrieArrayNode<T>) EMPTY;
     }
 
     @Nonnull
-    private static <T> TrieArrayNode<T> forValue(int shiftCount,
-                                                 int index,
-                                                 T value)
-    {
+    private static <T> TrieArrayNode<T> forValue(int shiftCount, int index, T value) {
         assert shiftCount == findShiftForIndex(index);
         final int baseIndex = baseIndexAtShift(shiftCount, index);
         final long valueBitmask = bitFromIndex(indexAtShift(shiftCount, index));
@@ -126,10 +118,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    private static <T> TrieArrayNode<T> forNode(int shiftCount,
-                                                int nodeBaseIndex,
-                                                @Nonnull TrieArrayNode<T> node)
-    {
+    private static <T> TrieArrayNode<T> forNode(int shiftCount, int nodeBaseIndex, @Nonnull TrieArrayNode<T> node) {
         final int baseIndex = baseIndexAtShift(shiftCount, nodeBaseIndex);
         final long valueBitmask = 0L;
         final T[] values = emptyValues();
@@ -139,106 +128,83 @@ public class TrieArrayNode<T>
         return new TrieArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.size());
     }
 
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return size == 0;
     }
 
-    public T getValueOr(int index,
-                        T defaultValue)
-    {
+    public T getValueOr(int index, T defaultValue) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return getValueOrImpl(shiftCountForValue, index, defaultValue);
     }
 
     @Nonnull
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return findImpl(shiftCountForValue, index, () -> Maybe.empty(), value -> Maybe.of(value));
     }
 
     @Nonnull
-    public TrieArrayNode<T> assign(int index,
-                                   T value)
-    {
+    public TrieArrayNode<T> assign(int index, T value) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return assignImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, value);
     }
 
     @Nonnull
-    public TrieArrayNode<T> delete(int index)
-    {
+    public TrieArrayNode<T> delete(int index) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return deleteImpl(shiftCountForValue, index);
     }
 
-    public <K> boolean mappedContains(@Nonnull ArrayContainsMapper<K, T> mapper,
-                                      @Nonnull K key)
-    {
+    public <K> boolean mappedContains(@Nonnull ArrayContainsMapper<K, T> mapper, @Nonnull K key) {
         final T node = getNodeFofHashKey(key);
         return node != null && mapper.mappedContains(node, key);
     }
 
-    public <K, V> V mappedGetValueOr(@Nonnull ArrayGetMapper<K, V, T> mapper,
-                                     @Nonnull K key,
-                                     V defaultValue)
-    {
+    public <K, V> V mappedGetValueOr(@Nonnull ArrayGetMapper<K, V, T> mapper, @Nonnull K key, V defaultValue) {
         final T node = getNodeFofHashKey(key);
         return node != null ? mapper.mappedGetValueOr(node, key, defaultValue) : defaultValue;
     }
 
     @Nonnull
-    public <K, V> Maybe<V> mappedFind(@Nonnull ArrayGetMapper<K, V, T> mapper,
-                                      @Nonnull K key)
-    {
+    public <K, V> Maybe<V> mappedFind(@Nonnull ArrayGetMapper<K, V, T> mapper, @Nonnull K key) {
         final T node = getNodeFofHashKey(key);
         return node != null ? mapper.mappedFind(node, key) : Maybe.empty();
     }
 
     @Nonnull
-    public <K, V> Maybe<IMapEntry<K, V>> mappedFindEntry(@Nonnull ArrayFindEntryMapper<K, V, T> mapper,
-                                                         @Nonnull K key)
-    {
+    public <K, V> Maybe<IMapEntry<K, V>> mappedFindEntry(
+            @Nonnull ArrayFindEntryMapper<K, V, T> mapper, @Nonnull K key) {
         final T node = getNodeFofHashKey(key);
         return node != null ? mapper.mappedFindEntry(node, key) : Maybe.empty();
     }
 
     @Nonnull
-    public <K, V> TrieArrayNode<T> mappedAssign(@Nonnull ArrayAssignMapper<K, V, T> mapper,
-                                                @Nonnull K key,
-                                                V value)
-    {
+    public <K, V> TrieArrayNode<T> mappedAssign(@Nonnull ArrayAssignMapper<K, V, T> mapper, @Nonnull K key, V value) {
         final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedAssignImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, mapper, key, value);
     }
 
     @Nonnull
-    public <K, V> TrieArrayNode<T> mappedUpdate(@Nonnull ArrayUpdateMapper<K, V, T> mapper,
-                                                @Nonnull K key,
-                                                @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    public <K, V> TrieArrayNode<T> mappedUpdate(
+            @Nonnull ArrayUpdateMapper<K, V, T> mapper, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator) {
         final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedUpdateImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, mapper, key, generator);
     }
 
     @Nonnull
-    public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayDeleteMapper<K, T> mapper,
-                                             @Nonnull K key)
-    {
+    public <K> TrieArrayNode<T> mappedDelete(@Nonnull ArrayDeleteMapper<K, T> mapper, @Nonnull K key) {
         final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return mappedDeleteImpl(shiftCountForValue, index, mapper, key);
     }
 
-    public void forEach(@Nonnull Proc1<T> proc)
-    {
+    public void forEach(@Nonnull Proc1<T> proc) {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
             final long bit = leastBit(combinedBitmask);
@@ -254,9 +220,7 @@ public class TrieArrayNode<T>
         }
     }
 
-    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc) throws E {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
             final long bit = leastBit(combinedBitmask);
@@ -272,8 +236,7 @@ public class TrieArrayNode<T>
         }
     }
 
-    public void forEach(@Nonnull IndexedProc1<T> proc)
-    {
+    public void forEach(@Nonnull IndexedProc1<T> proc) {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
             final long bit = leastBit(combinedBitmask);
@@ -291,9 +254,7 @@ public class TrieArrayNode<T>
         }
     }
 
-    public <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(@Nonnull IndexedProc1Throws<T, E> proc) throws E {
         long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
         while (combinedBitmask != 0) {
             final long bit = leastBit(combinedBitmask);
@@ -312,17 +273,13 @@ public class TrieArrayNode<T>
     }
 
     @Nullable
-    private <K> T getNodeFofHashKey(@Nonnull K key)
-    {
+    private <K> T getNodeFofHashKey(@Nonnull K key) {
         final int index = flip(key.hashCode());
         final int shiftCountForValue = findShiftForIndex(index);
         return getValueOrImpl(shiftCountForValue, index, null);
     }
 
-    private T getValueOrImpl(int shiftCountForValue,
-                             int index,
-                             T defaultValue)
-    {
+    private T getValueOrImpl(int shiftCountForValue, int index, T defaultValue) {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
             return defaultValue;
@@ -349,11 +306,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    private <C> C findImpl(int shiftCountForValue,
-                           int index,
-                           Func0<C> notFound,
-                           Func1<T, C> found)
-    {
+    private <C> C findImpl(int shiftCountForValue, int index, Func0<C> notFound, Func1<T, C> found) {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
             return notFound.apply();
@@ -380,11 +333,7 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    private TrieArrayNode<T> assignImpl(int shiftCount,
-                                        int shiftCountForValue,
-                                        int index,
-                                        T value)
-    {
+    private TrieArrayNode<T> assignImpl(int shiftCount, int shiftCountForValue, int index, T value) {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
         assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
@@ -428,28 +377,31 @@ public class TrieArrayNode<T>
                 final TrieArrayNode<T> newNode = node.assignImpl(shiftCount - 1, shiftCountForValue, index, value);
                 final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                 final int newSize = size - node.size() + newNode.size();
-                return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                return new TrieArrayNode<>(
+                        shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
                 final TrieArrayNode<T> newNode = forValue(shiftCountForValue, index, value);
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;
                 } else {
-                    final TrieArrayNode<T>[] newNodes = ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                    final TrieArrayNode<T>[] newNodes =
+                            ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
         }
     }
 
     @Nonnull
-    private <K, V> TrieArrayNode<T> mappedAssignImpl(int shiftCount,
-                                                     int shiftCountForValue,
-                                                     int index,
-                                                     @Nonnull ArrayAssignMapper<K, V, T> mapper,
-                                                     @Nonnull K key,
-                                                     V value)
-    {
+    private <K, V> TrieArrayNode<T> mappedAssignImpl(
+            int shiftCount,
+            int shiftCountForValue,
+            int index,
+            @Nonnull ArrayAssignMapper<K, V, T> mapper,
+            @Nonnull K key,
+            V value) {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
         assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
@@ -489,7 +441,8 @@ public class TrieArrayNode<T>
                     assert (newSize == size) || (newSize == size + 1);
                     final T[] newValues = ArrayHelper.assign(values, arrayIndex, newValue);
                     assert newSize == computeSize(mapper, nodes, newValues);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
                 }
             } else {
                 final T newValue = mapper.mappedAssign(key, value);
@@ -503,14 +456,16 @@ public class TrieArrayNode<T>
             final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
             if (bitIsPresent(nodesBitmask, bit)) {
                 final TrieArrayNode<T> node = nodes[arrayIndex];
-                final TrieArrayNode<T> newNode = node.mappedAssignImpl(shiftCount - 1, shiftCountForValue, index, mapper, key, value);
+                final TrieArrayNode<T> newNode =
+                        node.mappedAssignImpl(shiftCount - 1, shiftCountForValue, index, mapper, key, value);
                 if (newNode == node) {
                     return this;
                 } else {
                     final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                     final int newSize = size - node.size() + newNode.size();
                     assert newSize == computeSize(mapper, newNodes, values);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
                 }
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
@@ -518,22 +473,24 @@ public class TrieArrayNode<T>
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;
                 } else {
-                    final TrieArrayNode<T>[] newNodes = ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    final TrieArrayNode<T>[] newNodes =
+                            ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
                     assert (size + 1) == computeSize(mapper, newNodes, values);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
         }
     }
 
     @Nonnull
-    private <K, V> TrieArrayNode<T> mappedUpdateImpl(int shiftCount,
-                                                     int shiftCountForValue,
-                                                     int index,
-                                                     @Nonnull ArrayUpdateMapper<K, V, T> mapper,
-                                                     @Nonnull K key,
-                                                     @Nonnull Func1<Maybe<V>, V> generator)
-    {
+    private <K, V> TrieArrayNode<T> mappedUpdateImpl(
+            int shiftCount,
+            int shiftCountForValue,
+            int index,
+            @Nonnull ArrayUpdateMapper<K, V, T> mapper,
+            @Nonnull K key,
+            @Nonnull Func1<Maybe<V>, V> generator) {
         final int thisShiftCount = this.shiftCount;
         final int baseIndex = this.baseIndex;
         assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
@@ -573,7 +530,8 @@ public class TrieArrayNode<T>
                     assert (newSize == size) || (newSize == size + 1);
                     final T[] newValues = ArrayHelper.assign(values, arrayIndex, newValue);
                     assert newSize == computeSize(mapper, nodes, newValues);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, newSize);
                 }
             } else {
                 final T newValue = mapper.mappedAssign(key, generator.apply(Maybe.empty()));
@@ -587,14 +545,16 @@ public class TrieArrayNode<T>
             final int arrayIndex = arrayIndexForBit(nodesBitmask, bit);
             if (bitIsPresent(nodesBitmask, bit)) {
                 final TrieArrayNode<T> node = nodes[arrayIndex];
-                final TrieArrayNode<T> newNode = node.mappedUpdateImpl(shiftCount - 1, shiftCountForValue, index, mapper, key, generator);
+                final TrieArrayNode<T> newNode =
+                        node.mappedUpdateImpl(shiftCount - 1, shiftCountForValue, index, mapper, key, generator);
                 if (newNode == node) {
                     return this;
                 } else {
                     final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                     final int newSize = size - node.size() + newNode.size();
                     assert newSize == computeSize(mapper, newNodes, values);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
                 }
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
@@ -603,18 +563,18 @@ public class TrieArrayNode<T>
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;
                 } else {
-                    final TrieArrayNode<T>[] newNodes = ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    final TrieArrayNode<T>[] newNodes =
+                            ArrayHelper.insert(TrieArrayNode::allocateNodes, nodes, arrayIndex, newNode);
                     assert (size + 1) == computeSize(mapper, newNodes, values);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
         }
     }
 
     @Nonnull
-    private TrieArrayNode<T> deleteImpl(int shiftCountForValue,
-                                        int index)
-    {
+    private TrieArrayNode<T> deleteImpl(int shiftCountForValue, int index) {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
             return this;
@@ -636,7 +596,8 @@ public class TrieArrayNode<T>
                     final long newBitmask = removeBit(valuesBitmask, bit);
                     final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
                     final T[] newValues = ArrayHelper.delete(TrieArrayNode::allocateValues, values, arrayIndex);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
             }
         } else {
@@ -654,12 +615,15 @@ public class TrieArrayNode<T>
                             // return the unaffected single remaining node to minimize height of the tree
                             return nodes[arrayIndexForBit(nodesBitmask, newBitmask)];
                         } else {
-                            final TrieArrayNode<T>[] newNodes = ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
-                            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
+                            final TrieArrayNode<T>[] newNodes =
+                                    ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
+                            return new TrieArrayNode<>(
+                                    shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
                         final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                        return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                        return new TrieArrayNode<>(
+                                shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
                     }
                 }
             }
@@ -668,11 +632,8 @@ public class TrieArrayNode<T>
     }
 
     @Nonnull
-    private <K> TrieArrayNode<T> mappedDeleteImpl(int shiftCountForValue,
-                                                  int index,
-                                                  @Nonnull ArrayDeleteMapper<K, T> mapper,
-                                                  @Nonnull K key)
-    {
+    private <K> TrieArrayNode<T> mappedDeleteImpl(
+            int shiftCountForValue, int index, @Nonnull ArrayDeleteMapper<K, T> mapper, @Nonnull K key) {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
             return this;
@@ -703,7 +664,8 @@ public class TrieArrayNode<T>
                         newValues = ArrayHelper.assign(values, arrayIndex, newMapping);
                     }
                     assert (size - 1) == computeSize(mapper, nodes, newValues);
-                    return new TrieArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
+                    return new TrieArrayNode<>(
+                            shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
             }
         } else {
@@ -723,14 +685,17 @@ public class TrieArrayNode<T>
                             // return the unaffected single remaining node to minimize height of the tree
                             return nodes[arrayIndexForBit(bitmask, newBitmask)];
                         } else {
-                            final TrieArrayNode<T>[] newNodes = ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
+                            final TrieArrayNode<T>[] newNodes =
+                                    ArrayHelper.delete(TrieArrayNode::allocateNodes, nodes, arrayIndex);
                             assert newSize == computeSize(mapper, newNodes, values);
-                            return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
+                            return new TrieArrayNode<>(
+                                    shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
                         final TrieArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                         assert newSize == computeSize(mapper, newNodes, values);
-                        return new TrieArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
+                        return new TrieArrayNode<>(
+                                shiftCount, baseIndex, valuesBitmask, values, bitmask, newNodes, newSize);
                     }
                 }
             }
@@ -738,83 +703,76 @@ public class TrieArrayNode<T>
         return this;
     }
 
-    public void checkInvariants(@Nullable ArraySizeMapper<T> mapper)
-    {
+    public void checkInvariants(@Nullable ArraySizeMapper<T> mapper) {
         if (bitCount(valuesBitmask) != values.length) {
-            throw new IllegalStateException(String.format("invalid bitmask for values array: bitmask=%s length=%d", Long.toBinaryString(valuesBitmask), values.length));
+            throw new IllegalStateException(String.format(
+                    "invalid bitmask for values array: bitmask=%s length=%d",
+                    Long.toBinaryString(valuesBitmask), values.length));
         }
         if (bitCount(nodesBitmask) != nodes.length) {
-            throw new IllegalStateException(String.format("invalid bitmask for nodes array: bitmask=%s length=%d", Long.toBinaryString(nodesBitmask), nodes.length));
+            throw new IllegalStateException(String.format(
+                    "invalid bitmask for nodes array: bitmask=%s length=%d",
+                    Long.toBinaryString(nodesBitmask), nodes.length));
         }
         if (!checkChildShifts(shiftCount, nodes)) {
             throw new IllegalStateException("one or more nodes invalid for this branch");
         }
-        final int computedSize = mapper != null ? computeSize(mapper, nodes, values) : computeSize(nodes) + values.length;
+        final int computedSize =
+                mapper != null ? computeSize(mapper, nodes, values) : computeSize(nodes) + values.length;
         if (computedSize != size) {
             throw new IllegalStateException(String.format("size mismatch: size=%d computed=%d", size, computedSize));
         }
     }
 
     @Nonnull
-    public GenericIterator.Iterable<Integer> keys()
-    {
-        return iterable((valueIndex, arrayIndex) -> computeUserIndexForValue(valueIndex),
-                        nodeIndex -> nodes[nodeIndex].keys());
+    public GenericIterator.Iterable<Integer> keys() {
+        return iterable(
+                (valueIndex, arrayIndex) -> computeUserIndexForValue(valueIndex), nodeIndex -> nodes[nodeIndex].keys());
     }
 
     @Nonnull
-    public GenericIterator.Iterable<T> values()
-    {
-        return iterable((valueIndex, arrayIndex) -> values[arrayIndex],
-                        nodeIndex -> nodes[nodeIndex].values());
+    public GenericIterator.Iterable<T> values() {
+        return iterable((valueIndex, arrayIndex) -> values[arrayIndex], nodeIndex -> nodes[nodeIndex].values());
     }
 
     @Nonnull
-    public GenericIterator.Iterable<IMapEntry<Integer, T>> entries()
-    {
-        return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
-                        nodeIndex -> nodes[nodeIndex].entries());
+    public GenericIterator.Iterable<IMapEntry<Integer, T>> entries() {
+        return iterable(
+                (valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
+                nodeIndex -> nodes[nodeIndex].entries());
     }
 
     @Nonnull
-    public <K> GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayIterationMapper<K, ?, T> mapper)
-    {
+    public <K> GenericIterator.Iterable<K> mappedKeys(@Nonnull ArrayIterationMapper<K, ?, T> mapper) {
         return mappedIterable(mapper::mappedKeys);
     }
 
     @Nonnull
-    public <V> GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayIterationMapper<?, V, T> mapper)
-    {
+    public <V> GenericIterator.Iterable<V> mappedValues(@Nonnull ArrayIterationMapper<?, V, T> mapper) {
         return mappedIterable(mapper::mappedValues);
     }
 
     @Nonnull
-    public <K, V> GenericIterator.Iterable<IMapEntry<K, V>> mappedEntries(@Nonnull ArrayIterationMapper<K, V, T> mapper)
-    {
+    public <K, V> GenericIterator.Iterable<IMapEntry<K, V>> mappedEntries(
+            @Nonnull ArrayIterationMapper<K, V, T> mapper) {
         return mappedIterable(mapper::mappedEntries);
     }
 
-    public int size()
-    {
+    public int size() {
         return size;
     }
 
-    private int computeUserIndexForValue(Integer valueIndex)
-    {
+    private int computeUserIndexForValue(Integer valueIndex) {
         return flip(baseIndex + shift(shiftCount, valueIndex));
     }
 
-    private <V> GenericIterator.Iterable<V> iterable(@Nonnull IntFunc2<V> valueFunction,
-                                                     @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction)
-    {
-        return new GenericIterator.Iterable<V>()
-        {
+    private <V> GenericIterator.Iterable<V> iterable(
+            @Nonnull IntFunc2<V> valueFunction, @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction) {
+        return new GenericIterator.Iterable<V>() {
             @Nullable
             @Override
-            public GenericIterator.State<V> iterateOverRange(@Nullable GenericIterator.State<V> parent,
-                                                             int offset,
-                                                             int limit)
-            {
+            public GenericIterator.State<V> iterateOverRange(
+                    @Nullable GenericIterator.State<V> parent, int offset, int limit) {
                 final List<GenericIterator.Iterable<V>> iterables = new ArrayList<>(values.length + nodes.length);
                 long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
                 while (combinedBitmask != 0) {
@@ -836,24 +794,20 @@ public class TrieArrayNode<T>
             }
 
             @Override
-            public int iterableSize()
-            {
+            public int iterableSize() {
                 return size;
             }
         };
     }
 
     @Nonnull
-    private <V> GenericIterator.Iterable<V> mappedIterable(@Nonnull Func1<T, GenericIterator.Iterable<V>> valueFunction)
-    {
-        return new GenericIterator.Iterable<V>()
-        {
+    private <V> GenericIterator.Iterable<V> mappedIterable(
+            @Nonnull Func1<T, GenericIterator.Iterable<V>> valueFunction) {
+        return new GenericIterator.Iterable<V>() {
             @Nullable
             @Override
-            public GenericIterator.State<V> iterateOverRange(@Nullable GenericIterator.State<V> parent,
-                                                             int offset,
-                                                             int limit)
-            {
+            public GenericIterator.State<V> iterateOverRange(
+                    @Nullable GenericIterator.State<V> parent, int offset, int limit) {
                 final List<GenericIterator.Iterable<V>> iterables = new ArrayList<>(values.length + nodes.length);
                 long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
                 while (combinedBitmask != 0) {
@@ -873,8 +827,7 @@ public class TrieArrayNode<T>
             }
 
             @Override
-            public int iterableSize()
-            {
+            public int iterableSize() {
                 return size;
             }
         };
@@ -882,40 +835,33 @@ public class TrieArrayNode<T>
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> T[] allocateValues(int size)
-    {
-        return size == 0 ? emptyValues() : (T[])new Object[size];
+    static <T> T[] allocateValues(int size) {
+        return size == 0 ? emptyValues() : (T[]) new Object[size];
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> TrieArrayNode<T>[] allocateNodes(int size)
-    {
-        return size == 0 ? emptyNodes() : (TrieArrayNode<T>[])new TrieArrayNode[size];
+    static <T> TrieArrayNode<T>[] allocateNodes(int size) {
+        return size == 0 ? emptyNodes() : (TrieArrayNode<T>[]) new TrieArrayNode[size];
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> T[] emptyValues()
-    {
-        return (T[])EMPTY_VALUES;
+    private static <T> T[] emptyValues() {
+        return (T[]) EMPTY_VALUES;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> TrieArrayNode<T>[] emptyNodes()
-    {
-        return (TrieArrayNode<T>[])EMPTY_NODES;
+    private static <T> TrieArrayNode<T>[] emptyNodes() {
+        return (TrieArrayNode<T>[]) EMPTY_NODES;
     }
 
-    static int findShiftForIndex(int index)
-    {
+    static int findShiftForIndex(int index) {
         return findMinimumShiftForZeroBelowHashCode(index);
     }
 
-    static int findCommonAncestorShift(int index1,
-                                       int index2)
-    {
+    static int findCommonAncestorShift(int index1, int index2) {
         final int shift1 = findShiftForIndex(index1);
         final int shift2 = findShiftForIndex(index2);
         int shiftCount = Math.max(shift1, shift2);
@@ -927,21 +873,17 @@ public class TrieArrayNode<T>
     }
 
     /**
-     * Flips the sign bit in the index.  Starting from a userIndex which might be positive or
-     * negative it converts it into a corresponding (but different) unsigned integer such that
-     * for any two incoming integers a and b: compare(a, b)==compareUnsigned(flip(a),flip(b)).
-     * This ensures that iteration order fits the signed order while allowing all of the array
-     * mapping to work with indices as unsigned positive numbers.  Operation is reversable (i.e.
+     * Flips the sign bit in the index. Starting from a userIndex which might be positive or negative it converts it
+     * into a corresponding (but different) unsigned integer such that for any two incoming integers a and b: compare(a,
+     * b)==compareUnsigned(flip(a),flip(b)). This ensures that iteration order fits the signed order while allowing all
+     * of the array mapping to work with indices as unsigned positive numbers. Operation is reversable (i.e.
      * flip(flip(x))==x for all x.
      */
-    static int flip(int index)
-    {
+    static int flip(int index) {
         return index ^ SIGN_BIT;
     }
 
-    private static <T> boolean checkChildShifts(int shiftCount,
-                                                @Nonnull TrieArrayNode<T>[] nodes)
-    {
+    private static <T> boolean checkChildShifts(int shiftCount, @Nonnull TrieArrayNode<T>[] nodes) {
         for (TrieArrayNode<T> node : nodes) {
             if (shiftCount <= node.shiftCount || node.isEmpty()) {
                 return false;
@@ -950,10 +892,8 @@ public class TrieArrayNode<T>
         return true;
     }
 
-    private static <K, T> int computeSize(@Nonnull ArraySizeMapper<T> mapper,
-                                          @Nonnull TrieArrayNode<T>[] children,
-                                          @Nonnull T[] values)
-    {
+    private static <K, T> int computeSize(
+            @Nonnull ArraySizeMapper<T> mapper, @Nonnull TrieArrayNode<T>[] children, @Nonnull T[] values) {
         int total = 0;
         for (TrieArrayNode<T> child : children) {
             total += child.size();
@@ -964,8 +904,7 @@ public class TrieArrayNode<T>
         return total;
     }
 
-    private static <T> int computeSize(@Nonnull TrieArrayNode<T>[] children)
-    {
+    private static <T> int computeSize(@Nonnull TrieArrayNode<T>[] children) {
         int total = 0;
         for (TrieArrayNode<T> child : children) {
             total += child.size();

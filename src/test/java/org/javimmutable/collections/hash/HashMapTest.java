@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,19 @@
 
 package org.javimmutable.collections.hash;
 
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardMapTests.verifyEnumeration;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
@@ -52,25 +63,8 @@ import org.javimmutable.collections.common.StandardMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.tree.TreeCollisionMap;
 
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.StandardMapTests.verifyEnumeration;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.*;
-
-public class HashMapTest
-    extends TestCase
-{
-    public void test()
-    {
+public class HashMapTest extends TestCase {
+    public void test() {
         IMap<Integer, Integer> map = HashMap.usingList();
         Maybe<Integer> integers2 = map.find(10);
         assertEquals(true, integers2.isEmpty());
@@ -82,9 +76,9 @@ public class HashMapTest
         Maybe<Integer> integers1 = map.find(10);
         assertEquals(false, integers1.isEmpty());
         Maybe<Integer> integers3 = map.find(10);
-        assertEquals(20, (int)integers3.unsafeGet());
-        assertEquals(20, (int)map.getValueOr(10, -99));
-        assertEquals(-99, (int)map.getValueOr(72, -99));
+        assertEquals(20, (int) integers3.unsafeGet());
+        assertEquals(20, (int) map.getValueOr(10, -99));
+        assertEquals(-99, (int) map.getValueOr(72, -99));
         map = map.delete(10);
         Maybe<Integer> integers = map.find(10);
         assertEquals(true, integers.isEmpty());
@@ -94,20 +88,22 @@ public class HashMapTest
         StandardMapTests.verifyMiscellaneous(HashMap.usingTree());
     }
 
-    public void testCollisionMapAssignment()
-    {
+    public void testCollisionMapAssignment() {
         assertSame(HashMap.usingList(), HashMap.of(Object.class));
         assertSame(HashMap.usingTree(), HashMap.of(String.class));
 
         assertSame(HashMap.usingList(), HashMap.forKey(new Object()));
         assertSame(HashMap.usingTree(), HashMap.forKey("able"));
 
-        assertSame(((HashMap)HashMap.usingList()).getCollisionMap(), ((HashMap)HashMap.of().assign(new Object(), new Object())).getCollisionMap());
-        assertSame(((HashMap)HashMap.usingTree()).getCollisionMap(), ((HashMap)HashMap.of().assign("able", "baker")).getCollisionMap());
+        assertSame(
+                ((HashMap) HashMap.usingList()).getCollisionMap(),
+                ((HashMap) HashMap.of().assign(new Object(), new Object())).getCollisionMap());
+        assertSame(
+                ((HashMap) HashMap.usingTree()).getCollisionMap(),
+                ((HashMap) HashMap.of().assign("able", "baker")).getCollisionMap());
     }
 
-    public void testValueIdentity()
-    {
+    public void testValueIdentity() {
         IMap<Integer, String> map = HashMap.usingList();
         map = map.assign(10, "ab");
         assertSame(map, map.assign(10, "ab"));
@@ -118,8 +114,7 @@ public class HashMapTest
         assertSame(map, map.assign(14000, "aaa"));
     }
 
-    public void testRandom1()
-    {
+    public void testRandom1() {
         Random random = new Random(100L);
         for (int maxKeyLoop = 0; maxKeyLoop < 2; ++maxKeyLoop) {
             final int maxKey = (maxKeyLoop == 0) ? 10000 : 99999999;
@@ -212,8 +207,14 @@ public class HashMapTest
                 }
                 assertEquals(expected, fromIterator);
                 listIteratorTest(entries, map.iterator());
-                iteratorTest(value -> entries.get(value).getKey(), entries.size(), map.getMap().keySet().iterator());
-                iteratorTest(value -> entries.get(value).getValue(), entries.size(), map.getMap().values().iterator());
+                iteratorTest(
+                        value -> entries.get(value).getKey(),
+                        entries.size(),
+                        map.getMap().keySet().iterator());
+                iteratorTest(
+                        value -> entries.get(value).getValue(),
+                        entries.size(),
+                        map.getMap().values().iterator());
 
                 // verify the Map adaptor worked properly
                 assertEquals(expected, map.getMap());
@@ -241,30 +242,28 @@ public class HashMapTest
     }
 
     @Nonnull
-    private ManualHashKey createManualHashKey(int maxKey,
-                                              Random random)
-    {
+    private ManualHashKey createManualHashKey(int maxKey, Random random) {
         int keyValue = random.nextInt(maxKey);
         return new ManualHashKey(keyValue % 100, String.valueOf(keyValue));
     }
 
-    public void testEquals()
-    {
-        IMap<Integer, Integer> map1 = HashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
-        IMap<Integer, Integer> map2 = HashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+    public void testEquals() {
+        IMap<Integer, Integer> map1 =
+                HashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+        IMap<Integer, Integer> map2 =
+                HashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
         assertEquals(map1.hashCode(), map2.hashCode());
         assertEquals(map1, map2);
     }
 
-    public void testDeleteAll()
-    {
-        IMap<Integer, Integer> map1 = HashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
+    public void testDeleteAll() {
+        IMap<Integer, Integer> map1 =
+                HashMap.<Integer, Integer>usingList().assign(1, 3).assign(2, 4).assign(3, 5);
         assertSame(HashMap.of(), map1.deleteAll());
     }
 
-    public void testAssignAll()
-    {
-        //assignAll(JImmutableMap)
+    public void testAssignAll() {
+        // assignAll(JImmutableMap)
         IMap<String, Number> empty = HashMap.of();
         IMap<String, Number> map = empty;
         IMap<String, Integer> expected = HashMap.usingList();
@@ -278,7 +277,7 @@ public class HashMapTest
         assertEquals(expected, map);
         assertEquals(1, map.size());
         assertEquals(10, map.get("a"));
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
 
         assertEquals(map, map.assignAll(empty));
 
@@ -287,9 +286,9 @@ public class HashMapTest
         assertEquals(expected, map);
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
 
-        //assignAll(Map)
+        // assignAll(Map)
         map = empty;
         Map<String, Integer> expectedMutable = new java.util.HashMap<>();
         map = map.assignAll(expectedMutable);
@@ -301,7 +300,7 @@ public class HashMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(1, map.size());
         assertEquals(10, map.get("a"));
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
 
         assertEquals(map, map.assignAll(Collections.<String, Integer>emptyMap()));
 
@@ -312,12 +311,10 @@ public class HashMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-        assertSame(TreeCollisionMap.instance(), ((HashMap)map).getCollisionMap());
-
+        assertSame(TreeCollisionMap.instance(), ((HashMap) map).getCollisionMap());
     }
 
-    public void testEnumeration()
-    {
+    public void testEnumeration() {
         IMap<Integer, Integer> map = HashMap.usingList();
         java.util.HashMap<Integer, Integer> expected = new java.util.HashMap<>();
         for (int i = 0; i < 100000; ++i) {
@@ -328,8 +325,7 @@ public class HashMapTest
         verifyEnumeration(expected, map);
     }
 
-    public void testHashCollisions()
-    {
+    public void testHashCollisions() {
         ManualHashKey key1 = new ManualHashKey(1000, "a");
         ManualHashKey key2 = new ManualHashKey(1000, "b");
         ManualHashKey key3 = new ManualHashKey(1000, "c");
@@ -393,44 +389,57 @@ public class HashMapTest
         assertSame(HashMap.of(), map);
     }
 
-    public void testTransformSelection()
-    {
+    public void testTransformSelection() {
         assertSame(HashMap.LIST_EMPTY, HashMap.forKey(new Object()));
         assertSame(HashMap.TREE_EMPTY, HashMap.forKey(100));
         assertSame(HashMap.TREE_EMPTY, HashMap.forKey("testing"));
     }
 
-    public void testStreams()
-    {
+    public void testStreams() {
         final EmptyHashMap<Integer, Integer> hashMap = HashMap.of();
         assertEquals(asList(), hashMap.stream().collect(Collectors.toList()));
         assertEquals(asList(IMapEntry.of(1, 10)), hashMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(asList(IMapEntry.of(1, 10), IMapEntry.of(4, 40)), hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(IMapEntry.of(1, 10), IMapEntry.of(4, 40)),
+                hashMap.assign(1, 10).assign(4, 40).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), hashMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(1), hashMap.assign(1, 10).keys().stream().collect(Collectors.toList()));
-        assertEquals(asList(1, 4), hashMap.assign(1, 10).assign(4, 40).keys().stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(1, 4),
+                hashMap.assign(1, 10).assign(4, 40).keys().stream().collect(Collectors.toList()));
 
         assertEquals(asList(), hashMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), hashMap.assign(1, 10).values().stream().collect(Collectors.toList()));
-        assertEquals(asList(10, 40), hashMap.assign(1, 10).assign(4, 40).values().stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(10, 40),
+                hashMap.assign(1, 10).assign(4, 40).values().stream().collect(Collectors.toList()));
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap) a).iterator();
         final IMap<Integer, String> empty = HashMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgKACAJwqmKWhAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert(IMapEntry.of(1, "a")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZGBgYgW4TBJqYqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQNsFEOr8SnOTUova1kyV5Z7yoJsJZCTIsBIGxsQKAGFh0ZTyAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList(IMapEntry.of(Integer.MIN_VALUE, "a"), IMapEntry.of(1, "b"), IMapEntry.of(Integer.MAX_VALUE, "c"))),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgATQbYJAExP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBVouwBCnV9pblJqUduaqbLcUx50M4GMbACaVsLAmFhcyFDHwAzkMAJ5SRBePdBqIC+5AgAc02F6DgEAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgKACAJwqmKWhAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert(IMapEntry.of(1, "a")),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZGBgYgW4TBJqYqJeTmJeu55lXkpqeWiT0aMGS743tFkwMjJ4MrGWJOaWpQNsFEOr8SnOTUova1kyV5Z7yoJsJZCTIsBIGxsQKAGFh0ZTyAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList(
+                        IMapEntry.of(Integer.MIN_VALUE, "a"),
+                        IMapEntry.of(1, "b"),
+                        IMapEntry.of(Integer.MAX_VALUE, "c"))),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzSCzO8E0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlHAwMzC8ZgATQbYJAExP1chLz0vU880pS01OLhB4tWPK9sd2CiYHRk4G1LDGnNBVouwBCnV9pblJqUduaqbLcUx50M4GMbACaVsLAmFhcyFDHwAzkMAJ5SRBePdBqIC+5AgAc02F6DgEAAA==");
     }
 
-    public void testBuilder()
-    {
+    public void testBuilder() {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 2000; ++i) {
             IMapBuilder<Integer, Integer> builder = HashMap.builder();
@@ -447,25 +456,25 @@ public class HashMapTest
             assertEquals(expected, actual);
             assertEquals(actual, actual.parallelStream().collect(HashMap.createMapCollector()));
 
-            assertEquals(expected.deleteAll().assign(1, 2).assign(3, 4), builder.clear().add(1, 2).add(3, 4).build());
+            assertEquals(
+                    expected.deleteAll().assign(1, 2).assign(3, 4),
+                    builder.clear().add(1, 2).add(3, 4).build());
         }
     }
 
-    public void testStandardBuilderTests()
-        throws InterruptedException
-    {
+    public void testStandardBuilderTests() throws InterruptedException {
         final List<IMapEntry<Integer, Integer>> values = new ArrayList<>();
         for (int i = 1; i <= 5000; ++i) {
             values.add(IMapEntry.of(i, 5001 - i));
         }
         Collections.shuffle(values);
-        StandardBuilderTests.verifyBuilder(values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new IMapEntry[0]);
+        StandardBuilderTests.verifyBuilder(
+                values, this::stdBuilderTestAdaptor, this::stdBuilderTestComparator, new IMapEntry[0]);
         values.sort(MapEntry::compareKeys);
         StandardBuilderTests.verifyThreadSafety(values, MapEntry::compareKeys, this::stdBuilderTestAdaptor, a -> a);
     }
 
-    public void testForEach()
-    {
+    public void testForEach() {
         final StringBuilder sb = new StringBuilder();
         final Proc2<String, String> append = (k, v) -> {
             sb.append("[");
@@ -501,8 +510,7 @@ public class HashMapTest
         }
     }
 
-    public void testReduce()
-    {
+    public void testReduce() {
         final Sum2<String, String, String> append = (s, k, v) -> {
             return s + "[" + k + "," + v + "]";
         };
@@ -527,58 +535,48 @@ public class HashMapTest
         }
     }
 
-    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdaptor()
-    {
+    private MapBuilderTestAdapter<Integer, Integer> stdBuilderTestAdaptor() {
         return new MapBuilderTestAdapter<>(HashMap.builder());
     }
 
-    private Boolean stdBuilderTestComparator(List<IMapEntry<Integer, Integer>> expected,
-                                             IMap<Integer, Integer> actual)
-    {
+    private Boolean stdBuilderTestComparator(
+            List<IMapEntry<Integer, Integer>> expected, IMap<Integer, Integer> actual) {
         List<IMapEntry<Integer, Integer>> sorted = new ArrayList<>(expected);
         sorted.sort(MapEntry::compareKeys);
         assertEquals(sorted, actual.stream().sorted(MapEntry::compareKeys).collect(Collectors.toList()));
         return true;
     }
 
-    private static class ManualHashKey
-        implements Comparable<ManualHashKey>
-    {
+    private static class ManualHashKey implements Comparable<ManualHashKey> {
         private final int hash;
         private final String value;
 
-        private ManualHashKey(int hash,
-                              String value)
-        {
+        private ManualHashKey(int hash, String value) {
             this.hash = hash;
             this.value = value;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return hash;
         }
 
         @Override
-        public boolean equals(Object o)
-        {
+        public boolean equals(Object o) {
             if (!(o instanceof ManualHashKey)) {
                 return false;
             }
-            ManualHashKey other = (ManualHashKey)o;
+            ManualHashKey other = (ManualHashKey) o;
             return (other.hash == hash) && other.value.equals(value);
         }
 
         @Override
-        public int compareTo(@Nonnull ManualHashKey o)
-        {
+        public int compareTo(@Nonnull ManualHashKey o) {
             return value.compareTo(o.value);
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return Integer.toString(hash);
         }
     }

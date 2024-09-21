@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,15 +33,6 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IArray;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.IStreamable;
-import org.javimmutable.collections.MapEntry;
-import org.javimmutable.collections.Maybe;
-import org.javimmutable.collections.iterators.TransformStreamable;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
@@ -52,48 +41,46 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Spliterator;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.IArray;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.MapEntry;
+import org.javimmutable.collections.Maybe;
+import org.javimmutable.collections.iterators.TransformStreamable;
 
 @SuppressWarnings({"unchecked", "NullableProblems"})
 @Immutable
-public class ArrayToMapAdaptor<T>
-    extends AbstractMap<Integer, T>
-{
+public class ArrayToMapAdaptor<T> extends AbstractMap<Integer, T> {
     private final IArray<T> map;
 
-    public ArrayToMapAdaptor(IArray<T> map)
-    {
+    public ArrayToMapAdaptor(IArray<T> map) {
         this.map = map;
     }
 
-    public static <V> ArrayToMapAdaptor<V> of(IArray<V> map)
-    {
+    public static <V> ArrayToMapAdaptor<V> of(IArray<V> map) {
         return new ArrayToMapAdaptor<V>(map);
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return map.size();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return map.isEmpty();
     }
 
     @Override
-    public boolean containsKey(Object o)
-    {
-        return map.find((Integer)o).isFull();
+    public boolean containsKey(Object o) {
+        return map.find((Integer) o).isFull();
     }
 
-    /**
-     * Uses O(n) traversal of the {@link org.javimmutable.collections.IMap} to search for a matching value.
-     */
+    /** Uses O(n) traversal of the {@link org.javimmutable.collections.IMap} to search for a matching value. */
     @Override
-    public boolean containsValue(Object o)
-    {
+    public boolean containsValue(Object o) {
         for (IMapEntry<Integer, T> entry : map) {
             T value = entry.getValue();
             if (o == null) {
@@ -110,141 +97,115 @@ public class ArrayToMapAdaptor<T>
     }
 
     @Override
-    public T get(Object o)
-    {
-        return map.get((Integer)o);
+    public T get(Object o) {
+        return map.get((Integer) o);
     }
 
     @Override
-    public T put(Integer k,
-                 T t)
-    {
+    public T put(Integer k, T t) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public T remove(Object o)
-    {
+    public T remove(Object o) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void putAll(Map<? extends Integer, ? extends T> map)
-    {
+    public void putAll(Map<? extends Integer, ? extends T> map) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void clear()
-    {
+    public void clear() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<Integer> keySet()
-    {
-        return new AbstractSet<Integer>()
-        {
+    public Set<Integer> keySet() {
+        return new AbstractSet<Integer>() {
             @Override
-            public boolean isEmpty()
-            {
+            public boolean isEmpty() {
                 return map.isEmpty();
             }
 
             @Override
-            public boolean contains(Object o)
-            {
-                return map.find((Integer)o).isFull();
+            public boolean contains(Object o) {
+                return map.find((Integer) o).isFull();
             }
 
             @Override
-            public Iterator<Integer> iterator()
-            {
+            public Iterator<Integer> iterator() {
                 return map.keys().iterator();
             }
 
             @Override
-            public Spliterator<Integer> spliterator()
-            {
+            public Spliterator<Integer> spliterator() {
                 return map.keys().spliterator();
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return map.size();
             }
         };
     }
 
     @Override
-    public Collection<T> values()
-    {
-        return new AbstractCollection<T>()
-        {
+    public Collection<T> values() {
+        return new AbstractCollection<T>() {
             @Override
-            public Iterator<T> iterator()
-            {
+            public Iterator<T> iterator() {
                 return map.values().iterator();
             }
 
             @Override
-            public Spliterator<T> spliterator()
-            {
+            public Spliterator<T> spliterator() {
                 return map.values().spliterator();
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return map.size();
             }
         };
     }
 
     @Override
-    public Set<Entry<Integer, T>> entrySet()
-    {
-        return new AbstractSet<Entry<Integer, T>>()
-        {
+    public Set<Entry<Integer, T>> entrySet() {
+        return new AbstractSet<Entry<Integer, T>>() {
             @Override
-            public boolean isEmpty()
-            {
+            public boolean isEmpty() {
                 return map.isEmpty();
             }
 
             @Override
-            public boolean contains(Object o)
-            {
+            public boolean contains(Object o) {
                 if (!(o instanceof Entry)) {
                     return false;
                 }
-                Entry<Integer, T> oEntry = (Entry<Integer, T>)o;
+                Entry<Integer, T> oEntry = (Entry<Integer, T>) o;
                 Maybe<IMapEntry<Integer, T>> eMaybe = map.findEntry(oEntry.getKey());
                 return eMaybe.isFull() && new MapEntry(eMaybe.unsafeGet()).equals(oEntry);
             }
 
             @Override
-            public Iterator<Entry<Integer, T>> iterator()
-            {
+            public Iterator<Entry<Integer, T>> iterator() {
                 return streamable().iterator();
             }
 
             @Override
-            public Spliterator<Entry<Integer, T>> spliterator()
-            {
+            public Spliterator<Entry<Integer, T>> spliterator() {
                 return streamable().spliterator();
             }
 
             @Override
-            public int size()
-            {
+            public int size() {
                 return map.size();
             }
 
             @Nonnull
-            private IStreamable<Entry<Integer, T>> streamable()
-            {
+            private IStreamable<Entry<Integer, T>> streamable() {
                 return TransformStreamable.of(map, MapEntry::new);
             }
         };

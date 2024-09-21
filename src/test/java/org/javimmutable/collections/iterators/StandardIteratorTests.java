@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,13 +33,9 @@
 
 package org.javimmutable.collections.iterators;
 
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.Indexed;
-import org.javimmutable.collections.SplitIterator;
-import org.javimmutable.collections.SplitableIterator;
-import org.javimmutable.collections.common.TestUtil;
+import static java.util.function.Function.identity;
+import static junit.framework.Assert.*;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,56 +44,46 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.Indexed;
+import org.javimmutable.collections.SplitIterator;
+import org.javimmutable.collections.SplitableIterator;
+import org.javimmutable.collections.common.TestUtil;
 
-import static java.util.function.Function.identity;
-import static junit.framework.Assert.*;
-
-public class StandardIteratorTests
-{
-    public static <T> void verifyUnorderedIterable(@Nonnull Iterable<T> expected,
-                                                   @Nonnull Iterable<T> actual)
-    {
+public class StandardIteratorTests {
+    public static <T> void verifyUnorderedIterable(@Nonnull Iterable<T> expected, @Nonnull Iterable<T> actual) {
         verifyUnorderedIterable(expected, actual, identity());
     }
 
-    public static <S, T> void verifyUnorderedIterable(@Nonnull Iterable<T> expected,
-                                                      @Nonnull Iterable<S> actual,
-                                                      @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyUnorderedIterable(
+            @Nonnull Iterable<T> expected, @Nonnull Iterable<S> actual, @Nonnull Function<S, T> transforminator) {
         verifyUnorderedIteratorUsingHasNext(expected.iterator(), actual.iterator(), transforminator);
         verifyUnorderedIteratorUsingNextOnly(expected.iterator(), actual.iterator(), transforminator);
     }
 
-    public static <T> void verifyOrderedIterable(@Nonnull Iterable<T> expected,
-                                                 @Nonnull Iterable<T> actual)
-    {
+    public static <T> void verifyOrderedIterable(@Nonnull Iterable<T> expected, @Nonnull Iterable<T> actual) {
         verifyOrderedIterable(expected, actual, identity());
         verifyOrderedSplits(expected, actual.iterator(), identity());
     }
 
-    public static <S, T> void verifyOrderedIterable(@Nonnull Iterable<T> expected,
-                                                    @Nonnull Iterable<S> actual,
-                                                    @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyOrderedIterable(
+            @Nonnull Iterable<T> expected, @Nonnull Iterable<S> actual, @Nonnull Function<S, T> transforminator) {
         verifyOrderedIteratorUsingHasNext(expected.iterator(), actual.iterator(), transforminator);
         verifyOrderedIteratorUsingNextOnly(expected.iterator(), actual.iterator(), transforminator);
     }
 
-    private static <S, T> void verifyOrderedSplits(@Nonnull Iterable<T> expected,
-                                                   @Nonnull Iterator<T> actual,
-                                                   @Nonnull Function<S, T> transforminator)
-    {
+    private static <S, T> void verifyOrderedSplits(
+            @Nonnull Iterable<T> expected, @Nonnull Iterator<T> actual, @Nonnull Function<S, T> transforminator) {
         if (actual instanceof SplitableIterator) {
             List<T> result = new ArrayList<>();
-            traverseSplits((SplitableIterator<S>)actual, result, transforminator);
+            traverseSplits((SplitableIterator<S>) actual, result, transforminator);
             assertEquals(TestUtil.makeList(expected.iterator()), result);
         }
     }
 
-    private static <S, T> void traverseSplits(@Nonnull SplitableIterator<S> iterator,
-                                              @Nonnull List<T> result,
-                                              @Nonnull Function<S, T> transforminator)
-    {
+    private static <S, T> void traverseSplits(
+            @Nonnull SplitableIterator<S> iterator, @Nonnull List<T> result, @Nonnull Function<S, T> transforminator) {
         if (iterator.isSplitAllowed()) {
             SplitIterator<S> split = iterator.splitIterator();
             traverseSplits(split.getLeft(), result, transforminator);
@@ -111,10 +95,8 @@ public class StandardIteratorTests
         }
     }
 
-    public static <S, T> void verifyUnorderedIteratorUsingNextOnly(@Nonnull Iterator<T> expected,
-                                                                   @Nonnull Iterator<S> actual,
-                                                                   @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyUnorderedIteratorUsingNextOnly(
+            @Nonnull Iterator<T> expected, @Nonnull Iterator<S> actual, @Nonnull Function<S, T> transforminator) {
         final Set<T> expectedValues = new HashSet<>();
         final Set<T> actualValues = new HashSet<>();
         while (expected.hasNext()) {
@@ -129,16 +111,13 @@ public class StandardIteratorTests
         }
     }
 
-    public static <T> void verifyUnorderedIteratorUsingHasNext(@Nonnull Iterator<T> expected,
-                                                               @Nonnull Iterator<T> actual)
-    {
+    public static <T> void verifyUnorderedIteratorUsingHasNext(
+            @Nonnull Iterator<T> expected, @Nonnull Iterator<T> actual) {
         verifyUnorderedIteratorUsingHasNext(expected, actual, identity());
     }
 
-    public static <S, T> void verifyUnorderedIteratorUsingHasNext(@Nonnull Iterator<T> expected,
-                                                                  @Nonnull Iterator<S> actual,
-                                                                  @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyUnorderedIteratorUsingHasNext(
+            @Nonnull Iterator<T> expected, @Nonnull Iterator<S> actual, @Nonnull Function<S, T> transforminator) {
         final Set<T> expectedValues = new HashSet<>();
         final Set<T> actualValues = new HashSet<>();
         while (expected.hasNext()) {
@@ -155,10 +134,8 @@ public class StandardIteratorTests
         }
     }
 
-    public static <S, T> void verifyOrderedIteratorUsingNextOnly(@Nonnull Iterator<T> expected,
-                                                                 @Nonnull Iterator<S> actual,
-                                                                 @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyOrderedIteratorUsingNextOnly(
+            @Nonnull Iterator<T> expected, @Nonnull Iterator<S> actual, @Nonnull Function<S, T> transforminator) {
         while (expected.hasNext()) {
             assertEquals(expected.next(), transforminator.apply(actual.next()));
         }
@@ -169,16 +146,13 @@ public class StandardIteratorTests
         }
     }
 
-    public static <T> void verifyOrderedIteratorUsingHasNext(@Nonnull Iterator<T> expected,
-                                                             @Nonnull Iterator<T> actual)
-    {
+    public static <T> void verifyOrderedIteratorUsingHasNext(
+            @Nonnull Iterator<T> expected, @Nonnull Iterator<T> actual) {
         verifyOrderedIteratorUsingHasNext(expected, actual, identity());
     }
 
-    public static <S, T> void verifyOrderedIteratorUsingHasNext(@Nonnull Iterator<T> expected,
-                                                                @Nonnull Iterator<S> actual,
-                                                                @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyOrderedIteratorUsingHasNext(
+            @Nonnull Iterator<T> expected, @Nonnull Iterator<S> actual, @Nonnull Function<S, T> transforminator) {
         while (expected.hasNext()) {
             assertEquals(true, actual.hasNext());
             assertEquals(expected.next(), transforminator.apply(actual.next()));
@@ -191,11 +165,8 @@ public class StandardIteratorTests
         }
     }
 
-    public static <T> void verifyOrderedSplit(boolean allowed,
-                                              List<T> leftExpected,
-                                              List<T> rightExpected,
-                                              SplitableIterator<T> source)
-    {
+    public static <T> void verifyOrderedSplit(
+            boolean allowed, List<T> leftExpected, List<T> rightExpected, SplitableIterator<T> source) {
         assertEquals(allowed, source.isSplitAllowed());
         if (allowed) {
             SplitIterator<T> split = source.splitIterator();
@@ -204,10 +175,7 @@ public class StandardIteratorTests
         }
     }
 
-    public static <T> void iteratorTest(Func1<Integer, T> lookup,
-                                        int size,
-                                        Iterator<T> iterator)
-    {
+    public static <T> void iteratorTest(Func1<Integer, T> lookup, int size, Iterator<T> iterator) {
         // calling next advances through entire sequence
         for (int i = 0; i < size; ++i) {
             assertEquals(true, iterator.hasNext());
@@ -226,63 +194,46 @@ public class StandardIteratorTests
         assertEquals(false, iterator.hasNext());
     }
 
-    public static <T> void indexedIteratorTest(Indexed<T> indexed,
-                                               int size,
-                                               Iterator<T> iterator)
-    {
+    public static <T> void indexedIteratorTest(Indexed<T> indexed, int size, Iterator<T> iterator) {
         iteratorTest(new IndexedLookup<>(indexed), size, iterator);
     }
 
-    public static <T> void listIteratorTest(List<T> list,
-                                            Iterator<T> iterator)
-    {
+    public static <T> void listIteratorTest(List<T> list, Iterator<T> iterator) {
         iteratorTest(new ListLookup<>(list), list.size(), iterator);
     }
 
-    public static <T> void emptyIteratorTest(Iterator<T> iterator)
-    {
+    public static <T> void emptyIteratorTest(Iterator<T> iterator) {
         listIteratorTest(Collections.emptyList(), iterator);
     }
 
-    public static <T> void verifySplit(SplitableIterator<T> cursor,
-                                       List<T> left,
-                                       List<T> right)
-    {
+    public static <T> void verifySplit(SplitableIterator<T> cursor, List<T> left, List<T> right) {
         SplitIterator<T> split = cursor.splitIterator();
         listIteratorTest(left, split.getLeft());
         listIteratorTest(right, split.getRight());
     }
 
-    private static class ListLookup<T>
-        implements Func1<Integer, T>
-    {
+    private static class ListLookup<T> implements Func1<Integer, T> {
         private final List<T> list;
 
-        private ListLookup(List<T> list)
-        {
+        private ListLookup(List<T> list) {
             this.list = list;
         }
 
         @Override
-        public T apply(Integer value)
-        {
+        public T apply(Integer value) {
             return list.get(value);
         }
     }
 
-    private static class IndexedLookup<T>
-        implements Func1<Integer, T>
-    {
+    private static class IndexedLookup<T> implements Func1<Integer, T> {
         private final Indexed<T> indexed;
 
-        private IndexedLookup(Indexed<T> indexed)
-        {
+        private IndexedLookup(Indexed<T> indexed) {
             this.indexed = indexed;
         }
 
         @Override
-        public T apply(Integer value)
-        {
+        public T apply(Integer value) {
             return indexed.get(value);
         }
     }

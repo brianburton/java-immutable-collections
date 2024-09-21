@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,10 @@
 
 package org.javimmutable.collections.list;
 
+import java.util.StringJoiner;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.Func0;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Func2;
@@ -42,42 +44,30 @@ import org.javimmutable.collections.Proc1Throws;
 import org.javimmutable.collections.Sum1Throws;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.StringJoiner;
-import java.util.function.Consumer;
-
-class OneValueNode<T>
-    extends AbstractNode<T>
-{
+class OneValueNode<T> extends AbstractNode<T> {
     private final T value;
 
-    OneValueNode(T value)
-    {
+    OneValueNode(T value) {
         this.value = value;
     }
 
     @Override
-    boolean isEmpty()
-    {
+    boolean isEmpty() {
         return false;
     }
 
     @Override
-    int size()
-    {
+    int size() {
         return 1;
     }
 
     @Override
-    int depth()
-    {
+    int depth() {
         return 0;
     }
 
     @Override
-    T get(int index)
-    {
+    T get(int index) {
         if (index != 0) {
             throw new IndexOutOfBoundsException();
         }
@@ -85,24 +75,19 @@ class OneValueNode<T>
     }
 
     @Override
-    <C> C findImpl(int index,
-                   Func0<C> defaultMapping,
-                   Func1<T, C> valueMapping)
-    {
+    <C> C findImpl(int index, Func0<C> defaultMapping, Func1<T, C> valueMapping) {
         return index == 0 ? valueMapping.apply(value) : defaultMapping.apply();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> append(T value)
-    {
+    AbstractNode<T> append(T value) {
         return new MultiValueNode<>(this.value, value);
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> append(@Nonnull AbstractNode<T> node)
-    {
+    AbstractNode<T> append(@Nonnull AbstractNode<T> node) {
         if (node.depth() > 0) {
             return node.prepend(this);
         } else if (node.size() == 0) {
@@ -119,15 +104,13 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> prepend(T value)
-    {
+    AbstractNode<T> prepend(T value) {
         return new MultiValueNode<>(value, this.value);
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> prepend(@Nonnull AbstractNode<T> node)
-    {
+    AbstractNode<T> prepend(@Nonnull AbstractNode<T> node) {
         if (node.depth() > 0) {
             return node.append(this);
         } else if (node.size() == 0) {
@@ -144,9 +127,7 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> assign(int index,
-                           T value)
-    {
+    AbstractNode<T> assign(int index, T value) {
         if (index != 0) {
             throw new IndexOutOfBoundsException();
         } else if (value == this.value) {
@@ -158,9 +139,7 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> insert(int index,
-                           T value)
-    {
+    AbstractNode<T> insert(int index, T value) {
         switch (index) {
             case 0:
                 return new MultiValueNode<>(value, this.value);
@@ -175,22 +154,19 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> deleteFirst()
-    {
+    AbstractNode<T> deleteFirst() {
         return EmptyNode.instance();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> deleteLast()
-    {
+    AbstractNode<T> deleteLast() {
         return EmptyNode.instance();
     }
 
     @Nonnull
     @Override
-    AbstractNode<T> delete(int index)
-    {
+    AbstractNode<T> delete(int index) {
         if (index == 0) {
             return EmptyNode.instance();
         } else {
@@ -200,8 +176,7 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> prefix(int limit)
-    {
+    AbstractNode<T> prefix(int limit) {
         switch (limit) {
             case 0:
                 return EmptyNode.instance();
@@ -216,8 +191,7 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> suffix(int offset)
-    {
+    AbstractNode<T> suffix(int offset) {
         switch (offset) {
             case 0:
                 return this;
@@ -232,63 +206,46 @@ class OneValueNode<T>
 
     @Nonnull
     @Override
-    AbstractNode<T> reverse()
-    {
+    AbstractNode<T> reverse() {
         return this;
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
+    public void checkInvariants() {}
 
     @Override
-    void copyTo(T[] array,
-                int offset)
-    {
+    void copyTo(T[] array, int offset) {
         array[offset] = value;
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
-                                                     int offset,
-                                                     int limit)
-    {
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent, int offset, int limit) {
         return GenericIterator.singleValueState(parent, value, offset, limit);
     }
 
     @Override
-    public void forEach(Consumer<? super T> action)
-    {
+    public void forEach(Consumer<? super T> action) {
         action.accept(value);
     }
 
     @Override
-    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc)
-        throws E
-    {
+    public <E extends Exception> void forEachThrows(@Nonnull Proc1Throws<T, E> proc) throws E {
         proc.apply(value);
     }
 
     @Override
-    public <V> V reduce(V initialValue,
-                        Func2<V, T, V> accumulator)
-    {
+    public <V> V reduce(V initialValue, Func2<V, T, V> accumulator) {
         return accumulator.apply(initialValue, value);
     }
 
     @Override
-    public <V, E extends Exception> V reduceThrows(V initialValue,
-                                                   Sum1Throws<T, V, E> accumulator)
-        throws E
-    {
+    public <V, E extends Exception> V reduceThrows(V initialValue, Sum1Throws<T, V, E> accumulator) throws E {
         return accumulator.apply(initialValue, value);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -296,22 +253,20 @@ class OneValueNode<T>
             return false;
         }
 
-        OneValueNode<?> that = (OneValueNode<?>)o;
+        OneValueNode<?> that = (OneValueNode<?>) o;
 
         return value != null ? value.equals(that.value) : that.value == null;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return value != null ? value.hashCode() : 0;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new StringJoiner(", ", OneValueNode.class.getSimpleName() + "[", "]")
-            .add("value=" + value)
-            .toString();
+                .add("value=" + value)
+                .toString();
     }
 }

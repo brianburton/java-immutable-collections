@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,45 +33,36 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.SplitIterator;
 import org.javimmutable.collections.SplitableIterator;
 
-import javax.annotation.Nonnull;
-import java.util.Spliterator;
-import java.util.function.Consumer;
-
-public abstract class AbstractSplitableIterator<T>
-    implements SplitableIterator<T>
-{
+public abstract class AbstractSplitableIterator<T> implements SplitableIterator<T> {
     /**
-     * Returns a Spliterator with the specified characteristics that use this
-     * Iterator to visit all elements.  Advancing the Spliterator also advances
-     * this Iterator so the two cannot be used at the same time.
+     * Returns a Spliterator with the specified characteristics that use this Iterator to visit all elements. Advancing
+     * the Spliterator also advances this Iterator so the two cannot be used at the same time.
      */
     @Nonnull
     @Override
-    public Spliterator<T> spliterator(int characteristics)
-    {
+    public Spliterator<T> spliterator(int characteristics) {
         return new SpliteratorImpl<>(characteristics, this);
     }
 
-    private static class SpliteratorImpl<T>
-        implements Spliterator<T>
-    {
+    private static class SpliteratorImpl<T> implements Spliterator<T> {
         private final int characteristics;
+
         @Nonnull
         private SplitableIterator<T> iterator;
 
-        private SpliteratorImpl(int characteristics,
-                                @Nonnull SplitableIterator<T> iterator)
-        {
+        private SpliteratorImpl(int characteristics, @Nonnull SplitableIterator<T> iterator) {
             this.characteristics = characteristics;
             this.iterator = iterator;
         }
 
         @Override
-        public boolean tryAdvance(Consumer<? super T> action)
-        {
+        public boolean tryAdvance(Consumer<? super T> action) {
             if (iterator.hasNext()) {
                 action.accept(iterator.next());
                 return true;
@@ -82,8 +71,7 @@ public abstract class AbstractSplitableIterator<T>
         }
 
         @Override
-        public Spliterator<T> trySplit()
-        {
+        public Spliterator<T> trySplit() {
             if (iterator.isSplitAllowed()) {
                 final SplitIterator<T> split = iterator.splitIterator();
                 iterator = split.getRight();
@@ -93,14 +81,12 @@ public abstract class AbstractSplitableIterator<T>
         }
 
         @Override
-        public long estimateSize()
-        {
+        public long estimateSize() {
             return Long.MAX_VALUE;
         }
 
         @Override
-        public int characteristics()
-        {
+        public int characteristics() {
             return characteristics;
         }
     }

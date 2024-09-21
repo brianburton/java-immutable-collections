@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,13 +34,10 @@
 package org.javimmutable.collections;
 
 /**
- * Implemented by all classes for testing purposes. Base class checks its
- * invariants and throws an exception if any of the checks fail.
+ * Implemented by all classes for testing purposes. Base class checks its invariants and throws an exception if any of
+ * the checks fail.
  */
-public interface InvariantCheckable
-{
-    /**
-     * Checks invariants of implementing class.
-     */
+public interface InvariantCheckable {
+    /** Checks invariants of implementing class. */
     void checkInvariants();
 }

@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,12 @@
 
 package org.javimmutable.collections.inorder;
 
+import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
@@ -43,73 +47,56 @@ import org.javimmutable.collections.common.AbstractSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.OrderedSetProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collector;
-
 /**
- * {@link ISet} implementation built on top of an ordered set.  During iteration
- * elements are returned in the same order they were inserted into the set.  Performance is
- * slower than hash or tree sets but should be sufficient for most algorithms where insert
- * order matters.
+ * {@link ISet} implementation built on top of an ordered set. During iteration elements are returned in the same order
+ * they were inserted into the set. Performance is slower than hash or tree sets but should be sufficient for most
+ * algorithms where insert order matters.
  */
 @Immutable
-public class OrderedSet<T>
-    extends AbstractSetUsingMap<T>
-    implements Serializable
-{
+public class OrderedSet<T> extends AbstractSetUsingMap<T> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final OrderedSet EMPTY = new OrderedSet(OrderedMap.of());
+
     private static final long serialVersionUID = -121805;
 
-    private OrderedSet(IMap<T, Boolean> map)
-    {
+    private OrderedSet(IMap<T, Boolean> map) {
         super(map);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> OrderedSet<T> of()
-    {
+    public static <T> OrderedSet<T> of() {
         return EMPTY;
     }
 
     @Nonnull
-    public static <T> ISetBuilder<T> builder()
-    {
+    public static <T> ISetBuilder<T> builder() {
         return new GenericSetBuilder<>(OrderedMap.builder(), map -> map.isEmpty() ? of() : new OrderedSet<>(map));
     }
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll()
-    {
+    public ISet<T> deleteAll() {
         return of();
     }
 
     @Nonnull
     @Override
-    public Collector<T, ?, ISet<T>> setCollector()
-    {
-        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    public Collector<T, ?, ISet<T>> setCollector() {
+        return GenericCollector.ordered(
+                this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override
-    protected ISet<T> create(IMap<T, Boolean> map)
-    {
+    protected ISet<T> create(IMap<T, Boolean> map) {
         return map.isEmpty() ? of() : new OrderedSet<>(map);
     }
 
     @Override
-    protected Set<T> emptyMutableSet()
-    {
+    protected Set<T> emptyMutableSet() {
         return new LinkedHashSet<>();
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new OrderedSetProxy(this);
     }
 }

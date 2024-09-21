@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,11 @@
 
 package org.javimmutable.collections.tree;
 
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.ISetBuilder;
@@ -42,87 +45,66 @@ import org.javimmutable.collections.common.AbstractSetUsingMap;
 import org.javimmutable.collections.common.GenericSetBuilder;
 import org.javimmutable.collections.serialization.TreeSetProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Set;
-
 @Immutable
-public class TreeSet<T>
-    extends AbstractSetUsingMap<T>
-    implements Serializable
-{
+public class TreeSet<T> extends AbstractSetUsingMap<T> implements Serializable {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static final TreeSet EMPTY = new TreeSet(new ComparableComparator());
 
     private final Comparator<T> comparator;
 
-    private TreeSet(Comparator<T> comparator)
-    {
+    private TreeSet(Comparator<T> comparator) {
         this(TreeMap.of(comparator), comparator);
     }
 
-    private TreeSet(IMap<T, Boolean> map,
-                    Comparator<T> comparator)
-    {
+    private TreeSet(IMap<T, Boolean> map, Comparator<T> comparator) {
         super(map);
         this.comparator = comparator;
     }
 
     @Nonnull
     @Override
-    public TreeSet<T> deleteAll()
-    {
+    public TreeSet<T> deleteAll() {
         return of(comparator);
     }
 
-    public Comparator<T> getComparator()
-    {
+    public Comparator<T> getComparator() {
         return comparator;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> TreeSet<T> of()
-    {
+    public static <T extends Comparable<T>> TreeSet<T> of() {
         return EMPTY;
     }
 
-    public static <T> TreeSet<T> of(Comparator<T> comparator)
-    {
+    public static <T> TreeSet<T> of(Comparator<T> comparator) {
         return new TreeSet<>(comparator);
     }
 
-    public static <T extends Comparable<T>> ISetBuilder<T> builder()
-    {
+    public static <T extends Comparable<T>> ISetBuilder<T> builder() {
         return builder(ComparableComparator.<T>of());
     }
 
     @Nonnull
-    public static <T> ISetBuilder<T> builder(Comparator<T> comparator)
-    {
-        return new GenericSetBuilder<>(TreeMap.builder(comparator), map -> map.isEmpty() ? of(comparator) : new TreeSet<>(map, comparator));
+    public static <T> ISetBuilder<T> builder(Comparator<T> comparator) {
+        return new GenericSetBuilder<>(
+                TreeMap.builder(comparator), map -> map.isEmpty() ? of(comparator) : new TreeSet<>(map, comparator));
     }
 
     @Override
-    protected ISet<T> create(IMap<T, Boolean> map)
-    {
+    protected ISet<T> create(IMap<T, Boolean> map) {
         return map.isEmpty() ? of(comparator) : new TreeSet<>(map, comparator);
     }
 
     @Override
-    protected Set<T> emptyMutableSet()
-    {
+    protected Set<T> emptyMutableSet() {
         return new java.util.TreeSet<>(comparator);
     }
 
-    IMap getMap()
-    {
+    IMap getMap() {
         return map;
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new TreeSetProxy(this);
     }
 }

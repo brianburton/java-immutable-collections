@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,52 +33,41 @@
 
 package org.javimmutable.collections.iterators;
 
+import java.util.function.Function;
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
 
-import javax.annotation.Nonnull;
-import java.util.function.Function;
-
-public class TransformStreamable<S, T>
-    implements IStreamable<T>
-{
+public class TransformStreamable<S, T> implements IStreamable<T> {
     private final IStreamable<S> source;
     private final Function<S, T> transforminator;
 
-    private TransformStreamable(IStreamable<S> source,
-                                Function<S, T> transforminator)
-    {
+    private TransformStreamable(IStreamable<S> source, Function<S, T> transforminator) {
         this.source = source;
         this.transforminator = transforminator;
     }
 
-    public static <S, T> IStreamable<T> of(@Nonnull IStreamable<S> source,
-                                           @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> IStreamable<T> of(@Nonnull IStreamable<S> source, @Nonnull Function<S, T> transforminator) {
         return new TransformStreamable<>(source, transforminator);
     }
 
-    public static <K, V> IStreamable<K> ofKeys(@Nonnull IStreamable<IMapEntry<K, V>> source)
-    {
+    public static <K, V> IStreamable<K> ofKeys(@Nonnull IStreamable<IMapEntry<K, V>> source) {
         return of(source, IMapEntry::getKey);
     }
 
-    public static <K, V> IStreamable<V> ofValues(@Nonnull IStreamable<IMapEntry<K, V>> source)
-    {
+    public static <K, V> IStreamable<V> ofValues(@Nonnull IStreamable<IMapEntry<K, V>> source) {
         return of(source, IMapEntry::getValue);
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<T> iterator()
-    {
+    public SplitableIterator<T> iterator() {
         return TransformIterator.of(source.iterator(), transforminator);
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return source.getSpliteratorCharacteristics();
     }
 }

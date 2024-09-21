@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,19 +33,15 @@
 
 package org.javimmutable.collections.list;
 
-import org.javimmutable.collections.IList;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import org.javimmutable.collections.IList;
 
-public final class RAListTimingComparison
-{
+public final class RAListTimingComparison {
     @SuppressWarnings("CallToSystemExit")
-    public static void main(String[] argv)
-        throws Exception
-    {
+    public static void main(String[] argv) throws Exception {
         if (argv.length != 2) {
             System.err.println("usage: TimingComparison seed loops");
             System.exit(1);
@@ -71,12 +65,9 @@ public final class RAListTimingComparison
     }
 
     @SuppressWarnings({"OverlyComplexMethod", "OverlyLongMethod"})
-    private static void runTests(final long seed,
-                                 int loops,
-                                 int maxSize,
-                                 int maxCommand)
-    {
-        System.out.printf("STARTING TEST WITH seed %d loops %d maxSize %d maxCommand %d%n", seed, loops, maxSize, maxCommand);
+    private static void runTests(final long seed, int loops, int maxSize, int maxCommand) {
+        System.out.printf(
+                "STARTING TEST WITH seed %d loops %d maxSize %d maxCommand %d%n", seed, loops, maxSize, maxCommand);
         for (int outerloop = 0; outerloop < 10; ++outerloop) {
             Random random = new Random(seed);
             int adds = 0;
@@ -125,7 +116,9 @@ public final class RAListTimingComparison
                 }
             }
             long endMap = System.currentTimeMillis();
-            System.out.printf("jlist adds %d sets %s removes %d gets %d size %d elapsed %d%n", adds, sets, removes, gets, expected.size(), (endMap - startMap));
+            System.out.printf(
+                    "jlist adds %d sets %s removes %d gets %d size %d elapsed %d%n",
+                    adds, sets, removes, gets, expected.size(), (endMap - startMap));
 
             random = new Random(seed);
             adds = 0;
@@ -174,7 +167,9 @@ public final class RAListTimingComparison
                 }
             }
             long endPer = System.currentTimeMillis();
-            System.out.printf("ilist adds %d sets %d removes %d gets %d size %d elapsed %d%n", adds, sets, removes, gets, list.size(), (endPer - startPer));
+            System.out.printf(
+                    "ilist adds %d sets %d removes %d gets %d size %d elapsed %d%n",
+                    adds, sets, removes, gets, list.size(), (endPer - startPer));
 
             Iterator<Integer> expectedIterator = expected.iterator();
             Iterator<Integer> listIterator = list.iterator();
@@ -191,17 +186,13 @@ public final class RAListTimingComparison
         }
     }
 
-    private static void assertEquals(boolean a,
-                                     boolean b)
-    {
+    private static void assertEquals(boolean a, boolean b) {
         if (a != b) {
             throw new RuntimeException();
         }
     }
 
-    private static void assertEquals(Integer a,
-                                     Integer b)
-    {
+    private static void assertEquals(Integer a, Integer b) {
         if (!a.equals(b)) {
             throw new RuntimeException();
         }

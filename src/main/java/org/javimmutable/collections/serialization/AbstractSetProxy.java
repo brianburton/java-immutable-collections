@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,31 +33,25 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.ISet;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.ISet;
 
 @SuppressWarnings("rawtypes")
-abstract class AbstractSetProxy
-    implements Externalizable
-{
+abstract class AbstractSetProxy implements Externalizable {
     private static final int SET_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
     protected ISet set;
 
-    protected AbstractSetProxy(ISet set)
-    {
+    protected AbstractSetProxy(ISet set) {
         this.set = set;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(SET_VERSION);
         writeSet(out);
         out.writeInt(set.size());
@@ -69,9 +61,7 @@ abstract class AbstractSetProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != SET_VERSION) {
             throw new IOException("unexpected version number: expected " + SET_VERSION + " found " + version);
@@ -83,19 +73,13 @@ abstract class AbstractSetProxy
         }
     }
 
-    protected Object readResolve()
-    {
+    protected Object readResolve() {
         return set;
     }
 
-    protected ISet readSet(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    protected ISet readSet(ObjectInput in) throws IOException, ClassNotFoundException {
         return set;
     }
 
-    protected void writeSet(ObjectOutput out)
-        throws IOException
-    {
-    }
+    protected void writeSet(ObjectOutput out) throws IOException {}
 }

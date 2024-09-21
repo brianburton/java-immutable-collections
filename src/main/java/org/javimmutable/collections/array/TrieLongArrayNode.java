@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,14 @@
 
 package org.javimmutable.collections.array;
 
+import static org.javimmutable.collections.common.BitmaskMath.*;
+import static org.javimmutable.collections.common.LongArrayMappedTrieMath.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntFunction;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.MapEntry;
@@ -43,25 +49,18 @@ import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.indexed.IndexedList;
 import org.javimmutable.collections.iterators.GenericIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntFunction;
-
-import static org.javimmutable.collections.common.BitmaskMath.*;
-import static org.javimmutable.collections.common.LongArrayMappedTrieMath.*;
-
-public class TrieLongArrayNode<T>
-{
+public class TrieLongArrayNode<T> {
     static final int ROOT_SHIFT_COUNT = MAX_SHIFT_NUMBER;
     private static final long SIGN_BIT = 1L << 63;
 
     private static final Object[] EMPTY_VALUES = new Object[0];
+
     @SuppressWarnings({"rawtypes"})
     private static final TrieLongArrayNode[] EMPTY_NODES = new TrieLongArrayNode[0];
+
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static final TrieLongArrayNode EMPTY = new TrieLongArrayNode(ROOT_SHIFT_COUNT, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
+    private static final TrieLongArrayNode EMPTY =
+            new TrieLongArrayNode(ROOT_SHIFT_COUNT, 0, 0L, EMPTY_VALUES, 0L, EMPTY_NODES, 0);
 
     private final int shiftCount;
     private final long baseIndex;
@@ -71,14 +70,14 @@ public class TrieLongArrayNode<T>
     private final TrieLongArrayNode<T>[] nodes;
     private final int size;
 
-    TrieLongArrayNode(int shiftCount,
-                      long baseIndex,
-                      long valuesBitmask,
-                      T[] values,
-                      long nodesBitmask,
-                      @Nonnull TrieLongArrayNode<T>[] nodes,
-                      int size)
-    {
+    TrieLongArrayNode(
+            int shiftCount,
+            long baseIndex,
+            long valuesBitmask,
+            T[] values,
+            long nodesBitmask,
+            @Nonnull TrieLongArrayNode<T>[] nodes,
+            int size) {
         assert bitCount(valuesBitmask) == values.length;
         assert bitCount(nodesBitmask) == nodes.length;
         this.shiftCount = shiftCount;
@@ -89,79 +88,71 @@ public class TrieLongArrayNode<T>
         this.nodes = nodes;
         this.size = size;
         assert checkChildShifts(shiftCount, nodes);
-//        assert computeSize(nodes) + values.length == size;
+        //        assert computeSize(nodes) + values.length == size;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    public static <T> TrieLongArrayNode<T> empty()
-    {
-        return (TrieLongArrayNode<T>)EMPTY;
+    public static <T> TrieLongArrayNode<T> empty() {
+        return (TrieLongArrayNode<T>) EMPTY;
     }
 
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return size == 0;
     }
 
-    public int size()
-    {
+    public int size() {
         return size;
     }
 
-    public T getValueOr(long index,
-                        T defaultValue)
-    {
+    public T getValueOr(long index, T defaultValue) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return getValueOrImpl(shiftCountForValue, index, defaultValue);
     }
 
     @Nonnull
-    public TrieLongArrayNode<T> assign(long index,
-                                       T value)
-    {
+    public TrieLongArrayNode<T> assign(long index, T value) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return assignImpl(ROOT_SHIFT_COUNT, shiftCountForValue, index, value);
     }
 
     @Nonnull
-    public TrieLongArrayNode<T> delete(long index)
-    {
+    public TrieLongArrayNode<T> delete(long index) {
         index = flip(index);
         final int shiftCountForValue = findShiftForIndex(index);
         return deleteImpl(shiftCountForValue, index);
     }
 
     @Nonnull
-    public GenericIterator.Iterable<Long> keys()
-    {
-        return iterable((valueIndex, arrayIndex) -> computeUserIndexForValue(valueIndex),
-                        nodeIndex -> nodes[nodeIndex].keys());
+    public GenericIterator.Iterable<Long> keys() {
+        return iterable(
+                (valueIndex, arrayIndex) -> computeUserIndexForValue(valueIndex), nodeIndex -> nodes[nodeIndex].keys());
     }
 
     @Nonnull
-    public GenericIterator.Iterable<T> values()
-    {
-        return iterable((valueIndex, arrayIndex) -> values[arrayIndex],
-                        nodeIndex -> nodes[nodeIndex].values());
+    public GenericIterator.Iterable<T> values() {
+        return iterable((valueIndex, arrayIndex) -> values[arrayIndex], nodeIndex -> nodes[nodeIndex].values());
     }
 
     @Nonnull
-    public GenericIterator.Iterable<IMapEntry<Long, T>> entries()
-    {
-        return iterable((valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
-                        nodeIndex -> nodes[nodeIndex].entries());
+    public GenericIterator.Iterable<IMapEntry<Long, T>> entries() {
+        return iterable(
+                (valueIndex, arrayIndex) -> MapEntry.entry(computeUserIndexForValue(valueIndex), values[arrayIndex]),
+                nodeIndex -> nodes[nodeIndex].entries());
     }
 
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         if (bitCount(valuesBitmask) != values.length) {
-            throw new IllegalStateException(String.format("invalid bitmask for values array: bitmask=%s length=%d", Long.toBinaryString(valuesBitmask), values.length));
+            throw new IllegalStateException(String.format(
+                    "invalid bitmask for values array: bitmask=%s length=%d",
+                    Long.toBinaryString(valuesBitmask), values.length));
         }
         if (bitCount(nodesBitmask) != nodes.length) {
-            throw new IllegalStateException(String.format("invalid bitmask for nodes array: bitmask=%s length=%d", Long.toBinaryString(nodesBitmask), nodes.length));
+            throw new IllegalStateException(String.format(
+                    "invalid bitmask for nodes array: bitmask=%s length=%d",
+                    Long.toBinaryString(nodesBitmask), nodes.length));
         }
         if (!checkChildShifts(shiftCount, nodes)) {
             throw new IllegalStateException("one or more nodes invalid for this branch");
@@ -172,10 +163,7 @@ public class TrieLongArrayNode<T>
         }
     }
 
-    private T getValueOrImpl(int shiftCountForValue,
-                             long index,
-                             T defaultValue)
-    {
+    private T getValueOrImpl(int shiftCountForValue, long index, T defaultValue) {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
             return defaultValue;
@@ -202,11 +190,7 @@ public class TrieLongArrayNode<T>
     }
 
     @Nonnull
-    private TrieLongArrayNode<T> assignImpl(int shiftCount,
-                                            int shiftCountForValue,
-                                            long index,
-                                            T value)
-    {
+    private TrieLongArrayNode<T> assignImpl(int shiftCount, int shiftCountForValue, long index, T value) {
         final int thisShiftCount = this.shiftCount;
         final long baseIndex = this.baseIndex;
         assert baseIndexAtShift(shiftCount, index) == baseIndexAtShift(shiftCount, baseIndex);
@@ -240,7 +224,8 @@ public class TrieLongArrayNode<T>
                 return new TrieLongArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size);
             } else {
                 final T[] newValues = ArrayHelper.insert(TrieArrayNode::allocateValues, values, arrayIndex, value);
-                return new TrieLongArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
+                return new TrieLongArrayNode<>(
+                        shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size + 1);
             }
         } else {
             // Store the value in a descendent node.
@@ -250,24 +235,25 @@ public class TrieLongArrayNode<T>
                 final TrieLongArrayNode<T> newNode = node.assignImpl(shiftCount - 1, shiftCountForValue, index, value);
                 final TrieLongArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
                 final int newSize = size - node.size() + newNode.size();
-                return new TrieLongArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                return new TrieLongArrayNode<>(
+                        shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
             } else {
                 final long newBitmask = addBit(nodesBitmask, bit);
                 final TrieLongArrayNode<T> newNode = forValue(shiftCountForValue, index, value);
                 if (valuesBitmask == 0 && nodesBitmask == 0) {
                     return newNode;
                 } else {
-                    final TrieLongArrayNode<T>[] newNodes = ArrayHelper.insert(TrieLongArrayNode::allocateNodes, nodes, arrayIndex, newNode);
-                    return new TrieLongArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
+                    final TrieLongArrayNode<T>[] newNodes =
+                            ArrayHelper.insert(TrieLongArrayNode::allocateNodes, nodes, arrayIndex, newNode);
+                    return new TrieLongArrayNode<>(
+                            shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, size + 1);
                 }
             }
         }
     }
 
     @Nonnull
-    private TrieLongArrayNode<T> deleteImpl(int shiftCountForValue,
-                                            long index)
-    {
+    private TrieLongArrayNode<T> deleteImpl(int shiftCountForValue, long index) {
         final int shiftCount = this.shiftCount;
         if (shiftCountForValue > shiftCount) {
             return this;
@@ -289,7 +275,8 @@ public class TrieLongArrayNode<T>
                     final long newBitmask = removeBit(valuesBitmask, bit);
                     final int arrayIndex = arrayIndexForBit(valuesBitmask, bit);
                     final T[] newValues = ArrayHelper.delete(TrieArrayNode::allocateValues, values, arrayIndex);
-                    return new TrieLongArrayNode<>(shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
+                    return new TrieLongArrayNode<>(
+                            shiftCount, baseIndex, newBitmask, newValues, nodesBitmask, nodes, size - 1);
                 }
             }
         } else {
@@ -307,12 +294,15 @@ public class TrieLongArrayNode<T>
                             // return the unaffected single remaining node to minimize height of the tree
                             return nodes[arrayIndexForBit(nodesBitmask, newBitmask)];
                         } else {
-                            final TrieLongArrayNode<T>[] newNodes = ArrayHelper.delete(TrieLongArrayNode::allocateNodes, nodes, arrayIndex);
-                            return new TrieLongArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
+                            final TrieLongArrayNode<T>[] newNodes =
+                                    ArrayHelper.delete(TrieLongArrayNode::allocateNodes, nodes, arrayIndex);
+                            return new TrieLongArrayNode<>(
+                                    shiftCount, baseIndex, valuesBitmask, values, newBitmask, newNodes, newSize);
                         }
                     } else {
                         final TrieLongArrayNode<T>[] newNodes = ArrayHelper.assign(nodes, arrayIndex, newNode);
-                        return new TrieLongArrayNode<>(shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
+                        return new TrieLongArrayNode<>(
+                                shiftCount, baseIndex, valuesBitmask, values, nodesBitmask, newNodes, newSize);
                     }
                 }
             }
@@ -320,23 +310,18 @@ public class TrieLongArrayNode<T>
         return this;
     }
 
-    private <V> IStreamable<V> streamable(@Nonnull LongIntFunc<V> valueFunction,
-                                          @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction)
-    {
+    private <V> IStreamable<V> streamable(
+            @Nonnull LongIntFunc<V> valueFunction, @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction) {
         return iterable(valueFunction, nodeFunction).streamable(StreamConstants.SPLITERATOR_ORDERED);
     }
 
-    private <V> GenericIterator.Iterable<V> iterable(@Nonnull LongIntFunc<V> valueFunction,
-                                                     @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction)
-    {
-        return new GenericIterator.Iterable<V>()
-        {
+    private <V> GenericIterator.Iterable<V> iterable(
+            @Nonnull LongIntFunc<V> valueFunction, @Nonnull IntFunction<GenericIterator.Iterable<V>> nodeFunction) {
+        return new GenericIterator.Iterable<V>() {
             @Nullable
             @Override
-            public GenericIterator.State<V> iterateOverRange(@Nullable GenericIterator.State<V> parent,
-                                                             int offset,
-                                                             int limit)
-            {
+            public GenericIterator.State<V> iterateOverRange(
+                    @Nullable GenericIterator.State<V> parent, int offset, int limit) {
                 final List<GenericIterator.Iterable<V>> iterables = new ArrayList<>(values.length + nodes.length);
                 long combinedBitmask = addBit(valuesBitmask, nodesBitmask);
                 while (combinedBitmask != 0) {
@@ -357,18 +342,14 @@ public class TrieLongArrayNode<T>
             }
 
             @Override
-            public int iterableSize()
-            {
+            public int iterableSize() {
                 return size;
             }
         };
     }
 
     @Nonnull
-    private static <T> TrieLongArrayNode<T> forValue(int shiftCount,
-                                                     long index,
-                                                     T value)
-    {
+    private static <T> TrieLongArrayNode<T> forValue(int shiftCount, long index, T value) {
         assert shiftCount == findShiftForIndex(index);
         final long baseIndex = baseIndexAtShift(shiftCount, index);
         final long valueBitmask = bitFromIndex(indexAtShift(shiftCount, index));
@@ -379,10 +360,8 @@ public class TrieLongArrayNode<T>
     }
 
     @Nonnull
-    private static <T> TrieLongArrayNode<T> forNode(int shiftCount,
-                                                    long nodeBaseIndex,
-                                                    @Nonnull TrieLongArrayNode<T> node)
-    {
+    private static <T> TrieLongArrayNode<T> forNode(
+            int shiftCount, long nodeBaseIndex, @Nonnull TrieLongArrayNode<T> node) {
         final long baseIndex = baseIndexAtShift(shiftCount, nodeBaseIndex);
         final long valueBitmask = 0L;
         final T[] values = emptyValues();
@@ -392,47 +371,39 @@ public class TrieLongArrayNode<T>
         return new TrieLongArrayNode<>(shiftCount, baseIndex, valueBitmask, values, nodeBitmask, nodes, node.size());
     }
 
-    private long computeUserIndexForValue(Long valueIndex)
-    {
+    private long computeUserIndexForValue(Long valueIndex) {
         return flip(baseIndex + shift(shiftCount, valueIndex));
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> T[] allocateValues(int size)
-    {
-        return size == 0 ? emptyValues() : (T[])new Object[size];
+    static <T> T[] allocateValues(int size) {
+        return size == 0 ? emptyValues() : (T[]) new Object[size];
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    static <T> TrieLongArrayNode<T>[] allocateNodes(int size)
-    {
-        return size == 0 ? emptyNodes() : (TrieLongArrayNode<T>[])new TrieLongArrayNode[size];
+    static <T> TrieLongArrayNode<T>[] allocateNodes(int size) {
+        return size == 0 ? emptyNodes() : (TrieLongArrayNode<T>[]) new TrieLongArrayNode[size];
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> T[] emptyValues()
-    {
-        return (T[])EMPTY_VALUES;
+    private static <T> T[] emptyValues() {
+        return (T[]) EMPTY_VALUES;
     }
 
     @SuppressWarnings("unchecked")
     @Nonnull
-    private static <T> TrieLongArrayNode<T>[] emptyNodes()
-    {
-        return (TrieLongArrayNode<T>[])EMPTY_NODES;
+    private static <T> TrieLongArrayNode<T>[] emptyNodes() {
+        return (TrieLongArrayNode<T>[]) EMPTY_NODES;
     }
 
-    static int findShiftForIndex(long index)
-    {
+    static int findShiftForIndex(long index) {
         return findMinimumShiftForZeroBelowHashCode(index);
     }
 
-    static int findCommonAncestorShift(long index1,
-                                       long index2)
-    {
+    static int findCommonAncestorShift(long index1, long index2) {
         final int shift1 = findShiftForIndex(index1);
         final int shift2 = findShiftForIndex(index2);
         int shiftCount = Math.max(shift1, shift2);
@@ -444,21 +415,17 @@ public class TrieLongArrayNode<T>
     }
 
     /**
-     * Flips the sign bit in the index.  Starting from a userIndex which might be positive or
-     * negative it converts it into a corresponding (but different) unsigned integer such that
-     * for any two incoming integers a and b: compare(a, b)==compareUnsigned(flip(a),flip(b)).
-     * This ensures that iteration order fits the signed order while allowing all of the array
-     * mapping to work with indices as unsigned positive numbers.  Operation is reversable (i.e.
+     * Flips the sign bit in the index. Starting from a userIndex which might be positive or negative it converts it
+     * into a corresponding (but different) unsigned integer such that for any two incoming integers a and b: compare(a,
+     * b)==compareUnsigned(flip(a),flip(b)). This ensures that iteration order fits the signed order while allowing all
+     * of the array mapping to work with indices as unsigned positive numbers. Operation is reversable (i.e.
      * flip(flip(x))==x for all x.
      */
-    static long flip(long index)
-    {
+    static long flip(long index) {
         return index ^ SIGN_BIT;
     }
 
-    private static <T> boolean checkChildShifts(int shiftCount,
-                                                @Nonnull TrieLongArrayNode<T>[] nodes)
-    {
+    private static <T> boolean checkChildShifts(int shiftCount, @Nonnull TrieLongArrayNode<T>[] nodes) {
         for (TrieLongArrayNode<T> node : nodes) {
             if (shiftCount <= node.shiftCount || node.isEmpty()) {
                 return false;
@@ -467,8 +434,7 @@ public class TrieLongArrayNode<T>
         return true;
     }
 
-    private static <T> int computeSize(@Nonnull TrieLongArrayNode<T>[] children)
-    {
+    private static <T> int computeSize(@Nonnull TrieLongArrayNode<T>[] children) {
         int total = 0;
         for (TrieLongArrayNode<T> child : children) {
             total += child.size();
@@ -476,9 +442,7 @@ public class TrieLongArrayNode<T>
         return total;
     }
 
-    private interface LongIntFunc<R>
-    {
-        R apply(long p1,
-                int p2);
+    private interface LongIntFunc<R> {
+        R apply(long p1, int p2);
     }
 }

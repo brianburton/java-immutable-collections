@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,144 +33,114 @@
 
 package org.javimmutable.collections.deque;
 
-import org.javimmutable.collections.Maybe;
-import org.javimmutable.collections.iterators.GenericIterator;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import org.javimmutable.collections.Maybe;
+import org.javimmutable.collections.iterators.GenericIterator;
 
-/**
- * Node implementation containing no values.  Implemented as a singleton.
- */
+/** Node implementation containing no values. Implemented as a singleton. */
 @Immutable
-final class EmptyNode<T>
-    implements Node<T>
-{
+final class EmptyNode<T> implements Node<T> {
     private static final EmptyNode INSTANCE = new EmptyNode();
 
-    private EmptyNode()
-    {
-    }
+    private EmptyNode() {}
 
     @SuppressWarnings("unchecked")
-    static <T> EmptyNode<T> of()
-    {
-        return (EmptyNode<T>)INSTANCE;
+    static <T> EmptyNode<T> of() {
+        return (EmptyNode<T>) INSTANCE;
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return true;
     }
 
     @Override
-    public boolean isFull()
-    {
+    public boolean isFull() {
         return false;
     }
 
     @Override
-    public int iterableSize()
-    {
+    public int iterableSize() {
         return 0;
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return 0;
     }
 
     @Override
-    public int getDepth()
-    {
+    public int getDepth() {
         return 1;
     }
 
     @Override
-    public Node<T> deleteFirst()
-    {
+    public Node<T> deleteFirst() {
         throw new IllegalStateException();
     }
 
     @Override
-    public Node<T> deleteLast()
-    {
+    public Node<T> deleteLast() {
         throw new IllegalStateException();
     }
 
     @Override
-    public Node<T> insertFirst(T value)
-    {
+    public Node<T> insertFirst(T value) {
         return new LeafNode<T>(value);
     }
 
     @Override
-    public Node<T> insertLast(T value)
-    {
+    public Node<T> insertLast(T value) {
         return new LeafNode<T>(value);
     }
 
     @Override
-    public boolean containsIndex(int index)
-    {
+    public boolean containsIndex(int index) {
         return false;
     }
 
     @Override
-    public T get(int index)
-    {
+    public T get(int index) {
         throw new IndexOutOfBoundsException();
     }
 
     @Nonnull
     @Override
-    public Maybe<T> find(int index)
-    {
+    public Maybe<T> find(int index) {
         throw new IndexOutOfBoundsException();
     }
 
     @Override
-    public Node<T> assign(int index,
-                          T value)
-    {
+    public Node<T> assign(int index, T value) {
         throw new IndexOutOfBoundsException();
     }
 
     @Nullable
     @Override
-    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent,
-                                                     int offset,
-                                                     int limit)
-    {
+    public GenericIterator.State<T> iterateOverRange(@Nullable GenericIterator.State<T> parent, int offset, int limit) {
         assert offset == 0 && limit == 0;
         return parent;
     }
 
     @Override
-    public int computedSize()
-    {
+    public int computedSize() {
         return 0;
     }
 
     @Nonnull
     @Override
-    public Node<T> reverse()
-    {
+    public Node<T> reverse() {
         return this;
     }
 
     @Override
-    public void checkInvariants()
-    {
-    }
+    public void checkInvariants() {}
 
     @Nonnull
     @Override
-    public Node<T> prefix(int limit)
-    {
+    public Node<T> prefix(int limit) {
         if (limit == 0) {
             return this;
         } else {
@@ -182,8 +150,7 @@ final class EmptyNode<T>
 
     @Nonnull
     @Override
-    public Node<T> suffix(int offset)
-    {
+    public Node<T> suffix(int offset) {
         if (offset == 0) {
             return this;
         } else {

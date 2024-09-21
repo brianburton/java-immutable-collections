@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,32 +33,29 @@
 
 package org.javimmutable.collections.iterators;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.IStreamable;
 import org.javimmutable.collections.SplitableIterator;
 
-import javax.annotation.Nonnull;
-
 public class EntryStreamable<K, V, C extends IStreamable<V>, D extends IStreamable<IMapEntry<K, C>>>
-    implements IStreamable<IMapEntry<K, V>>
-{
+        implements IStreamable<IMapEntry<K, V>> {
     private final D source;
 
-    public EntryStreamable(@Nonnull D source)
-    {
+    public EntryStreamable(@Nonnull D source) {
         this.source = source;
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<IMapEntry<K, V>> iterator()
-    {
-        return LazyMultiIterator.transformed(source.iterator(), e -> () -> TransformIterator.of(e.getValue().iterator(), v -> IMapEntry.of(e.getKey(), v)));
+    public SplitableIterator<IMapEntry<K, V>> iterator() {
+        return LazyMultiIterator.transformed(
+                source.iterator(),
+                e -> () -> TransformIterator.of(e.getValue().iterator(), v -> IMapEntry.of(e.getKey(), v)));
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return source.getSpliteratorCharacteristics();
     }
 }

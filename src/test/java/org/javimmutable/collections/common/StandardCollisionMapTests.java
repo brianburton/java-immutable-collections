@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,23 +33,20 @@
 
 package org.javimmutable.collections.common;
 
-import junit.framework.AssertionFailedError;
-import org.javimmutable.collections.IMapEntry;
-import org.javimmutable.collections.Maybe;
+import static junit.framework.Assert.*;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.annotation.Nonnull;
+import junit.framework.AssertionFailedError;
+import org.javimmutable.collections.IMapEntry;
+import org.javimmutable.collections.Maybe;
 
-import static junit.framework.Assert.*;
-
-public class StandardCollisionMapTests
-{
-    public static void randomTests(@Nonnull CollisionMap<Integer, Integer> map)
-    {
+public class StandardCollisionMapTests {
+    public static void randomTests(@Nonnull CollisionMap<Integer, Integer> map) {
         assertEquals(map.update(map.empty(), -45, 1000), map.single(-45, 1000));
         Map<Integer, Integer> expected = new TreeMap<>();
         CollisionMap.Node node = map.empty();
@@ -133,20 +128,15 @@ public class StandardCollisionMapTests
         }
     }
 
-    private static Integer randomValue(Random r,
-                                       Integer k,
-                                       Map<Integer, Integer> expected)
-    {
+    private static Integer randomValue(Random r, Integer k, Map<Integer, Integer> expected) {
         if (expected.containsKey(k) && r.nextInt(100) <= 10) {
             return expected.get(k);
         }
         return r.nextInt(500);
     }
 
-    private static void verifyValues(Map<Integer, Integer> expected,
-                                     CollisionMap<Integer, Integer> map,
-                                     CollisionMap.Node node)
-    {
+    private static void verifyValues(
+            Map<Integer, Integer> expected, CollisionMap<Integer, Integer> map, CollisionMap.Node node) {
         StringBuilder sb = new StringBuilder();
         if (map.size(node) != expected.size()) {
             sb.append(String.format("size mismatch: expected=%d actual=%d\n", expected.size(), map.size(node)));
@@ -170,10 +160,13 @@ public class StandardCollisionMapTests
                 sb.append(String.format("missing entry for key: k=%d ev=%s\n", k, ev));
             } else {
                 if (!k.equals(he.unsafeGet().getKey())) {
-                    sb.append(String.format("mismatch: k=%d he.k=%s\n", k, he.unsafeGet().getKey()));
+                    sb.append(String.format(
+                            "mismatch: k=%d he.k=%s\n", k, he.unsafeGet().getKey()));
                 }
                 if (!ev.equals(he.unsafeGet().getValue())) {
-                    sb.append(String.format("mismatch: k=%d ev=%s he.v=%s\n", k, ev, he.unsafeGet().getValue()));
+                    sb.append(String.format(
+                            "mismatch: k=%d ev=%s he.v=%s\n",
+                            k, ev, he.unsafeGet().getValue()));
                 }
             }
         }

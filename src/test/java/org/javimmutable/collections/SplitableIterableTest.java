@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2019-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,22 +33,17 @@
 
 package org.javimmutable.collections;
 
+import java.io.IOException;
 import junit.framework.TestCase;
 
-import java.io.IOException;
-
-public class SplitableIterableTest
-    extends TestCase
-{
-    public void testIndexedForEach()
-    {
+public class SplitableIterableTest extends TestCase {
+    public void testIndexedForEach() {
         IListBuilder<Integer> collected = ILists.builder();
         ILists.of(1, 2, 3).indexedForEach((i, v) -> collected.add(i).add(v));
         assertEquals(ILists.of(0, 1, 1, 2, 2, 3), collected.build());
     }
 
-    public void testIndexedForEachThrows()
-    {
+    public void testIndexedForEachThrows() {
         IListBuilder<Integer> collected = ILists.builder();
         try {
             ILists.of(1, 2, 3).indexedForEachThrows((i, v) -> {

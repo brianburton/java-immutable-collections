@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,12 @@
 
 package org.javimmutable.collections.inorder;
 
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.GenericCollector;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMultiset;
@@ -42,75 +46,58 @@ import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.common.AbstractMultiset;
 import org.javimmutable.collections.serialization.OrderedMultisetProxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Collector;
-
 /**
- * {@link IMultiset} implementation built on top of an ordered map. During iteration,
- * elements are returned in the same order they were inserted into the set. Performance is slower
- * than hash or tree sets, but should be sufficient for most algorithms where insert order matters.
+ * {@link IMultiset} implementation built on top of an ordered map. During iteration, elements are returned in the same
+ * order they were inserted into the set. Performance is slower than hash or tree sets, but should be sufficient for
+ * most algorithms where insert order matters.
  */
 @Immutable
-public class OrderedMultiset<T>
-    extends AbstractMultiset<T>
-    implements Serializable
-{
+public class OrderedMultiset<T> extends AbstractMultiset<T> implements Serializable {
     @SuppressWarnings("unchecked")
     private static final OrderedMultiset EMPTY = new OrderedMultiset(OrderedMap.of(), 0);
+
     private static final long serialVersionUID = -121805;
 
-    private OrderedMultiset(IMap<T, Integer> map,
-                            int occurrences)
-    {
+    private OrderedMultiset(IMap<T, Integer> map, int occurrences) {
         super(map, occurrences);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> OrderedMultiset<T> of()
-    {
+    public static <T> OrderedMultiset<T> of() {
         return EMPTY;
     }
 
     @Nonnull
     @Override
-    public OrderedMultiset<T> deleteAll()
-    {
+    public OrderedMultiset<T> deleteAll() {
         return of();
     }
 
     @Nonnull
     @Override
-    public Collector<T, ?, ISet<T>> setCollector()
-    {
-        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    public Collector<T, ?, ISet<T>> setCollector() {
+        return GenericCollector.ordered(
+                this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Nonnull
     @Override
-    public Collector<T, ?, IMultiset<T>> multisetCollector()
-    {
-        return GenericCollector.ordered(this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
+    public Collector<T, ?, IMultiset<T>> multisetCollector() {
+        return GenericCollector.ordered(
+                this, deleteAll(), a -> a.isEmpty(), (a, v) -> a.insert(v), (a, b) -> a.insertAll(b));
     }
 
     @Override
-    protected OrderedMultiset<T> create(IMap<T, Integer> map,
-                                        int occurrences)
-    {
+    protected OrderedMultiset<T> create(IMap<T, Integer> map, int occurrences) {
         return new OrderedMultiset<>(map, occurrences);
     }
 
     @Override
-    protected Map<T, Integer> emptyMutableMap()
-    {
+    protected Map<T, Integer> emptyMutableMap() {
         return new LinkedHashMap<>();
     }
 
-    private Object writeReplace()
-    {
+    private Object writeReplace() {
         return new OrderedMultisetProxy(this);
     }
 }

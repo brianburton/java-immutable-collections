@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2014-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,10 @@
 
 package org.javimmutable.collections.listmap;
 
+import java.util.Iterator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import org.javimmutable.collections.IList;
 import org.javimmutable.collections.IListMap;
 import org.javimmutable.collections.IMap;
@@ -46,29 +48,19 @@ import org.javimmutable.collections.common.Conditions;
 import org.javimmutable.collections.common.StreamConstants;
 import org.javimmutable.collections.util.Functions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.util.Iterator;
-
 @Immutable
-abstract class AbstractListMap<K, V>
-    implements IListMap<K, V>
-{
+abstract class AbstractListMap<K, V> implements IListMap<K, V> {
     protected final IList<V> emptyList;
     protected final IMap<K, IList<V>> contents;
 
-    protected AbstractListMap(IMap<K, IList<V>> contents,
-                              IList<V> emptyList)
-    {
+    protected AbstractListMap(IMap<K, IList<V>> contents, IList<V> emptyList) {
         this.emptyList = emptyList;
         this.contents = contents;
     }
 
     @Nonnull
     @Override
-    public IList<V> getList(@Nonnull K key)
-    {
+    public IList<V> getList(@Nonnull K key) {
         Conditions.stopNull(key);
         Maybe<IList<V>> current = contents.find(key);
         return current.get(emptyList);
@@ -76,155 +68,127 @@ abstract class AbstractListMap<K, V>
 
     @Nonnull
     @Override
-    public IListMap<K, V> assign(@Nonnull K key,
-                                 @Nonnull IList<V> value)
-    {
+    public IListMap<K, V> assign(@Nonnull K key, @Nonnull IList<V> value) {
         Conditions.stopNull(key, value);
         return create(contents.assign(key, copyList(value)));
     }
 
     @Nonnull
     @Override
-    public IListMap<K, V> insert(@Nonnull K key,
-                                 @Nullable V value)
-    {
+    public IListMap<K, V> insert(@Nonnull K key, @Nullable V value) {
         return create(contents.update(key, h -> h.get(emptyList).insertLast(value)));
     }
 
     @Nonnull
     @Override
-    public IListMap<K, V> delete(@Nonnull K key)
-    {
+    public IListMap<K, V> delete(@Nonnull K key) {
         return create(contents.delete(key));
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return contents.size();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return contents.isEmpty();
     }
 
     @Nonnull
     @Override
-    public IStreamable<K> keys()
-    {
+    public IStreamable<K> keys() {
         return contents.keys();
     }
 
     @Nonnull
     @Override
-    public IStreamable<V> values(@Nonnull K key)
-    {
+    public IStreamable<V> values(@Nonnull K key) {
         return getList(key);
     }
 
     @Nonnull
     @Override
-    public IStreamable<IMapEntry<K, IList<V>>> entries()
-    {
+    public IStreamable<IMapEntry<K, IList<V>>> entries() {
         return contents;
     }
 
     @Nonnull
     @Override
-    public IListMap<K, V> insert(@Nonnull IMapEntry<K, IList<V>> e)
-    {
+    public IListMap<K, V> insert(@Nonnull IMapEntry<K, IList<V>> e) {
         return insertAll(e.getKey(), e.getValue());
     }
 
     @Nonnull
     @Override
-    public IListMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, IList<V>>> iterator)
-    {
-        return Functions.foldLeft((IListMap<K, V>)this,
-                                  iterator,
-                                  (s, e) -> s.insertAll(e.getKey(), e.getValue()));
+    public IListMap<K, V> insertAll(@Nonnull Iterator<? extends IMapEntry<K, IList<V>>> iterator) {
+        return Functions.foldLeft((IListMap<K, V>) this, iterator, (s, e) -> s.insertAll(e.getKey(), e.getValue()));
     }
 
     @Override
     @Nonnull
-    public SplitableIterator<IMapEntry<K, IList<V>>> iterator()
-    {
+    public SplitableIterator<IMapEntry<K, IList<V>>> iterator() {
         return contents.iterator();
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return StreamConstants.SPLITERATOR_ORDERED;
     }
 
     @Nullable
     @Override
-    public IList<V> get(K key)
-    {
+    public IList<V> get(K key) {
         return contents.get(key);
     }
 
     @Override
-    public IList<V> getValueOr(K key,
-                               IList<V> defaultValue)
-    {
+    public IList<V> getValueOr(K key, IList<V> defaultValue) {
         return contents.getValueOr(key, defaultValue);
     }
 
     @Nonnull
     @Override
-    public Maybe<IList<V>> find(K key)
-    {
+    public Maybe<IList<V>> find(K key) {
         return contents.find(key);
     }
 
     @Nonnull
     @Override
-    public IListMap<K, V> deleteAll()
-    {
+    public IListMap<K, V> deleteAll() {
         return create(contents.deleteAll());
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return contents.hashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        return (o instanceof AbstractListMap) && contents.equals(((AbstractListMap)o).contents);
+    public boolean equals(Object o) {
+        return (o instanceof AbstractListMap) && contents.equals(((AbstractListMap) o).contents);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return contents.toString();
     }
 
-    protected void checkListMapInvariants()
-    {
+    protected void checkListMapInvariants() {
         contents.checkInvariants();
         for (IMapEntry<K, IList<V>> entry : contents) {
             entry.getValue().checkInvariants();
         }
     }
 
-    /**
-     * Implemented by derived classes to create a new instance of the appropriate class.
-     */
+    /** Implemented by derived classes to create a new instance of the appropriate class. */
     protected abstract IListMap<K, V> create(IMap<K, IList<V>> map);
 
     /**
-     * Overridable by derived classes to create a compatible copy of the specified list.
-     * Default implementation simply returns the original.
+     * Overridable by derived classes to create a compatible copy of the specified list. Default implementation simply
+     * returns the original.
      */
-    protected IList<V> copyList(IList<V> original)
-    {
+    protected IList<V> copyList(IList<V> original) {
         return original;
     }
 }

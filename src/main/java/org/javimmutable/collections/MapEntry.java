@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,127 +33,104 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Immutable implementation of both {@link Map.Entry} and {@link IMapEntry} that uses the same equals() and hashCode() implementations as
- * documented in javadoc for {@link Map.Entry}.
+ * Immutable implementation of both {@link Map.Entry} and {@link IMapEntry} that uses the same equals() and hashCode()
+ * implementations as documented in javadoc for {@link Map.Entry}.
  */
 @Immutable
-public class MapEntry<K, V>
-    implements IMapEntry<K, V>,
-               Map.Entry<K, V>
-{
+public class MapEntry<K, V> implements IMapEntry<K, V>, Map.Entry<K, V> {
     @Nonnull
     protected final K key;
+
     protected final V value;
 
-    public MapEntry(@Nonnull Map.Entry<K, V> entry)
-    {
+    public MapEntry(@Nonnull Map.Entry<K, V> entry) {
         this(entry.getKey(), entry.getValue());
     }
 
-    public MapEntry(@Nonnull IMapEntry<K, V> entry)
-    {
+    public MapEntry(@Nonnull IMapEntry<K, V> entry) {
         this(entry.getKey(), entry.getValue());
     }
 
-    public MapEntry(@Nonnull K key,
-                    V value)
-    {
+    public MapEntry(@Nonnull K key, V value) {
         this.key = key;
         this.value = value;
     }
 
     @Nonnull
-    public static <K, V> IMapEntry<K, V> entry(@Nonnull K key,
-                                               V value)
-    {
+    public static <K, V> IMapEntry<K, V> entry(@Nonnull K key, V value) {
         return new MapEntry<K, V>(key, value);
     }
 
     @Nonnull
-    public static <K, V> Map.Entry<K, V> javaEntry(@Nonnull K key,
-                                                   V value)
-    {
+    public static <K, V> Map.Entry<K, V> javaEntry(@Nonnull K key, V value) {
         return new MapEntry<K, V>(key, value);
     }
 
-    public static <K extends Comparable<K>, V> int compareKeys(@Nonnull IMapEntry<K, V> a,
-                                                               @Nonnull IMapEntry<K, V> b)
-    {
+    public static <K extends Comparable<K>, V> int compareKeys(@Nonnull IMapEntry<K, V> a, @Nonnull IMapEntry<K, V> b) {
         return a.getKey().compareTo(b.getKey());
     }
 
     @Nonnull
     @Override
-    public K getKey()
-    {
+    public K getKey() {
         return key;
     }
 
     @Override
-    public V getValue()
-    {
+    public V getValue() {
         return value;
     }
 
     @Override
-    public V setValue(V v)
-    {
+    public V setValue(V v) {
         throw new UnsupportedOperationException();
     }
 
-    public IMapEntry<K, V> asIMapEntry()
-    {
+    public IMapEntry<K, V> asIMapEntry() {
         return this;
     }
 
-    public Map.Entry<K, V> asMapEntry()
-    {
+    public Map.Entry<K, V> asMapEntry() {
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
-        return ((key == null) ? 0 : key.hashCode()) ^
-               ((value == null) ? 0 : value.hashCode());
+    public int hashCode() {
+        return ((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value.hashCode());
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (o instanceof IMapEntry) {
-            IMapEntry jentry = (IMapEntry)o;
+            IMapEntry jentry = (IMapEntry) o;
             //noinspection ConstantConditions
-            return ((key == null) ? (jentry.getKey() == null) : key.equals(jentry.getKey())) &&
-                   ((value == null) ? (jentry.getValue() == null) : value.equals(jentry.getValue()));
+            return ((key == null) ? (jentry.getKey() == null) : key.equals(jentry.getKey()))
+                    && ((value == null) ? (jentry.getValue() == null) : value.equals(jentry.getValue()));
         }
 
         if (!(o instanceof Map.Entry)) {
             return false;
         }
 
-        Map.Entry entry2 = (Map.Entry)o;
-        return ((key == null) ? (entry2.getKey() == null) : key.equals(entry2.getKey())) &&
-               ((value == null) ? (entry2.getValue() == null) : value.equals(entry2.getValue()));
+        Map.Entry entry2 = (Map.Entry) o;
+        return ((key == null) ? (entry2.getKey() == null) : key.equals(entry2.getKey()))
+                && ((value == null) ? (entry2.getValue() == null) : value.equals(entry2.getValue()));
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return makeToString(this);
     }
 
-    private static void addToString(StringBuilder sb,
-                                    Object obj)
-    {
+    private static void addToString(StringBuilder sb, Object obj) {
         if (obj == null) {
             sb.append("null");
         } else {
@@ -163,35 +138,27 @@ public class MapEntry<K, V>
         }
     }
 
-    public static String makeToString(IMapEntry entry)
-    {
+    public static String makeToString(IMapEntry entry) {
         StringBuilder sb = new StringBuilder();
         addToString(sb, entry);
         return sb.toString();
     }
 
-    public static void addToString(StringBuilder sb,
-                                   IMapEntry entry)
-    {
+    public static void addToString(StringBuilder sb, IMapEntry entry) {
         addToString(sb, entry.getKey(), entry.getValue());
     }
 
-    public static <K, V> void addToString(StringBuilder sb,
-                                          K key,
-                                          V value)
-    {
+    public static <K, V> void addToString(StringBuilder sb, K key, V value) {
         addToString(sb, key);
         sb.append("=");
         addToString(sb, value);
     }
 
-    public static <K, V> List<Map.Entry<K, V>> toMapEntries(@Nonnull Collection<IMapEntry<K, V>> source)
-    {
+    public static <K, V> List<Map.Entry<K, V>> toMapEntries(@Nonnull Collection<IMapEntry<K, V>> source) {
         return source.stream().map(MapEntry::new).collect(Collectors.toList());
     }
 
-    public static <K, V> List<IMapEntry<K, V>> toIMapEntries(@Nonnull Collection<Map.Entry<K, V>> source)
-    {
+    public static <K, V> List<IMapEntry<K, V>> toIMapEntries(@Nonnull Collection<Map.Entry<K, V>> source) {
         return source.stream().map(MapEntry::new).collect(Collectors.toList());
     }
 }

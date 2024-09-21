@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,51 +33,41 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
 
 /**
- * Interface for classes that can produce java.util.Streams and are also Iterable.   The default stream
- * creation implementations use spliterator().
+ * Interface for classes that can produce java.util.Streams and are also Iterable. The default stream creation
+ * implementations use spliterator().
  */
-public interface IStreamable<T>
-    extends SplitableIterable<T>
-{
+public interface IStreamable<T> extends SplitableIterable<T> {
     /**
-     * Overridden here to require implementations to return a SplitableIterator rather than
-     * a basic Iterator.  This is necessary to allow composition of new objects from methods
-     * like keys() and values().
+     * Overridden here to require implementations to return a SplitableIterator rather than a basic Iterator. This is
+     * necessary to allow composition of new objects from methods like keys() and values().
      */
     @Nonnull
     @Override
     SplitableIterator<T> iterator();
 
-    /**
-     * @return characteristics value used when creating Spliterators
-     */
+    /** @return characteristics value used when creating Spliterators */
     int getSpliteratorCharacteristics();
 
-    /**
-     * Default implementation that creates a Spliterator from a newly created Iterator.
-     */
+    /** Default implementation that creates a Spliterator from a newly created Iterator. */
     @Nonnull
     @Override
-    default Spliterator<T> spliterator()
-    {
+    default Spliterator<T> spliterator() {
         return iterator().spliterator(getSpliteratorCharacteristics());
     }
 
     @Nonnull
-    default Stream<T> stream()
-    {
+    default Stream<T> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
     @Nonnull
-    default Stream<T> parallelStream()
-    {
+    default Stream<T> parallelStream() {
         return StreamSupport.stream(spliterator(), true);
     }
 }

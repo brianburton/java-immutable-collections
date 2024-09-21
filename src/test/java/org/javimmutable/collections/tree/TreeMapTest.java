@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +33,21 @@
 
 package org.javimmutable.collections.tree;
 
+import static java.util.Arrays.asList;
+import static org.javimmutable.collections.common.StandardMapTests.*;
+import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.IMap;
@@ -49,32 +62,12 @@ import org.javimmutable.collections.common.StandardMapTests;
 import org.javimmutable.collections.common.StandardSerializableTests;
 import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static org.javimmutable.collections.common.StandardMapTests.*;
-import static org.javimmutable.collections.iterators.StandardIteratorTests.emptyIteratorTest;
-
-public class TreeMapTest
-    extends TestCase
-{
-    public void test()
-    {
+public class TreeMapTest extends TestCase {
+    public void test() {
         StandardMapTests.verifyMiscellaneous(TreeMap.of());
     }
 
-    public void testInsert()
-    {
+    public void testInsert() {
         TreeMap<Integer, Integer> map = TreeMap.of();
         verifyEmptyEnumeration(map);
         emptyIteratorTest(map.iterator());
@@ -100,24 +93,25 @@ public class TreeMapTest
         assertEquals(Maybe.of(11), map.find(10));
         assertEquals(Arrays.asList(10, 20, 30), new ArrayList<>(map.getMap().keySet()));
         assertEquals(Arrays.asList(11, 19, 18), new ArrayList<>(map.getMap().values()));
-        final List<IMapEntry<Integer, Integer>> expectedEntries = Arrays.asList(IMapEntry.of(10, 11), IMapEntry.of(20, 19), IMapEntry.of(30, 18));
+        final List<IMapEntry<Integer, Integer>> expectedEntries =
+                Arrays.asList(IMapEntry.of(10, 11), IMapEntry.of(20, 19), IMapEntry.of(30, 18));
         StandardIteratorTests.listIteratorTest(expectedEntries, map.iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(11, 19, 18), map.getMap().values().iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(10, 20, 30), map.getMap().keySet().iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(11, 19, 18), map.getMap().values().iterator());
 
         verifyEnumeration(expectedEntries, map);
     }
 
-    public void testValueIdentity()
-    {
+    public void testValueIdentity() {
         TreeMap<String, String> map = TreeMap.of();
         map = map.assign("a", "A");
         assertSame(map, map.assign("a", "A"));
         assertFalse(map == map.assign("a", "AA"));
     }
 
-    public void testRandom1()
-    {
+    public void testRandom1() {
         Random random = new Random();
         for (int loop = 0; loop < 20; ++loop) {
             Set<Integer> expected = new TreeSet<>();
@@ -151,8 +145,7 @@ public class TreeMapTest
         }
     }
 
-    public void testRandom2()
-    {
+    public void testRandom2() {
         final int maxKey = 500;
         Random random = new Random();
         for (int loop = 0; loop < 10; ++loop) {
@@ -233,7 +226,9 @@ public class TreeMapTest
             }
             assertEquals(expected, map.getMap());
             assertEquals(expected.keySet(), map.getMap().keySet());
-            assertEquals(new ArrayList<>(expected.values()), new ArrayList<>(map.getMap().values()));
+            assertEquals(
+                    new ArrayList<>(expected.values()),
+                    new ArrayList<>(map.getMap().values()));
             for (Map.Entry<Integer, Integer> entry : expected.entrySet()) {
                 Maybe<Integer> value = map.find(entry.getKey());
                 assertEquals(entry.getValue(), value.unsafeGet());
@@ -242,8 +237,7 @@ public class TreeMapTest
         }
     }
 
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() {
         TreeMap<Integer, Integer> map = TreeMap.of();
         map = map.assign(1, 2).assign(3, 4);
         TreeMap<Integer, Integer> cleared = map.deleteAll();
@@ -263,9 +257,8 @@ public class TreeMapTest
         emptyIteratorTest(cleared.iterator());
     }
 
-    public void testAssignAll()
-    {
-        //assignAll(JImmutableMap)
+    public void testAssignAll() {
+        // assignAll(JImmutableMap)
         IMap<String, Number> empty = TreeMap.of();
         IMap<String, Number> map = empty;
         IMap<String, Integer> expected = TreeMap.of();
@@ -288,7 +281,7 @@ public class TreeMapTest
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
 
-        //assignAll(Map)
+        // assignAll(Map)
         map = empty;
         Map<String, Integer> expectedMutable = new java.util.TreeMap<>();
         map = map.assignAll(expectedMutable);
@@ -310,11 +303,9 @@ public class TreeMapTest
         assertEquals(expectedMutable, map.getMap());
         assertEquals(3, map.size());
         assertEquals(8, map.get("a"));
-
     }
 
-    public void testIterator()
-    {
+    public void testIterator() {
         List<IMapEntry<Integer, Integer>> expected = new ArrayList<>();
         IMap<Integer, Integer> map = TreeMap.of();
         for (int i = -1000; i <= 1000; ++i) {
@@ -324,20 +315,25 @@ public class TreeMapTest
         StandardIteratorTests.verifyOrderedIterable(expected, map);
     }
 
-    public void testStreams()
-    {
+    public void testStreams() {
         final IMap<Integer, Integer> treeMap = TreeMap.of();
         assertEquals(asList(), treeMap.stream().collect(Collectors.toList()));
         assertEquals(asList(IMapEntry.of(1, 10)), treeMap.assign(1, 10).stream().collect(Collectors.toList()));
-        assertEquals(asList(IMapEntry.of(1, 10), IMapEntry.of(4, 40)), treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(IMapEntry.of(1, 10), IMapEntry.of(4, 40)),
+                treeMap.assign(4, 40).assign(1, 10).stream().collect(Collectors.toList()));
 
         assertEquals(asList(), treeMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(1), treeMap.assign(1, 10).keys().stream().collect(Collectors.toList()));
-        assertEquals(asList(1, 4), treeMap.assign(4, 40).assign(1, 10).keys().stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(1, 4),
+                treeMap.assign(4, 40).assign(1, 10).keys().stream().collect(Collectors.toList()));
 
         assertEquals(asList(), treeMap.keys().stream().collect(Collectors.toList()));
         assertEquals(asList(10), treeMap.assign(1, 10).values().stream().collect(Collectors.toList()));
-        assertEquals(asList(10, 40), treeMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
+        assertEquals(
+                asList(10, 40),
+                treeMap.assign(4, 40).assign(1, 10).values().stream().collect(Collectors.toList()));
 
         List<Integer> keys = new ArrayList<>();
         IMap<Integer, Integer> map = treeMap;
@@ -352,37 +348,50 @@ public class TreeMapTest
         assertEquals(map, map.parallelStream().collect(TreeMap.createMapCollector()));
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((IMap) a).iterator();
         IMap<String, String> empty = TreeMap.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7jLDa2IJ0CV6zvm5BYlFIDkoqyS/CGYYE8wwIA0AOQDw3OoAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7jLDa2IJ0CV6zvm5BYlFIDkoqyS/CGYYE8wwBsYSBkZHIE6sAAD52Rri8gAAAA==");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("G", "b"), IMapEntry.of("Z", "c"))),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7jLDa2IJ0CV6zvm5BYlFIDkoqyS/CGYYE8wwBuYSBkZHIE4EYncgTgLiKCBOrgAAo1PItgIBAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                TreeMapTest::extraSerializationChecks,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7jLDa2IJ0CV6zvm5BYlFIDkoqyS/CGYYE8wwIA0AOQDw3OoAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                TreeMapTest::extraSerializationChecks,
+                empty.insert(IMapEntry.of("A", "a")),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7jLDa2IJ0CV6zvm5BYlFIDkoqyS/CGYYE8wwBsYSBkZHIE6sAAD52Rri8gAAAA==");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                TreeMapTest::extraSerializationChecks,
+                empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("G", "b"), IMapEntry.of("Z", "c"))),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7jLDa2IJ0CV6zvm5BYlFIDkoqyS/CGYYE8wwBuYSBkZHIE4EYncgTgLiKCBOrgAAo1PItgIBAAA=");
 
         empty = TreeMap.of(String.CASE_INSENSITIVE_ORDER);
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7tICmpaol5OYl64XXFKUmZeu4pxYnOqZV5yaV5xZklmW6pyfW5BYlFiSX1TOHFMbE/D0HBPMACANAHEH4JzeAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insert(IMapEntry.of("A", "a")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7tICmpaol5OYl64XXFKUmZeu4pxYnOqZV5yaV5xZklmW6pyfW5BYlFiSX1TOHFMbE/D0HBPMAAbGEgZGRyBOrAAA/WTghuYAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, TreeMapTest::extraSerializationChecks, empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("G", "b"), IMapEntry.of("Z", "c"))),
-                                                     "H4sIAAAAAAAA/5XOIQ7CQBCF4YGC4xhViDUIBKpBEARJE1CkZtpMmiXb3WZ2aAsJN+Is3AKB4ArAVuAwTPKJMX/e9QljzzB3XKoDNrqqjoK5IVU4Y6gQ7axXnlij0WfsX7Vjog3WKbvu9O7vFc8mAB3D4o9KknthLORXqW5HANEj7JqGGiqDtlRbYW3LeIme1taT9Vp0Q0tX1cgojtsou2Tp/Tb8BiASGCQBBqsgD/ZB0X0Atgq2afYAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                TreeMapTest::extraSerializationChecks,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7tICmpaol5OYl64XXFKUmZeu4pxYnOqZV5yaV5xZklmW6pyfW5BYlFiSX1TOHFMbE/D0HBPMACANAHEH4JzeAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                TreeMapTest::extraSerializationChecks,
+                empty.insert(IMapEntry.of("A", "a")),
+                "H4sIAAAAAAAA/1vzloG1uIjBPL8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNULKUpN9U0sCCjKr6j8DwL/VIx5GBgqihisSTDFMam4pCgxuQSbSQXlLAwMzC+B7tICmpaol5OYl64XXFKUmZeu4pxYnOqZV5yaV5xZklmW6pyfW5BYlFiSX1TOHFMbE/D0HBPMAAbGEgZGRyBOrAAA/WTghuYAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                TreeMapTest::extraSerializationChecks,
+                empty.insertAll(asList(IMapEntry.of("A", "a"), IMapEntry.of("G", "b"), IMapEntry.of("Z", "c"))),
+                "H4sIAAAAAAAA/5XOIQ7CQBCF4YGC4xhViDUIBKpBEARJE1CkZtpMmiXb3WZ2aAsJN+Is3AKB4ArAVuAwTPKJMX/e9QljzzB3XKoDNrqqjoK5IVU4Y6gQ7axXnlij0WfsX7Vjog3WKbvu9O7vFc8mAB3D4o9KknthLORXqW5HANEj7JqGGiqDtlRbYW3LeIme1taT9Vp0Q0tX1cgojtsou2Tp/Tb8BiASGCQBBqsgD/ZB0X0Atgq2afYAAAA=");
     }
 
-    public static void extraSerializationChecks(Object a,
-                                                Object b)
-    {
-        TreeMap mapA = (TreeMap)a;
-        TreeMap mapB = (TreeMap)b;
+    public static void extraSerializationChecks(Object a, Object b) {
+        TreeMap mapA = (TreeMap) a;
+        TreeMap mapB = (TreeMap) b;
         assertEquals(mapA.getComparator(), mapB.getComparator());
     }
 
-    public void testBuilder()
-    {
+    public void testBuilder() {
         final Random r = new Random(1265143000);
         for (int i = 1; i <= 1000; ++i) {
             IMapBuilder<Integer, Integer> builder = TreeMap.builder();
@@ -399,12 +408,13 @@ public class TreeMapTest
             assertEquals(expected, actual);
 
             builder.clear();
-            assertEquals(expected.deleteAll().assign(1, 2).assign(2, 3), builder.add(1, 2).add(2, 3).build());
+            assertEquals(
+                    expected.deleteAll().assign(1, 2).assign(2, 3),
+                    builder.add(1, 2).add(2, 3).build());
         }
     }
 
-    public void testForEach()
-    {
+    public void testForEach() {
         final StringBuilder sb = new StringBuilder();
         final Proc2<String, String> append = (k, v) -> {
             sb.append("[");
@@ -417,7 +427,8 @@ public class TreeMapTest
         empty.forEach(append);
         assertEquals("", sb.toString());
 
-        final TreeMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
+        final TreeMap<String, String> map =
+                empty.assign("a", "A").assign("c", "C").assign("b", "B");
         map.forEach(append);
         assertEquals("[a,A][b,B][c,C]", sb.toString());
 
@@ -440,15 +451,15 @@ public class TreeMapTest
         }
     }
 
-    public void testReduce()
-    {
+    public void testReduce() {
         final Sum2<String, String, String> append = (s, k, v) -> {
             return s + "[" + k + "," + v + "]";
         };
         final TreeMap<String, String> empty = TreeMap.of();
         assertEquals("", empty.reduce("", append));
 
-        final TreeMap<String, String> map = empty.assign("a", "A").assign("c", "C").assign("b", "B");
+        final TreeMap<String, String> map =
+                empty.assign("a", "A").assign("c", "C").assign("b", "B");
         assertEquals("[a,A][b,B][c,C]", map.reduce("", append));
 
         final Sum2Throws<String, String, String, IOException> appendThrows = (s, k, v) -> {
@@ -466,18 +477,12 @@ public class TreeMapTest
         }
     }
 
-    private TreeMap<Integer, Integer> add(IMap<Integer, Integer> map,
-                                          Integer value)
-    {
+    private TreeMap<Integer, Integer> add(IMap<Integer, Integer> map, Integer value) {
         return add(map, value, value);
     }
 
-    private TreeMap<Integer, Integer> update(IMap<Integer, Integer> map,
-                                             Integer key,
-                                             Integer value,
-                                             Integer merged)
-    {
-        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>)map;
+    private TreeMap<Integer, Integer> update(IMap<Integer, Integer> map, Integer key, Integer value, Integer merged) {
+        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>) map;
         treeMap = treeMap.update(key, h -> h.isEmpty() ? value : Integer.valueOf(h.unsafeGet() ^ value));
         treeMap.checkInvariants();
         Maybe<Integer> integers = treeMap.find(key);
@@ -487,11 +492,8 @@ public class TreeMapTest
         return treeMap;
     }
 
-    private TreeMap<Integer, Integer> add(IMap<Integer, Integer> map,
-                                          Integer key,
-                                          Integer value)
-    {
-        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>)map;
+    private TreeMap<Integer, Integer> add(IMap<Integer, Integer> map, Integer key, Integer value) {
+        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>) map;
         treeMap = treeMap.assign(key, value);
         treeMap.checkInvariants();
         Maybe<Integer> integers = treeMap.find(key);
@@ -501,11 +503,9 @@ public class TreeMapTest
         return treeMap;
     }
 
-    private TreeMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
-                                             IMap<Integer, Integer> extra)
-    {
+    private TreeMap<Integer, Integer> addAll(IMap<Integer, Integer> map, IMap<Integer, Integer> extra) {
         map = map.assignAll(extra);
-        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>)map;
+        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>) map;
         treeMap.checkInvariants();
         for (IMapEntry<Integer, Integer> entry : extra) {
             Maybe<Integer> integers = treeMap.find(entry.getKey());
@@ -516,11 +516,9 @@ public class TreeMapTest
         return treeMap;
     }
 
-    private TreeMap<Integer, Integer> addAll(IMap<Integer, Integer> map,
-                                             Map<Integer, Integer> extra)
-    {
+    private TreeMap<Integer, Integer> addAll(IMap<Integer, Integer> map, Map<Integer, Integer> extra) {
         map = map.assignAll(extra);
-        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>)map;
+        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>) map;
         treeMap.checkInvariants();
         for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
             Maybe<Integer> integers = treeMap.find(entry.getKey());
@@ -531,10 +529,8 @@ public class TreeMapTest
         return treeMap;
     }
 
-    private TreeMap<Integer, Integer> remove(IMap<Integer, Integer> map,
-                                             Integer value)
-    {
-        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>)map;
+    private TreeMap<Integer, Integer> remove(IMap<Integer, Integer> map, Integer value) {
+        TreeMap<Integer, Integer> treeMap = (TreeMap<Integer, Integer>) map;
         treeMap = treeMap.delete(value);
         treeMap.checkInvariants();
         Maybe<Integer> integers = treeMap.find(value);

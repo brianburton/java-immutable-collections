@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,52 +33,44 @@
 
 package org.javimmutable.collections.common;
 
+import java.util.Iterator;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.javimmutable.collections.IMap;
 import org.javimmutable.collections.IMapEntry;
 import org.javimmutable.collections.ISet;
 import org.javimmutable.collections.SplitableIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.Set;
-
-public abstract class AbstractSetUsingMap<T>
-    extends AbstractSet<T>
-{
+public abstract class AbstractSetUsingMap<T> extends AbstractSet<T> {
     protected final IMap<T, Boolean> map;
 
-    public AbstractSetUsingMap(@Nonnull IMap<T, Boolean> map)
-    {
+    public AbstractSetUsingMap(@Nonnull IMap<T, Boolean> map) {
         this.map = map;
     }
 
     @Override
     @Nonnull
-    public ISet<T> insert(@Nonnull T value)
-    {
+    public ISet<T> insert(@Nonnull T value) {
         final IMap<T, Boolean> newMap = map.assign(value, Boolean.TRUE);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Override
-    public boolean contains(@Nullable T value)
-    {
+    public boolean contains(@Nullable T value) {
         return (value != null) && map.getValueOr(value, Boolean.FALSE);
     }
 
     @Nonnull
     @Override
-    public ISet<T> delete(T value)
-    {
+    public ISet<T> delete(T value) {
         IMap<T, Boolean> newMap = map.delete(value);
         return (newMap != map) ? create(newMap) : this;
     }
 
     @Nonnull
     @Override
-    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> deleteAll(@Nonnull Iterator<? extends T> values) {
         IMap<T, Boolean> newMap = map;
         while (values.hasNext()) {
             final T value = values.next();
@@ -93,8 +83,7 @@ public abstract class AbstractSetUsingMap<T>
 
     @Nonnull
     @Override
-    public ISet<T> union(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> union(@Nonnull Iterator<? extends T> values) {
         IMap<T, Boolean> newMap = map;
         while (values.hasNext()) {
             final T value = values.next();
@@ -107,8 +96,7 @@ public abstract class AbstractSetUsingMap<T>
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Iterator<? extends T> values)
-    {
+    public ISet<T> intersection(@Nonnull Iterator<? extends T> values) {
         if (isEmpty()) {
             return this;
         }
@@ -137,8 +125,7 @@ public abstract class AbstractSetUsingMap<T>
 
     @Nonnull
     @Override
-    public ISet<T> intersection(@Nonnull Set<? extends T> other)
-    {
+    public ISet<T> intersection(@Nonnull Set<? extends T> other) {
         if (isEmpty()) {
             return this;
         } else if (other.isEmpty()) {
@@ -155,38 +142,32 @@ public abstract class AbstractSetUsingMap<T>
     }
 
     @Override
-    public int size()
-    {
+    public int size() {
         return map.size();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return map.isEmpty();
     }
 
     @Nonnull
     @Override
-    public SplitableIterator<T> iterator()
-    {
+    public SplitableIterator<T> iterator() {
         return map.keys().iterator();
     }
 
     @Override
-    public int getSpliteratorCharacteristics()
-    {
+    public int getSpliteratorCharacteristics() {
         return map.keys().getSpliteratorCharacteristics();
     }
 
     @Override
-    public void checkInvariants()
-    {
+    public void checkInvariants() {
         checkSetInvariants();
     }
 
-    protected void checkSetInvariants()
-    {
+    protected void checkSetInvariants() {
         map.checkInvariants();
         for (IMapEntry<T, Boolean> entry : map) {
             if (!entry.getValue()) {
@@ -195,8 +176,6 @@ public abstract class AbstractSetUsingMap<T>
         }
     }
 
-    /**
-     * Implemented by derived classes to create a new instance of the appropriate class.
-     */
+    /** Implemented by derived classes to create a new instance of the appropriate class. */
     protected abstract ISet<T> create(IMap<T, Boolean> map);
 }

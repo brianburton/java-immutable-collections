@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,41 +33,32 @@
 
 package org.javimmutable.collections.serialization;
 
-import org.javimmutable.collections.IDeque;
-import org.javimmutable.collections.IDequeBuilder;
-import org.javimmutable.collections.deque.ArrayDeque;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import org.javimmutable.collections.IDeque;
+import org.javimmutable.collections.IDequeBuilder;
+import org.javimmutable.collections.deque.ArrayDeque;
 
-/**
- * Serialization proxy class to safely serialize immutable collection.
- */
+/** Serialization proxy class to safely serialize immutable collection. */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ArrayDequeProxy
-    implements Externalizable
-{
+public class ArrayDequeProxy implements Externalizable {
     private static final int DEQUE_VERSION = 1001;
     private static final long serialVersionUID = -121805;
 
     protected IDeque deque;
 
-    public ArrayDequeProxy()
-    {
+    public ArrayDequeProxy() {
         this.deque = ArrayDeque.of();
     }
 
-    public ArrayDequeProxy(IDeque deque)
-    {
+    public ArrayDequeProxy(IDeque deque) {
         this.deque = deque;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out)
-        throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(DEQUE_VERSION);
         out.writeInt(deque.size());
         for (Object obj : deque) {
@@ -78,9 +67,7 @@ public class ArrayDequeProxy
     }
 
     @Override
-    public void readExternal(ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         final int version = in.readInt();
         if (version != DEQUE_VERSION) {
             throw new IOException("unexpected version number: expected " + DEQUE_VERSION + " found " + version);
@@ -93,8 +80,7 @@ public class ArrayDequeProxy
         deque = builder.build();
     }
 
-    protected Object readResolve()
-    {
+    protected Object readResolve() {
         return deque;
     }
 }

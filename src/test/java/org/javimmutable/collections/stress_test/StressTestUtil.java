@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2016-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,22 +33,18 @@
 
 package org.javimmutable.collections.stress_test;
 
-import org.javimmutable.collections.IList;
-import org.javimmutable.collections.ILists;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.ISets;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
+import org.javimmutable.collections.IList;
+import org.javimmutable.collections.ILists;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.ISets;
 
-class StressTestUtil
-{
-    static IList<String> loadTokens(Iterable<String> filenames)
-        throws IOException
-    {
+class StressTestUtil {
+    static IList<String> loadTokens(Iterable<String> filenames) throws IOException {
         ISet<String> tokens = ISets.hashed();
         for (String filename : filenames) {
             tokens = addTokensFromFile(tokens, filename);
@@ -58,18 +52,13 @@ class StressTestUtil
         return ILists.allOf(tokens);
     }
 
-    static IList<String> loadTokens(String filename)
-        throws IOException
-    {
+    static IList<String> loadTokens(String filename) throws IOException {
         ISet<String> tokens = ISets.hashed();
         tokens = addTokensFromFile(tokens, filename);
         return ILists.allOf(tokens);
     }
 
-    static ISet<String> addTokensFromFile(ISet<String> tokens,
-                                          String filename)
-        throws IOException
-    {
+    static ISet<String> addTokensFromFile(ISet<String> tokens, String filename) throws IOException {
         BufferedReader inp = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
         try {
             for (String line = inp.readLine(); line != null; line = inp.readLine()) {

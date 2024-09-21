@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,14 +33,7 @@
 
 package org.javimmutable.collections.inorder;
 
-import junit.framework.TestCase;
-import org.javimmutable.collections.Func1;
-import org.javimmutable.collections.ISet;
-import org.javimmutable.collections.common.StandardSerializableTests;
-import org.javimmutable.collections.common.StandardSetTests;
-import org.javimmutable.collections.common.StandardStreamableTests;
-import org.javimmutable.collections.common.TestUtil;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,21 +45,25 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import junit.framework.TestCase;
+import org.javimmutable.collections.Func1;
+import org.javimmutable.collections.ISet;
+import org.javimmutable.collections.common.StandardSerializableTests;
+import org.javimmutable.collections.common.StandardSetTests;
+import org.javimmutable.collections.common.StandardStreamableTests;
+import org.javimmutable.collections.common.TestUtil;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import static java.util.Arrays.asList;
-
-public class OrderedSetTest
-    extends TestCase
-{
-    public void testStandard()
-    {
+public class OrderedSetTest extends TestCase {
+    public void testStandard() {
         StandardSetTests.verifySet(OrderedSet.of(), true);
         StandardIteratorTests.emptyIteratorTest(OrderedSet.<Integer>of().iterator());
-        StandardIteratorTests.listIteratorTest(Arrays.asList(1, 2, 3), OrderedSet.<Integer>of().union(Arrays.asList(1, 2, 3)).iterator());
+        StandardIteratorTests.listIteratorTest(
+                Arrays.asList(1, 2, 3),
+                OrderedSet.<Integer>of().union(Arrays.asList(1, 2, 3)).iterator());
     }
 
-    public void test()
-    {
+    public void test() {
         List<String> expected = List.of("barney", "betty", "wilma", "fred");
 
         ISet<String> set = OrderedSet.of();
@@ -145,7 +140,9 @@ public class OrderedSetTest
         assertEquals(true, set3.containsAll(expected));
         assertEquals(true, set3.containsAll(set));
         assertEquals(true, set3.containsAll(set2));
-        assertEquals(new LinkedHashSet<>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")), set3.getSet());
+        assertEquals(
+                new LinkedHashSet<>(Arrays.asList("fred", "wilma", "betty", "barney", "homer", "marge")),
+                set3.getSet());
         assertEquals(set, set3.intersection(set));
         assertEquals(set2, set3.intersection(set2));
         assertEquals(set, set.intersection(set));
@@ -155,8 +152,7 @@ public class OrderedSetTest
         assertEquals(OrderedSet.<String>of(), set3.deleteAll(set3));
     }
 
-    public void testRandom()
-    {
+    public void testRandom() {
         Random random = new Random(2500L);
         for (int i = 0; i < 50; ++i) {
             int size = 1 + random.nextInt(20000);
@@ -198,15 +194,13 @@ public class OrderedSetTest
         }
     }
 
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() {
         ISet<String> set = OrderedSet.<String>of().insert("FRED").insert("WILMA");
         assertSame(OrderedSet.of(), set.deleteAll());
     }
 
     @SuppressWarnings("unchecked")
-    public void testIntersectWithStringComparisonDifference()
-    {
+    public void testIntersectWithStringComparisonDifference() {
         // from hash set standpoint HELLO and Hello are NOT the same String so an intersection
         // should yield an empty set.  However that's not how java.util.Set works
         Set<String> hset = new HashSet<>(asList("Hello"));
@@ -249,25 +243,37 @@ public class OrderedSetTest
         assertEquals(asList("Hello"), TestUtil.makeList(jet.intersection(tset)));
         // different than Set.retainAll()
         assertEquals(asList(), TestUtil.makeList(jet.intersection(tset.iterator())));
-        assertEquals(asList(), TestUtil.makeList(jet.intersection((Collection)tset)));
+        assertEquals(asList(), TestUtil.makeList(jet.intersection((Collection) tset)));
     }
 
-    public void testStreams()
-    {
-        ISet<Integer> mset = OrderedSet.<Integer>of().insert(4).insert(3).insert(4).insert(2).insert(1).insert(3);
+    public void testStreams() {
+        ISet<Integer> mset = OrderedSet.<Integer>of()
+                .insert(4)
+                .insert(3)
+                .insert(4)
+                .insert(2)
+                .insert(1)
+                .insert(3);
         StandardStreamableTests.verifyOrderedUsingCollection(asList(4, 3, 2, 1), mset);
     }
 
-    public void testSerialization()
-        throws Exception
-    {
-        final Func1<Object, Iterator> iteratorFactory = a -> ((ISet)a).iterator();
+    public void testSerialization() throws Exception {
+        final Func1<Object, Iterator> iteratorFactory = a -> ((ISet) a).iterator();
         final ISet<String> empty = OrderedSet.of();
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty,
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4tCSjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgKACAGv+RMGkAAAA");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insert("a"),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4tCSjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZGBgYSxgYEysAmH4ZJ6gAAAA=");
-        StandardSerializableTests.verifySerializable(iteratorFactory, null, empty.insertAll(asList("a", "b", "c", "b")),
-                                                     "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4tCSjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgEQJA2MiECcBcXIFABIEp4uwAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty,
+                "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4tCSjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgKACAGv+RMGkAAAA");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insert("a"),
+                "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4tCSjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZGBgYSxgYEysAmH4ZJ6gAAAA=");
+        StandardSerializableTests.verifySerializable(
+                iteratorFactory,
+                null,
+                empty.insertAll(asList("a", "b", "c", "b")),
+                "H4sIAAAAAAAA/1vzloG1uIjBKr8oXS8rsSwzN7e0JDEpJ1UvOT8nJzW5JDM/r1ivOLUoMzEnsyoRxNXzL0pJLUpNCU4tCSjKr6j8DwL/VIx5GBgqihisSTDIMam4pCgxuQSbSQXlHAwMzC8ZgEQJA2MiECcBcXIFABIEp4uwAAAA");
     }
 }

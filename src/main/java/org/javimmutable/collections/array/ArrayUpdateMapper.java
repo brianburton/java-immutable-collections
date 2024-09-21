@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,16 +33,11 @@
 
 package org.javimmutable.collections.array;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Func1;
 import org.javimmutable.collections.Maybe;
 
-import javax.annotation.Nonnull;
-
-public interface ArrayUpdateMapper<K, V, T>
-    extends ArrayAssignMapper<K, V, T>
-{
+public interface ArrayUpdateMapper<K, V, T> extends ArrayAssignMapper<K, V, T> {
     @Nonnull
-    T mappedUpdate(@Nonnull T current,
-                   @Nonnull K key,
-                   @Nonnull Func1<Maybe<V>, V> generator);
+    T mappedUpdate(@Nonnull T current, @Nonnull K key, @Nonnull Func1<Maybe<V>, V> generator);
 }

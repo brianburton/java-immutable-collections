@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2013-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,13 +33,8 @@
 
 package org.javimmutable.collections;
 
-/**
- * Interface for functions that take no arguments and return a value of type T and might
- * throw an exception.
- */
+/** Interface for functions that take no arguments and return a value of type T and might throw an exception. */
 @FunctionalInterface
-public interface Func0Throws<T, E extends Exception>
-{
-    T apply()
-        throws E;
+public interface Func0Throws<T, E extends Exception> {
+    T apply() throws E;
 }

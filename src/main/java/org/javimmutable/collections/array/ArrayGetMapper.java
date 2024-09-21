@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2020-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,17 +33,12 @@
 
 package org.javimmutable.collections.array;
 
+import javax.annotation.Nonnull;
 import org.javimmutable.collections.Maybe;
 
-import javax.annotation.Nonnull;
-
-public interface ArrayGetMapper<K, V, T>
-{
-    V mappedGetValueOr(@Nonnull T mapping,
-                       @Nonnull K key,
-                       V defaultValue);
+public interface ArrayGetMapper<K, V, T> {
+    V mappedGetValueOr(@Nonnull T mapping, @Nonnull K key, V defaultValue);
 
     @Nonnull
-    Maybe<V> mappedFind(@Nonnull T mapping,
-                        @Nonnull K key);
+    Maybe<V> mappedFind(@Nonnull T mapping, @Nonnull K key);
 }

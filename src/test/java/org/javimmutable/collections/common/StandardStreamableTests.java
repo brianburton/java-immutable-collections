@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,98 +33,88 @@
 
 package org.javimmutable.collections.common;
 
-import org.javimmutable.collections.IStreamable;
-import org.javimmutable.collections.iterators.StandardIteratorTests;
+import static junit.framework.Assert.assertEquals;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import org.javimmutable.collections.IStreamable;
+import org.javimmutable.collections.iterators.StandardIteratorTests;
 
-import static junit.framework.Assert.assertEquals;
-
-public class StandardStreamableTests
-{
-    public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                        @Nonnull IStreamable<T> source)
-    {
+public class StandardStreamableTests {
+    public static <T> void verifyOrderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull IStreamable<T> source) {
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 
-    public static <T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                        @Nonnull Collection<T> source)
-    {
+    public static <T> void verifyOrderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull Collection<T> source) {
         verifyOrderedUsingCollection(expected, source, Function.identity());
     }
 
-    public static <S, T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                           @Nonnull IStreamable<S> source,
-                                                           @Nonnull Function<S, T> transforminator)
-    {
-        StandardIteratorTests.verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        StandardIteratorTests.verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+    public static <S, T> void verifyOrderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull IStreamable<S> source, @Nonnull Function<S, T> transforminator) {
+        StandardIteratorTests.verifyOrderedIteratorUsingHasNext(
+                expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyOrderedIteratorUsingNextOnly(
+                expected.iterator(), source.iterator(), transforminator);
         verifyOrderedStream(expected.stream(), source.stream(), transforminator);
         verifyOrderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
 
-    public static <S, T> void verifyOrderedUsingCollection(@Nonnull Collection<T> expected,
-                                                           @Nonnull Collection<S> source,
-                                                           @Nonnull Function<S, T> transforminator)
-    {
-        StandardIteratorTests.verifyOrderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        StandardIteratorTests.verifyOrderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+    public static <S, T> void verifyOrderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull Collection<S> source, @Nonnull Function<S, T> transforminator) {
+        StandardIteratorTests.verifyOrderedIteratorUsingHasNext(
+                expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyOrderedIteratorUsingNextOnly(
+                expected.iterator(), source.iterator(), transforminator);
         verifyOrderedStream(expected.stream(), source.stream(), transforminator);
         verifyOrderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
 
-    public static <T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
-                                                          @Nonnull IStreamable<T> source)
-    {
+    public static <T> void verifyUnorderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull IStreamable<T> source) {
         verifyUnorderedUsingCollection(expected, source, Function.identity());
     }
 
-    public static <T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
-                                                          @Nonnull Collection<T> source)
-    {
+    public static <T> void verifyUnorderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull Collection<T> source) {
         verifyUnorderedUsingCollection(expected, source, Function.identity());
     }
 
-    public static <S, T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
-                                                             @Nonnull IStreamable<S> source,
-                                                             @Nonnull Function<S, T> transforminator)
-    {
-        StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        StandardIteratorTests.verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+    public static <S, T> void verifyUnorderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull IStreamable<S> source, @Nonnull Function<S, T> transforminator) {
+        StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(
+                expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyUnorderedIteratorUsingNextOnly(
+                expected.iterator(), source.iterator(), transforminator);
         verifyUnorderedStream(expected.stream(), source.stream(), transforminator);
         verifyUnorderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
 
-    public static <S, T> void verifyUnorderedUsingCollection(@Nonnull Collection<T> expected,
-                                                             @Nonnull Collection<S> source,
-                                                             @Nonnull Function<S, T> transforminator)
-    {
-        StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(expected.iterator(), source.iterator(), transforminator);
-        StandardIteratorTests.verifyUnorderedIteratorUsingNextOnly(expected.iterator(), source.iterator(), transforminator);
+    public static <S, T> void verifyUnorderedUsingCollection(
+            @Nonnull Collection<T> expected, @Nonnull Collection<S> source, @Nonnull Function<S, T> transforminator) {
+        StandardIteratorTests.verifyUnorderedIteratorUsingHasNext(
+                expected.iterator(), source.iterator(), transforminator);
+        StandardIteratorTests.verifyUnorderedIteratorUsingNextOnly(
+                expected.iterator(), source.iterator(), transforminator);
         verifyUnorderedStream(expected.stream(), source.stream(), transforminator);
         verifyUnorderedStream(expected.parallelStream(), source.parallelStream(), transforminator);
     }
 
-    public static <S, T> void verifyOrderedStream(@Nonnull Stream<T> expected,
-                                                  @Nonnull Stream<S> actual,
-                                                  @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyOrderedStream(
+            @Nonnull Stream<T> expected, @Nonnull Stream<S> actual, @Nonnull Function<S, T> transforminator) {
         List<T> expectedList = expected.collect(Collectors.toList());
         List<T> actualList = actual.map(v -> transforminator.apply(v)).collect(Collectors.toList());
         assertEquals(expectedList, actualList);
     }
 
-    public static <S, T> void verifyUnorderedStream(@Nonnull Stream<T> expected,
-                                                    @Nonnull Stream<S> actual,
-                                                    @Nonnull Function<S, T> transforminator)
-    {
+    public static <S, T> void verifyUnorderedStream(
+            @Nonnull Stream<T> expected, @Nonnull Stream<S> actual, @Nonnull Function<S, T> transforminator) {
         Set<T> expectedList = expected.collect(Collectors.toSet());
         Set<T> actualList = actual.map(v -> transforminator.apply(v)).collect(Collectors.toSet());
         assertEquals(expectedList, actualList);

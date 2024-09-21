@@ -1,9 +1,7 @@
-///###////////////////////////////////////////////////////////////////////////
-//
 // Burton Computer Corporation
 // http://www.burton-computer.com
 //
-// Copyright (c) 2024, Burton Computer Corporation
+// Copyright (c) 2017-2024, Burton Computer Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,8 +33,6 @@
 
 package org.javimmutable.collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -46,54 +42,52 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-public final class GenericCollector
-{
-    private static final Set<Collector.Characteristics> ORDERED = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT));
-    private static final Set<Collector.Characteristics> UNORDERED = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.UNORDERED, Collector.Characteristics.CONCURRENT));
+public final class GenericCollector {
+    private static final Set<Collector.Characteristics> ORDERED =
+            Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT));
+    private static final Set<Collector.Characteristics> UNORDERED = Collections.unmodifiableSet(
+            EnumSet.of(Collector.Characteristics.UNORDERED, Collector.Characteristics.CONCURRENT));
 
-    private GenericCollector()
-    {
-    }
+    private GenericCollector() {}
 
     @Nonnull
-    public static <T, C> Collector<T, ?, C> ordered(@Nonnull C initialValue,
-                                                    @Nonnull C empty,
-                                                    @Nonnull Predicate<C> isEmpty,
-                                                    @Nonnull Func2<C, T, C> adder,
-                                                    @Nonnull Func2<C, C, C> combiner)
-    {
+    public static <T, C> Collector<T, ?, C> ordered(
+            @Nonnull C initialValue,
+            @Nonnull C empty,
+            @Nonnull Predicate<C> isEmpty,
+            @Nonnull Func2<C, T, C> adder,
+            @Nonnull Func2<C, C, C> combiner) {
         return new CollectorImpl<>(ORDERED, initialValue, empty, isEmpty, adder, combiner);
     }
 
     @Nonnull
-    public static <T, C> Collector<T, ?, C> unordered(@Nonnull C initialValue,
-                                                      @Nonnull C empty,
-                                                      @Nonnull Predicate<C> isEmpty,
-                                                      @Nonnull Func2<C, T, C> adder,
-                                                      @Nonnull Func2<C, C, C> combiner)
-    {
+    public static <T, C> Collector<T, ?, C> unordered(
+            @Nonnull C initialValue,
+            @Nonnull C empty,
+            @Nonnull Predicate<C> isEmpty,
+            @Nonnull Func2<C, T, C> adder,
+            @Nonnull Func2<C, C, C> combiner) {
         return new CollectorImpl<>(UNORDERED, initialValue, empty, isEmpty, adder, combiner);
     }
 
-
     @Immutable
-    private static class CollectorImpl<T, C>
-        implements Collector<T, Accumulator<T, C>, C>
-    {
+    private static class CollectorImpl<T, C> implements Collector<T, Accumulator<T, C>, C> {
         private final Set<Characteristics> characteristics;
         private final C initialValues;
         private final C empty;
         private final Func2<C, T, C> adder;
         private final Func2<C, C, C> combiner;
 
-        private CollectorImpl(@Nonnull Set<Characteristics> characteristics,
-                              @Nonnull C initialValues,
-                              @Nonnull C empty,
-                              @Nonnull Predicate<C> isEmpty,
-                              @Nonnull Func2<C, T, C> adder,
-                              @Nonnull Func2<C, C, C> combiner)
-        {
+        private CollectorImpl(
+                @Nonnull Set<Characteristics> characteristics,
+                @Nonnull C initialValues,
+                @Nonnull C empty,
+                @Nonnull Predicate<C> isEmpty,
+                @Nonnull Func2<C, T, C> adder,
+                @Nonnull Func2<C, C, C> combiner) {
             this.characteristics = characteristics;
             this.initialValues = isEmpty.test(initialValues) ? null : initialValues;
             this.empty = empty;
@@ -102,26 +96,22 @@ public final class GenericCollector
         }
 
         @Override
-        public Supplier<Accumulator<T, C>> supplier()
-        {
+        public Supplier<Accumulator<T, C>> supplier() {
             return () -> new Accumulator<>(adder, combiner, empty);
         }
 
         @Override
-        public BiConsumer<Accumulator<T, C>, T> accumulator()
-        {
+        public BiConsumer<Accumulator<T, C>, T> accumulator() {
             return (a, v) -> a.add(v);
         }
 
         @Override
-        public BinaryOperator<Accumulator<T, C>> combiner()
-        {
+        public BinaryOperator<Accumulator<T, C>> combiner() {
             return (left, right) -> left.combine(right);
         }
 
         @Override
-        public Function<Accumulator<T, C>, C> finisher()
-        {
+        public Function<Accumulator<T, C>, C> finisher() {
             if (initialValues == null) {
                 return a -> a.list;
             } else {
@@ -130,34 +120,27 @@ public final class GenericCollector
         }
 
         @Override
-        public Set<Characteristics> characteristics()
-        {
+        public Set<Characteristics> characteristics() {
             return characteristics;
         }
     }
 
-    private static class Accumulator<T, C>
-    {
+    private static class Accumulator<T, C> {
         private Func2<C, T, C> adder;
         private Func2<C, C, C> combiner;
         private C list;
 
-        private Accumulator(@Nonnull Func2<C, T, C> adder,
-                            @Nonnull Func2<C, C, C> combiner,
-                            @Nonnull C list)
-        {
+        private Accumulator(@Nonnull Func2<C, T, C> adder, @Nonnull Func2<C, C, C> combiner, @Nonnull C list) {
             this.adder = adder;
             this.combiner = combiner;
             this.list = list;
         }
 
-        private synchronized void add(T value)
-        {
+        private synchronized void add(T value) {
             list = adder.apply(list, value);
         }
 
-        private synchronized Accumulator<T, C> combine(Accumulator<T, C> other)
-        {
+        private synchronized Accumulator<T, C> combine(Accumulator<T, C> other) {
             list = combiner.apply(list, other.list);
             return this;
         }
